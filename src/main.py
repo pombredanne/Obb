@@ -1,13 +1,36 @@
-'''Game main module.
+import pygame
+from pygame.locals import *
+import data, vista, context, settings
 
-Contains the entry point used by the run_game.py script.
-
-Feel free to put all your game code here, or in other modules in this "src"
-package.
-'''
-
-import data
+pygame.init()
 
 def main():
-    print "Hello from your game's main()"
-    print data.load('sample.txt').read()
+    vista.init()
+    pygame.display.set_caption("Ubb")
+    context.push(context.Context())
+    clock = pygame.time.Clock()
+    while context.top():
+        dt = min(clock.tick(settings.maxfps) * 0.001, 1./settings.minfps)
+        con = context.top()
+        events = pygame.event.get()
+        keys = pygame.key.get_pressed()
+        mousepos = pygame.mouse.get_pos()
+        buttons = pygame.mouse.get_pressed()
+
+        for event in events:
+            if event.type == QUIT:
+                return
+            if event.type == KEYDOWN and event.key == K_ESCAPE:
+                return
+            if event.type == KEYDOWN and event.key == K_F12:
+                vista.screencap()
+
+        con.think(dt, events, keys, mousepos, buttons)
+        con.draw()
+        if settings.showfps:
+            pygame.display.set_caption("Ubb - %.1ffps" % clock.get_fps())
+        pygame.display.flip()
+        
+        
+
+    
