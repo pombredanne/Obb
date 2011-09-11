@@ -29,7 +29,7 @@ def main():
         con.draw()
         if settings.showfps:
             pygame.display.set_caption("Ubb - %.1ffps" % clock.get_fps())
-        pygame.display.flip()
+        vista.flip()
         
         
 

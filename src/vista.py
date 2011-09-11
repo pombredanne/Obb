@@ -5,9 +5,10 @@ import settings
 screen = None
 
 def init():
-    global screen
+    global screen, _screen
     flags = FULLSCREEN if settings.fullscreen else 0
-    screen = pygame.display.set_mode(settings.size, flags)
+    screen = pygame.Surface(settings.size, SRCALPHA)
+    _screen = pygame.display.set_mode(settings.size, flags)
 
 def clear(color = (64, 64, 64)):
     screen.fill(color)
@@ -15,6 +16,9 @@ def clear(color = (64, 64, 64)):
 def screencap():
     pygame.image.save(screen, "screenshot.png")
 
+def flip():
+    _screen.blit(screen, (0,0))
+    pygame.display.flip()
 
 s3 = math.sqrt(3.)
 class HexGrid(object):
@@ -67,5 +71,35 @@ class HexGrid(object):
         pygame.draw.polygon(screen, color, vs)
 
 grid = HexGrid()
+
+
+class Mask(object):
+    """A fog-of-war style mask (black with a variable alpha"""
+    circs = {}
+    def __init__(self, (sx, sy), ps = (), (cr, cg, cb) = (0, 0, 0)):
+        self.sx, self.sy = sx, sy
+        self.surf = pygame.Surface((sx, sy), SRCALPHA)
+        self.surf.fill((cr, cg, cb, 255))
+        img = pygame.Surface((sx, sy), SRCALPHA)
+        img.fill((0,0,0))
+        for (px, py), r in ps:
+            img.blit(self.getcirc(r), (px-r, py-r))
+#        self.surf.blit(img, (0,0))
+        pygame.surfarray.pixels_alpha(self.surf)[:,:] = 255 - pygame.surfarray.array2d(img)
+        
+    @staticmethod
+    def getcirc(r):
+        if r not in Mask.circs:
+            # TODO: pygame.surfarray
+            img = pygame.Surface((2*r, 2*r), SRCALPHA)
+            for x in range(2*r):
+                for y in range(2*r):
+                    d2 = float((x - r) ** 2 + (y - r) ** 2) / r ** 2
+                    d = math.sqrt(d2)
+                    a = max(min(int(255 * 1 / (1 + math.exp(-6 + 12 * d))), 255), 0)
+                    img.set_at((x,y), (0, 0, 255, a))
+            Mask.circs[r] = img
+        return Mask.circs[r]
+        
 
 

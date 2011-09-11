@@ -14,7 +14,6 @@ class Body(object):
             app2 = Organ(self.core, p, e)
             app.buds[(p, e)] = app2
             self.parts.append(app2)
-            
     
     def draw(self):
         for part in self.parts:
@@ -27,6 +26,9 @@ class BodyPart(object):
         self.edge = edge  # Edge number of base
         self.buds = {}  # New body parts that are formed off this one
                         # (set to None if no body part there yet)
+
+    def screenpos(self):
+        return vista.grid.gcenter((self.x, self.y))
 
     def randombud(self):
         """Return a bud that hasn't been used yet"""
