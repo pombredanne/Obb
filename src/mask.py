@@ -21,13 +21,14 @@ class Mask(object):
         area = (self.x1 - self.x0) * (self.y1 - self.y0)
         # TODO: set a according to area
         self.a = 6
-        self.sx, self.sy = self.worldtomask((self.x1, self.y1))
+        self.sx, self.sy = self.worldtomask((self.x1, self.y0))
+        print self.sx, self.sy
 
     def bounds(self):
         return self.x0, self.y0, self.x1, self.y1
 
     def worldtomask(self, (x, y)):
-        return int((x - self.x0) * self.a + 0.5), int((y - self.y0) * self.a + 0.5)
+        return int((x - self.x0) * self.a + 0.5), int((self.y1 - y) * self.a + 0.5)
 
     def visibility(self, (x, y)):
         """Return the visibility (0 to 1) of the given world coordinate"""
@@ -71,8 +72,8 @@ class Mask(object):
     def getmask(self, (x0, y0, x1, y1), (sx, sy)):
         """Return a piece of the mask that covers the rectangle of given
         world-coordinate edges and has the given pixel dimensions."""
-        px0, py0 = self.worldtomask((x0, y0))
-        px1, py1 = self.worldtomask((x1, y1))
+        px0, py1 = self.worldtomask((x0, y0))
+        px1, py0 = self.worldtomask((x1, y1))
         key = px0, py0, px1, py1, sx, sy
         if key == self.lastrequest:
             return self.lastresponse

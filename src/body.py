@@ -91,7 +91,7 @@ class BodyPart(object):
 
 class Core(BodyPart):
     """The central core of the body, that has the funny mouth"""
-    lightradius = 3
+    lightradius = 8
     def __init__(self, body, (x,y) = (0,0)):
         BodyPart.__init__(self, body, (x,y), 0)
         for edge in range(6):  # One bud in each of six directions
@@ -102,7 +102,7 @@ class Core(BodyPart):
 
     def draw(self):
         px, py = vista.worldtoview(vista.grid.hextoworld((self.x, self.y)))
-        r = int(vista.grid.a * 0.8)
+        r = int(vista.zoom * 0.85)
         pygame.draw.circle(vista.screen, (0, 192, 96), (px, py), r)
 
 class AppendageSpec(object):
@@ -146,21 +146,21 @@ class Organ(BodyPart):
         p0 = self.screenpos()
 #        p1 = vista.grid.gedge((self.x, self.y), self.edge)
 #        pygame.draw.line(vista.screen, (0, 192, 64), p0, p1, 5)
-        pygame.draw.circle(vista.screen, (0, 192, 64), p0, int(vista.grid.a*0.5))
+        pygame.draw.circle(vista.screen, (0, 192, 64), p0, int(vista.zoom*0.5))
 
     def tiles(self):
         return ((self.x, self.y),)
 
 class Eye(Organ):
     """Extends your visible region"""
-    lightradius = 3
+    lightradius = 8
 
     def draw(self):
         p0 = self.screenpos()
         p1 = self.edgescreenpos()
         pygame.draw.line(vista.screen, (0, 192, 64), p0, p1, 5)
-        pygame.draw.circle(vista.screen, (0, 192, 64), p0, int(vista.grid.a*0.5))
-        pygame.draw.circle(vista.screen, (255, 255, 255), p0, int(vista.grid.a*0.4))
-        pygame.draw.circle(vista.screen, (0, 0, 0), p0, int(vista.grid.a*0.2))
+        pygame.draw.circle(vista.screen, (0, 192, 64), p0, int(vista.zoom*0.5))
+        pygame.draw.circle(vista.screen, (255, 255, 255), p0, int(vista.zoom*0.4))
+        pygame.draw.circle(vista.screen, (0, 0, 0), p0, int(vista.zoom*0.2))
 
 

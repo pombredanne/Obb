@@ -18,4 +18,5 @@ class Play(context.Context):
 #                vista.grid.drawhex((x,y))
         vista.grid.drawhex(self.ton, (255, 255, 255))
         self.body.draw()
+        vista.addmask(self.body.mask)
 

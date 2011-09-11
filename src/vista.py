@@ -39,8 +39,9 @@ def init():
     zoom = 30
 
 def setgrect((x0, y0, x1, y1)):
-    global wx0, wy0, wx1, wy1, gsurf
+    global wx0, wy0, wx1, wy1, gsurf, zoom
     wx0, wy0, wx1, wy1 = x0, y0, x1, y1
+    zoom = min(settings.sx / (wx1 - wx0), settings.sy / (wy1 - wy0))
 #    gsurf = pygame.Surface(worldtogameplay((wx1, wy0)))
 
 def worldtogameplay((x, y)):
@@ -55,6 +56,10 @@ def clear(color = (64, 64, 64)):
 def screencap():
     dstr = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
     pygame.image.save(_screen, "screenshots/screenshot-%s.png" % dstr)
+
+def addmask(mask):
+    gsx, gsy = worldtogameplay((wx1, wy0))
+    screen.blit(mask.getmask((wx0, wy0, wx1, wy1), (gsx, gsy)), (0,0))
 
 def flip():
 #    screen.blit(gsurf)  # TODO
