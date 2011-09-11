@@ -11,7 +11,7 @@ class Body(object):
             self.core.buds[(p, e)] = app
             self.parts.append(app)
             p, e = app.randombud()
-            app2 = Appendage(self.core, p, e)
+            app2 = Organ(self.core, p, e)
             app.buds[(p, e)] = app2
             self.parts.append(app2)
             
@@ -63,5 +63,11 @@ class Appendage(BodyPart):
             p2 = vista.grid.gedge(p, edge)
             pygame.draw.line(vista.screen, (192, 64, 0), p0, p2, 5)
             
-
+class Organ(BodyPart):
+    def draw(self):
+        p0 = vista.grid.gcenter((self.x, self.y))
+        p1 = vista.grid.gedge((self.x, self.y), self.edge)
+        pygame.draw.line(vista.screen, (0, 192, 64), p0, p1, 5)
+        pygame.draw.circle(vista.screen, (0, 64, 192), p0, 20)
+    
 
