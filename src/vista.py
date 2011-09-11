@@ -39,13 +39,14 @@ class HexGrid(object):
 
     def gedge(self, (x, y), e):
         """Screen coordinate of center of eth edge of tile at (x,y)"""
-        dx, dy = [(0,-0.5), (0.75,-0.25), (0.75,0.25),
-                  (0,0.5), (-0.75,0.25), (-0.75,-0.25)][e%6]
+        dx, dy = [(0,0.5), (0.75,0.25), (0.75,-0.25),
+                  (0,-0.5), (-0.75,-0.25), (-0.75,0.25)][e%6]
         px = self.x0 + (1.5 * x + dx) * self.a
         py = self.y0 - s3 * (y + 0.5 * x + dy) * self.a
         return int(px + .5), int(py + .5)
 
-    def opposite(self, (x, y), e):
+    @staticmethod
+    def opposite((x, y), e):
         """The tile and edge that's opposite the specified edge"""
         dx, dy = [(0,1), (1,0), (1,-1), (0,-1), (-1,0), (-1,1)][e%6]
         return (x+dx, y+dy), (e+3)%6
