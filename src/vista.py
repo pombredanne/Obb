@@ -1,4 +1,4 @@
-import pygame, math
+import pygame, math, datetime
 from pygame.locals import *
 import settings
 
@@ -13,7 +13,8 @@ def clear(color = (64, 64, 64)):
     screen.fill(color)
 
 def screencap():
-    pygame.image.save(screen, "screenshot.png")
+    dstr = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+    pygame.image.save(screen, "screenshots/screenshot-%s.png" % dstr)
 
 def flip():
     _screen.blit(screen, vrect)
