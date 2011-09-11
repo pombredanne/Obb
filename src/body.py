@@ -1,5 +1,5 @@
 import pygame, random
-import vista
+import vista, mask
 
 class Body(object):
     def __init__(self, (x, y) = (0, 0)):
@@ -7,6 +7,8 @@ class Body(object):
         self.takentiles = set()
         self.takenedges = set()
         self.core = Core(self, (x, y))
+        self.mask = mask.Mask((self.core.lightcircle(),))
+        vista.setgrect(self.mask.bounds())
         self.addpart(self.core)
 
     def addrandompart(self, n = 1, maxtries = 100):
@@ -20,7 +22,7 @@ class Body(object):
                 appspec = randomspec()
                 part = Appendage(self.core, pos, edge, appspec)
             else:
-                part = Organ(self.core, pos, edge)
+                part = Eye(self.core, pos, edge)
             if not self.canaddpart(part): continue
             parent.buds[bud] = part
             self.addpart(part)
@@ -37,18 +39,27 @@ class Body(object):
         tiles, edges = part.claimedsets()
         self.takentiles |= tiles
         self.takenedges |= edges
+        if part.lightradius > 0:
+            self.mask.addp(*part.lightcircle())
+            vista.setgrect(self.mask.bounds())
     
     def draw(self):
         for part in self.parts:
             part.draw()
 
 class BodyPart(object):
+    lightradius = 0  # How much does this part extend your visibility
     def __init__(self, body, (x,y), edge = 0):
         self.body = body
         self.x, self.y = x, y
+        self.worldpos = vista.grid.hextoworld((self.x, self.y))
         self.edge = edge  # Edge number of base
+        self.edgeworldpos = vista.grid.edgeworld((self.x, self.y), self.edge)
         self.buds = {}  # New body parts that are formed off this one
                         # (set to None if no body part there yet)
+
+    def lightcircle(self):
+        return vista.grid.hextoworld((self.x,self.y)), self.lightradius
 
     def tiles(self):
         return ()
@@ -61,9 +72,16 @@ class BodyPart(object):
         es = set(vista.grid.normedge(p, e) for p,e in self.edges())
         return ts, es
 
-
     def screenpos(self):
-        return vista.grid.gcenter((self.x, self.y))
+        return vista.worldtoview(self.worldpos)
+
+    def edgescreenpos(self):
+        return vista.worldtoview(self.edgeworldpos)
+
+    @staticmethod
+    def budscreenpos(p, e):
+        """Screen position of a given edge"""
+        return vista.worldtoview(vista.grid.edgeworld(p, e))
 
     def randombud(self):
         """Return a bud that hasn't been used yet"""
@@ -73,6 +91,7 @@ class BodyPart(object):
 
 class Core(BodyPart):
     """The central core of the body, that has the funny mouth"""
+    lightradius = 3
     def __init__(self, body, (x,y) = (0,0)):
         BodyPart.__init__(self, body, (x,y), 0)
         for edge in range(6):  # One bud in each of six directions
@@ -82,7 +101,7 @@ class Core(BodyPart):
         return ((self.x, self.y),)
 
     def draw(self):
-        px, py = vista.grid.gcenter((self.x, self.y))
+        px, py = vista.worldtoview(vista.grid.hextoworld((self.x, self.y)))
         r = int(vista.grid.a * 0.8)
         pygame.draw.circle(vista.screen, (0, 192, 96), (px, py), r)
 
@@ -114,24 +133,34 @@ class Appendage(BodyPart):
         self.color = random.randint(0, 128), random.randint(128, 255), random.randint(0, 128)
     
     def draw(self):
-        p0 = vista.grid.gedge((self.x, self.y), self.edge)
-        p1 = vista.grid.gcenter((self.x, self.y))
+        p0 = self.edgescreenpos()
+        p1 = self.screenpos()
         for p, edge in self.buds:
-            p2 = vista.grid.gedge(p, edge)
+            p2 = self.budscreenpos(p, edge)
             ps = qBezier(p0, p1, p2)
             pygame.draw.lines(vista.screen, self.color, False, ps, 5)
             
 class Organ(BodyPart):
     """A functional body part that terminates a stalk"""
     def draw(self):
-        p0 = vista.grid.gcenter((self.x, self.y))
-        p1 = vista.grid.gedge((self.x, self.y), self.edge)
+        p0 = self.screenpos()
+#        p1 = vista.grid.gedge((self.x, self.y), self.edge)
+#        pygame.draw.line(vista.screen, (0, 192, 64), p0, p1, 5)
+        pygame.draw.circle(vista.screen, (0, 192, 64), p0, int(vista.grid.a*0.5))
+
+    def tiles(self):
+        return ((self.x, self.y),)
+
+class Eye(Organ):
+    """Extends your visible region"""
+    lightradius = 3
+
+    def draw(self):
+        p0 = self.screenpos()
+        p1 = self.edgescreenpos()
         pygame.draw.line(vista.screen, (0, 192, 64), p0, p1, 5)
         pygame.draw.circle(vista.screen, (0, 192, 64), p0, int(vista.grid.a*0.5))
         pygame.draw.circle(vista.screen, (255, 255, 255), p0, int(vista.grid.a*0.4))
         pygame.draw.circle(vista.screen, (0, 0, 0), p0, int(vista.grid.a*0.2))
-
-    def tiles(self):
-        return ((self.x, self.y),)
 
 

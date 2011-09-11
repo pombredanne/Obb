@@ -2,21 +2,62 @@ import pygame, math, datetime
 from pygame.locals import *
 import settings
 
+# Okay, here's the deal. There are six simultaneous coordinate systems
+#   going on at once.
+
+# World coordinates: Zoom-level invariant coordinate system, where the
+#   gameplay happens. Distances between game object should be computed
+#   in this coordinate system.
+# Hex coordinates: A skewed linear transform of world coordinates that
+#   maps the tile centers to (integer) lattice points. Since edges are
+#   midpoints between these, edges are obviously at half-integer
+#   coordinates.
+# Gameplay coordinates: Transformation of world coordinates to pixel
+#   coordinates. The pixels in question are in some arbitrary surface
+#   that doesn't necessarily correspond to the screen. The gameplay
+#   surface can be resized when the gameplay area is extended, or when
+#   the zoom level is changed. When these happen, the mapping to world
+#   coordinates changes. Panning does not affect this mapping.
+# View coordinates: The viewport is a rectangle that actually appears
+#   on the screen. Generally it's a piece of the gameplay surface. The
+#   mapping between gameplay coordinates and view coordinates can change
+#   when the gameplay area is panned.
+# Screen coordinates: The viewport doesn't have to be in the upper-left
+#   corner of the window, in which case this coordinate system is used
+#   for mouse coordinates and there's a transformation to view
+#   coordinates that's just an offset.
+# Mask coordinates: The mask is the surface that has the visibility-
+#   blocking mask. It doesn't need very high resolution.
+
 def init():
-    global screen, _screen, vrect
+    global screen, _screen, vrect, zoom
     flags = FULLSCREEN if settings.fullscreen else 0
     screen = pygame.Surface(settings.size, SRCALPHA)
     _screen = pygame.display.set_mode(settings.size, flags)
+    # TODO: decouple view and screen coordinates
     vrect = pygame.Rect(0, 0, settings.sx, settings.sy)
+    zoom = 30
+
+def setgrect((x0, y0, x1, y1)):
+    global wx0, wy0, wx1, wy1, gsurf
+    wx0, wy0, wx1, wy1 = x0, y0, x1, y1
+#    gsurf = pygame.Surface(worldtogameplay((wx1, wy0)))
+
+def worldtogameplay((x, y)):
+    return int((x - wx0) * zoom + 0.5), int((wy1 - y) * zoom + 0.5)
+
+def worldtoview((x, y)):
+    return worldtogameplay((x, y))  # TODO
 
 def clear(color = (64, 64, 64)):
     screen.fill(color)
 
 def screencap():
     dstr = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-    pygame.image.save(screen, "screenshots/screenshot-%s.png" % dstr)
+    pygame.image.save(_screen, "screenshots/screenshot-%s.png" % dstr)
 
 def flip():
+#    screen.blit(gsurf)  # TODO
     _screen.blit(screen, vrect)
     pygame.display.flip()
 
@@ -50,6 +91,28 @@ class HexGrid(object):
         return int(px + .5), int(py + .5)
 
     @staticmethod
+    def edgehex((x, y), e):
+        """Hex coordinates of given edge"""
+        dx, dy = [(0,0.5), (0.5,0), (0.5,-0.5),
+                  (0,-0.5), (-0.5,0), (-0.5,0.5)][e%6]
+        return x+dx, y+dy
+
+    @staticmethod
+    def edgeworld((x, y), e):
+        """World coordinates of given edge"""
+        return HexGrid.hextoworld(HexGrid.edgehex((x, y), e))
+
+    @staticmethod
+    def worldtohex((x, y)):
+        """Convert hex coordinates to world coordinates"""
+        return 2./3 * x, -x/3. + y/s3
+
+    @staticmethod
+    def hextoworld((x, y)):
+        """Convert world coordinates to hex coordinates"""
+        return 3./2 * x, s3*(x/2. + y)
+
+    @staticmethod
     def opposite((x, y), e):
         """The tile and edge that's opposite the specified edge"""
         dx, dy = [(0,1), (1,0), (1,-1), (0,-1), (-1,0), (-1,1)][e%6]
@@ -76,54 +139,5 @@ class HexGrid(object):
         pygame.draw.polygon(screen, color, vs)
 
 grid = HexGrid(a = 30)
-
-
-class Mask(object):
-    """A fog-of-war style mask (black with a variable alpha)"""
-    circs = {}
-    def __init__(self, (sx, sy), ps = (), color = (0, 0, 0), ):
-        self.sx, self.sy = sx, sy
-        self.color = tuple(color)
-        self.ps = list(ps)
-        self.draw()
-
-    def draw(self):
-        """Draw entire surface from scratch"""
-        self.surf = pygame.Surface((self.sx, self.sy), SRCALPHA)
-        self.surf.fill(self.color)
-        self.blue = pygame.Surface((self.sx, self.sy), SRCALPHA)
-        self.blue.fill((0,0,0))
-        for p, r in self.ps:
-            self.addcirc(p, r)
-        self.alphacopy()
-
-    def addp(self, p, r):
-        self.ps.append((p, r))
-        self.addcirc(p, r)
-        self.alphacopy()
-
-    def addcirc(self, (px, py), r):
-        """Add a circle onto the blue surface"""
-        self.blue.blit(self.getcirc(r), (px-r, py-r))
-
-    def alphacopy(self):
-        """Copy from pixel data in the blue surface to the alpha
-        channel of the main surface"""
-        pygame.surfarray.pixels_alpha(self.surf)[:,:] = 255 - pygame.surfarray.array2d(self.blue)
-        
-    @staticmethod
-    def getcirc(r):
-        if r not in Mask.circs:
-            # TODO: pygame.surfarray
-            img = pygame.Surface((2*r, 2*r), SRCALPHA)
-            for x in range(2*r):
-                for y in range(2*r):
-                    d2 = float((x - r) ** 2 + (y - r) ** 2) / r ** 2
-                    d = math.sqrt(d2)
-                    a = max(min(int(255 * 1 / (1 + math.exp(-6 + 12 * d))), 255), 0)
-                    img.set_at((x,y), (0, 0, 255, a))
-            Mask.circs[r] = img
-        return Mask.circs[r]
-        
 
 
