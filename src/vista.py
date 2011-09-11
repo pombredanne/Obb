@@ -54,6 +54,11 @@ class HexGrid(object):
         dx, dy = [(0,1), (1,0), (1,-1), (0,-1), (-1,0), (-1,1)][e%6]
         return (x+dx, y+dy), (e+3)%6
 
+    @staticmethod
+    def normedge(p, e):
+        """The "normalized" edge, used for comparison"""
+        return (p,e%6) if e%6 < 3 else HexGrid.opposite(p, e)
+
     def tnearest(self, (px, py)):
         """The tile that the given screen position is over"""
         x0 = math.floor(float(px - self.x0) / self.a / 1.5)

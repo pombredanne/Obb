@@ -1,10 +1,13 @@
 import pygame, random
+from pygame.locals import *
 import vista, context, body, settings
 
 class Play(context.Context):
     def __init__(self):
         self.body = body.Body()
-        
+        self.drawmask()
+
+    def drawmask(self):        
         px, py = self.body.core.screenpos()
         ps = [((px/10, py/10), 20)]
         for part in self.body.parts:
@@ -16,6 +19,9 @@ class Play(context.Context):
 
     def think(self, dt, events, keys, mousepos, buttons):
         self.ton = vista.grid.tnearest(mousepos)
+        if any(event.type == KEYDOWN for event in events):
+            self.body.addrandompart()
+            self.drawmask()
 
     def draw(self):
         vista.clear()
