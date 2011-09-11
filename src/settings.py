@@ -1,7 +1,7 @@
 import sys
 
 
-size = sx, sy = 854, 480
+size = sx, sy = 480, 480
 
 fullscreen = "--fullscreen" in sys.argv
 showfps = True

@@ -70,6 +70,6 @@ class Organ(BodyPart):
         p0 = vista.grid.gcenter((self.x, self.y))
         p1 = vista.grid.gedge((self.x, self.y), self.edge)
         pygame.draw.line(vista.screen, (0, 192, 64), p0, p1, 5)
-        pygame.draw.circle(vista.screen, (0, 64, 192), p0, 20)
+        pygame.draw.circle(vista.screen, (0, 64, 192), p0, int(vista.grid.a/2))
     
 

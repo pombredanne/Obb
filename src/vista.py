@@ -2,13 +2,12 @@ import pygame, math
 from pygame.locals import *
 import settings
 
-screen = None
-
 def init():
-    global screen, _screen
+    global screen, _screen, vrect
     flags = FULLSCREEN if settings.fullscreen else 0
     screen = pygame.Surface(settings.size, SRCALPHA)
     _screen = pygame.display.set_mode(settings.size, flags)
+    vrect = pygame.Rect(0, 0, settings.sx, settings.sy)
 
 def clear(color = (64, 64, 64)):
     screen.fill(color)
@@ -17,7 +16,7 @@ def screencap():
     pygame.image.save(screen, "screenshot.png")
 
 def flip():
-    _screen.blit(screen, (0,0))
+    _screen.blit(screen, vrect)
     pygame.display.flip()
 
 s3 = math.sqrt(3.)
@@ -70,22 +69,41 @@ class HexGrid(object):
         vs = [self.gvertex((x, y), v) for v in range(6)]        
         pygame.draw.polygon(screen, color, vs)
 
-grid = HexGrid()
+grid = HexGrid(a = 20)
 
 
 class Mask(object):
-    """A fog-of-war style mask (black with a variable alpha"""
+    """A fog-of-war style mask (black with a variable alpha)"""
     circs = {}
-    def __init__(self, (sx, sy), ps = (), (cr, cg, cb) = (0, 0, 0)):
+    def __init__(self, (sx, sy), ps = (), color = (0, 0, 0), ):
         self.sx, self.sy = sx, sy
-        self.surf = pygame.Surface((sx, sy), SRCALPHA)
-        self.surf.fill((cr, cg, cb, 255))
-        img = pygame.Surface((sx, sy), SRCALPHA)
-        img.fill((0,0,0))
-        for (px, py), r in ps:
-            img.blit(self.getcirc(r), (px-r, py-r))
-#        self.surf.blit(img, (0,0))
-        pygame.surfarray.pixels_alpha(self.surf)[:,:] = 255 - pygame.surfarray.array2d(img)
+        self.color = tuple(color)
+        self.ps = list(ps)
+        self.draw()
+
+    def draw(self):
+        """Draw entire surface from scratch"""
+        self.surf = pygame.Surface((self.sx, self.sy), SRCALPHA)
+        self.surf.fill(self.color)
+        self.blue = pygame.Surface((self.sx, self.sy), SRCALPHA)
+        self.blue.fill((0,0,0))
+        for p, r in self.ps:
+            self.addcirc(p, r)
+        self.alphacopy()
+
+    def addp(self, p, r):
+        self.ps.append((p, r))
+        self.addcirc(p, r)
+        self.alphacopy()
+
+    def addcirc(self, (px, py), r):
+        """Add a circle onto the blue surface"""
+        self.blue.blit(self.getcirc(r), (px-r, py-r))
+
+    def alphacopy(self):
+        """Copy from pixel data in the blue surface to the alpha
+        channel of the main surface"""
+        pygame.surfarray.pixels_alpha(self.surf)[:,:] = 255 - pygame.surfarray.array2d(self.blue)
         
     @staticmethod
     def getcirc(r):
