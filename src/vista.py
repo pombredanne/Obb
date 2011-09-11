@@ -74,7 +74,7 @@ class HexGrid(object):
         vs = [self.gvertex((x, y), v) for v in range(6)]        
         pygame.draw.polygon(screen, color, vs)
 
-grid = HexGrid(a = 20)
+grid = HexGrid(a = 30)
 
 
 class Mask(object):

@@ -9,14 +9,14 @@ class Body(object):
         self.core = Core(self, (x, y))
         self.addpart(self.core)
 
-    def addrandompart(self, n = 1):
+    def addrandompart(self, n = 1, maxtries = 100):
         added = 0
-        while added < n:
+        for tries in range(maxtries):
             parent = random.choice(self.parts)
             bud = parent.randombud()
             if not bud: continue
             pos, edge = bud
-            if random.random() < 0.5:
+            if random.random() < 0.8:
                 appspec = randomspec()
                 part = Appendage(self.core, pos, edge, appspec)
             else:
@@ -25,6 +25,8 @@ class Body(object):
             parent.buds[bud] = part
             self.addpart(part)
             added += 1
+            if added == n: return n
+        return added
 
     def canaddpart(self, part):
         tiles, edges = part.claimedsets()
@@ -95,6 +97,13 @@ class AppendageSpec(object):
 def randomspec(n = 2):
     return AppendageSpec([random.choice(range(5))+1 for _ in range(n)])
 
+
+def qBezier((x0,y0), (x1,y1), (x2,y2), n = 12):
+    """Quadratic bezier curve"""
+    ts = [float(j) / n for j in range(n+1)]
+    cs = [((1-t)**2, 2*t*(1-t), t**2) for t in ts]
+    return [(a*x0+b*x1+c*x2, a*y0+b*y1+c*y2) for a,b,c in cs]    
+
 class Appendage(BodyPart):
     """A stalk that leads to one or more subsequent buds"""
     def __init__(self, body, (x,y), edge, appspec):
@@ -102,14 +111,15 @@ class Appendage(BodyPart):
         self.appspec = appspec
         for bud in self.appspec.outbuds((x, y), edge):
             self.buds[bud] = None
+        self.color = random.randint(0, 128), random.randint(128, 255), random.randint(0, 128)
     
     def draw(self):
-        p0 = vista.grid.gcenter((self.x, self.y))
-        p1 = vista.grid.gedge((self.x, self.y), self.edge)
-        pygame.draw.line(vista.screen, (0, 192, 64), p0, p1, 5)
+        p0 = vista.grid.gedge((self.x, self.y), self.edge)
+        p1 = vista.grid.gcenter((self.x, self.y))
         for p, edge in self.buds:
             p2 = vista.grid.gedge(p, edge)
-            pygame.draw.line(vista.screen, (192, 64, 0), p0, p2, 5)
+            ps = qBezier(p0, p1, p2)
+            pygame.draw.lines(vista.screen, self.color, False, ps, 5)
             
 class Organ(BodyPart):
     """A functional body part that terminates a stalk"""
@@ -117,7 +127,9 @@ class Organ(BodyPart):
         p0 = vista.grid.gcenter((self.x, self.y))
         p1 = vista.grid.gedge((self.x, self.y), self.edge)
         pygame.draw.line(vista.screen, (0, 192, 64), p0, p1, 5)
-        pygame.draw.circle(vista.screen, (0, 64, 192), p0, int(vista.grid.a/2))
+        pygame.draw.circle(vista.screen, (0, 192, 64), p0, int(vista.grid.a*0.5))
+        pygame.draw.circle(vista.screen, (255, 255, 255), p0, int(vista.grid.a*0.4))
+        pygame.draw.circle(vista.screen, (0, 0, 0), p0, int(vista.grid.a*0.2))
 
     def tiles(self):
         return ((self.x, self.y),)
