@@ -23,6 +23,7 @@ class Body(object):
                 part = Appendage(self.core, parent, pos, edge, appspec)
             else:
                 part = Eye(self.core, parent, pos, edge)
+            if part.colorcode != parent.budcolors[bud]: continue
             if not self.canaddpart(part): continue
             parent.buds[bud] = part
             self.addpart(part)
@@ -94,6 +95,7 @@ class BodyPart(object):
         self.buds = {}  # New body parts that are formed off this one
                         # (set to None if no body part there yet)
         self.lastzoom = None
+        self.budcolors = {}
 
     def lightcircle(self):
         return vista.grid.hextoworld((self.x,self.y)), self.lightradius
@@ -135,13 +137,19 @@ class BodyPart(object):
         px, py = vista.worldtoview(vista.grid.hextoworld((self.x, self.y)))
         vista.screen.blit(self.img, (px-zoom, py-zoom))
 
+    @staticmethod
+    def colorbycode(colorcode):
+        return [(0,192,64), (128,0,128), (192,64,0)][colorcode]
+
 class Core(BodyPart):
     """The central core of the body, that has the funny mouth"""
     lightradius = 8
     def __init__(self, body, (x,y) = (0,0)):
         BodyPart.__init__(self, body, None, (x,y), 0)
         for edge in range(6):  # One bud in each of six directions
-            self.buds[vista.grid.opposite((x, y), edge)] = None
+            oppedge = vista.grid.opposite((x, y), edge)
+            self.buds[oppedge] = None
+            self.budcolors[oppedge] = edge % 3
 
     def tiles(self):
         return ((self.x, self.y),)
@@ -152,14 +160,15 @@ class Core(BodyPart):
 
 class AppendageSpec(object):
     """Data to specify the path of an appendage, irrespective of starting position"""
-    def __init__(self, dedges):
+    def __init__(self, dedges, colorcode):
         self.dedges = sorted(set(dedges))
+        self.colorcode = colorcode
     
     def outbuds(self, pos, edge):
         return [vista.grid.opposite(pos, edge + dedge) for dedge in self.dedges]
 
 def randomspec(n = 2):
-    return AppendageSpec([random.choice(range(5))+1 for _ in range(n)])
+    return AppendageSpec([random.choice(range(5))+1 for _ in range(n)], random.choice((0,1,2)))
 
 
 def qBezier((x0,y0), (x1,y1), (x2,y2), n = 6):
@@ -174,9 +183,11 @@ class Appendage(BodyPart):
     def __init__(self, body, parent, (x,y), edge, appspec):
         BodyPart.__init__(self, body, parent, (x,y), edge)
         self.appspec = appspec
+        self.colorcode = appspec.colorcode
+        self.color = self.colorbycode(self.colorcode)
         for bud in self.appspec.outbuds((x, y), edge):
             self.buds[bud] = None
-        self.color = random.randint(0, 128), random.randint(128, 255), random.randint(0, 128)
+            self.budcolors[bud] = self.colorcode
 
     def draw0(self, img, zoom, (cx, cy)):
         def hextooffset((x, y)):
@@ -205,13 +216,15 @@ class Organ(BodyPart):
 class Eye(Organ):
     """Extends your visible region"""
     lightradius = 8
+    colorcode = 0
 
     def draw0(self, img, zoom, center):
         wx, wy = vista.grid.hextoworld(vista.grid.edgehex((0,0), self.edge))
         cx, cy = center
         p0 = int(cx + zoom * wx + 0.5), int(cy - zoom * wy + 0.5)
-        pygame.draw.line(img, (0, 192, 64), p0, center, int(vista.zoom * 0.3))
-        pygame.draw.circle(img, (0, 192, 64), center, int(zoom * 0.5))
+        color = self.colorbycode(self.colorcode)
+        pygame.draw.line(img, color, p0, center, int(vista.zoom * 0.3))
+        pygame.draw.circle(img, color, center, int(zoom * 0.5))
         pygame.draw.circle(img, (255, 255, 255), center, int(zoom * 0.4))
         pygame.draw.circle(img, (0, 0, 0), center, int(zoom * 0.2))
 
