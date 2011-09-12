@@ -5,11 +5,10 @@ import vista, mask
 class Body(object):
     def __init__(self, (x, y) = (0, 0)):
         self.parts = []
-        self.takentiles = set()
-        self.takenedges = set()
+        self.takentiles = {}
+        self.takenedges = {}
         self.core = Core(self, (x, y))
-        self.mask = mask.Mask((self.core.lightcircle(),))
-        vista.setgrect(self.mask.bounds())
+        self.mask = None
         self.addpart(self.core)
 
     def addrandompart(self, n = 1, maxtries = 100):
@@ -21,9 +20,9 @@ class Body(object):
             pos, edge = bud
             if random.random() < 0.8:
                 appspec = randomspec()
-                part = Appendage(self.core, pos, edge, appspec)
+                part = Appendage(self.core, parent, pos, edge, appspec)
             else:
-                part = Eye(self.core, pos, edge)
+                part = Eye(self.core, parent, pos, edge)
             if not self.canaddpart(part): continue
             parent.buds[bud] = part
             self.addpart(part)
@@ -33,25 +32,61 @@ class Body(object):
 
     def canaddpart(self, part):
         tiles, edges = part.claimedsets()
-        return not self.takentiles & tiles and not self.takenedges & edges
+        if any(tile in self.takentiles for tile in tiles): return False
+        if any(edge in self.takenedges for edge in edges): return False
+        return True
 
     def addpart(self, part):
+        assert self.canaddpart(part)
         self.parts.append(part)
         tiles, edges = part.claimedsets()
-        self.takentiles |= tiles
-        self.takenedges |= edges
-        if part.lightradius > 0:
+        for tile in tiles: self.takentiles[tile] = part
+        for edge in edges: self.takenedges[edge] = part
+        if part.lightradius > 0 and self.mask is not None:
             self.mask.addp(*part.lightcircle())
+            vista.setgrect(self.mask.bounds())
+
+    def remakemask(self):
+        """Build the mask from scratch"""
+        circles = [part.lightcircle() for part in self.parts if part.lightradius > 0]
+        self.mask = mask.Mask(circles)
+
+    def removepart(self, part):
+        assert not isinstance(part, Core)
+        self.parts.remove(part)
+        edge = (part.x, part.y), part.edge
+        assert part.parent.buds[edge] is part
+        part.parent.buds[edge] = None
+        tiles, edges = part.claimedsets()
+        for tile in tiles: del self.takentiles[tile]
+        for edge in edges: del self.takenedges[edge]
+        assert part not in self.takentiles.values()
+        assert part not in self.takenedges.values()
+        if part.lightradius > 0:
+            self.mask = None
+
+    def removebranch(self, part):
+        """Remove a part and all its children"""
+        for child in part.buds.values():
+            if child is not None:
+                self.removebranch(child)
+        self.removepart(part)
+
+    def think(self, dt):
+        if self.mask is None:
+            self.remakemask()
             vista.setgrect(self.mask.bounds())
     
     def draw(self):
-        for part in self.parts:
+        for part in sorted(self.parts, key = lambda p: p.draworder):
             part.draw()
 
 class BodyPart(object):
     lightradius = 0  # How much does this part extend your visibility
-    def __init__(self, body, (x,y), edge = 0):
+    draworder = 0
+    def __init__(self, body, parent, (x,y), edge = 0):
         self.body = body
+        self.parent = parent
         self.x, self.y = x, y
         self.worldpos = vista.grid.hextoworld((self.x, self.y))
         self.edge = edge  # Edge number of base
@@ -104,7 +139,7 @@ class Core(BodyPart):
     """The central core of the body, that has the funny mouth"""
     lightradius = 8
     def __init__(self, body, (x,y) = (0,0)):
-        BodyPart.__init__(self, body, (x,y), 0)
+        BodyPart.__init__(self, body, None, (x,y), 0)
         for edge in range(6):  # One bud in each of six directions
             self.buds[vista.grid.opposite((x, y), edge)] = None
 
@@ -127,7 +162,7 @@ def randomspec(n = 2):
     return AppendageSpec([random.choice(range(5))+1 for _ in range(n)])
 
 
-def qBezier((x0,y0), (x1,y1), (x2,y2), n = 12):
+def qBezier((x0,y0), (x1,y1), (x2,y2), n = 6):
     """Quadratic bezier curve"""
     ts = [float(j) / n for j in range(n+1)]
     cs = [((1-t)**2, 2*t*(1-t), t**2) for t in ts]
@@ -135,8 +170,9 @@ def qBezier((x0,y0), (x1,y1), (x2,y2), n = 12):
 
 class Appendage(BodyPart):
     """A stalk that leads to one or more subsequent buds"""
-    def __init__(self, body, (x,y), edge, appspec):
-        BodyPart.__init__(self, body, (x,y), edge)
+    draworder = 1
+    def __init__(self, body, parent, (x,y), edge, appspec):
+        BodyPart.__init__(self, body, parent, (x,y), edge)
         self.appspec = appspec
         for bud in self.appspec.outbuds((x, y), edge):
             self.buds[bud] = None
@@ -158,6 +194,7 @@ class Appendage(BodyPart):
             
 class Organ(BodyPart):
     """A functional body part that terminates a stalk"""
+    draworder = 2
     def draw0(self, img, zoom, center):
         r = int(zoom * 0.5)
         pygame.draw.circle(img, (0, 192, 64), center, r)

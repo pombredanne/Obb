@@ -38,6 +38,8 @@ def init():
     vrect = pygame.Rect(0, 0, settings.sx, settings.sy)
     zoom = 30
 
+wx0, wy0, wx1, wy1, zoom = -1, -1, 1, 1, 30
+
 def setgrect((x0, y0, x1, y1)):
     global wx0, wy0, wx1, wy1, gsurf, zoom
     wx0, wy0, wx1, wy1 = x0, y0, x1, y1
@@ -133,6 +135,24 @@ class HexGrid(object):
     def normedge(p, e):
         """The "normalized" edge, used for comparison"""
         return (p,e%6) if e%6 < 3 else HexGrid.opposite(p, e)
+
+    @staticmethod
+    def nearesttile(pos):
+        """Tile that the given world coordinate is over"""
+        hx, hy = [int(math.floor(p)) for p in HexGrid.worldtohex(pos)]
+        d2 = lambda (x0, y0), (x1, y1): (x0 - x1) ** 2 + (y0 - y1) ** 2
+        d2s = [(d2(pos, HexGrid.hextoworld((ax, ay))), (ax, ay))
+                for ax in (hx,hx+1) for ay in (hy,hy+1)]
+        return min(d2s)[1]
+
+    @staticmethod
+    def nearestedge(pos):
+        """Nearest edge to given world coordinate (not normalized)"""
+        tile = HexGrid.nearesttile(pos)
+        d2 = lambda (x0, y0), (x1, y1): (x0 - x1) ** 2 + (y0 - y1) ** 2
+        d2s = [(d2(pos, HexGrid.edgeworld(tile, edge)), (tile, edge))
+                for edge in range(6)]
+        return min(d2s)[1]
 
     def tnearest(self, (px, py)):
         """The tile that the given screen position is over"""
