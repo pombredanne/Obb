@@ -1,4 +1,5 @@
 import pygame, random
+from pygame.locals import *
 import vista, mask
 
 class Body(object):
@@ -57,6 +58,7 @@ class BodyPart(object):
         self.edgeworldpos = vista.grid.edgeworld((self.x, self.y), self.edge)
         self.buds = {}  # New body parts that are formed off this one
                         # (set to None if no body part there yet)
+        self.lastzoom = None
 
     def lightcircle(self):
         return vista.grid.hextoworld((self.x,self.y)), self.lightradius
@@ -89,6 +91,15 @@ class BodyPart(object):
         if not buds: return None
         return random.choice(buds)
 
+    def draw(self):
+        zoom = int(vista.zoom + 0.5)
+        if zoom != self.lastzoom:
+            self.lastzoom = zoom
+            self.img = pygame.Surface((2*zoom, 2*zoom), SRCALPHA)
+            self.draw0(self.img, zoom, (zoom, zoom))
+        px, py = vista.worldtoview(vista.grid.hextoworld((self.x, self.y)))
+        vista.screen.blit(self.img, (px-zoom, py-zoom))
+
 class Core(BodyPart):
     """The central core of the body, that has the funny mouth"""
     lightradius = 8
@@ -100,10 +111,9 @@ class Core(BodyPart):
     def tiles(self):
         return ((self.x, self.y),)
 
-    def draw(self):
-        px, py = vista.worldtoview(vista.grid.hextoworld((self.x, self.y)))
-        r = int(vista.zoom * 0.85)
-        pygame.draw.circle(vista.screen, (0, 192, 96), (px, py), r)
+    def draw0(self, img, zoom, center):
+        r = int(zoom * 0.85)
+        pygame.draw.circle(img, (0, 192, 96), center, r)
 
 class AppendageSpec(object):
     """Data to specify the path of an appendage, irrespective of starting position"""
@@ -131,22 +141,26 @@ class Appendage(BodyPart):
         for bud in self.appspec.outbuds((x, y), edge):
             self.buds[bud] = None
         self.color = random.randint(0, 128), random.randint(128, 255), random.randint(0, 128)
-    
-    def draw(self):
-        p0 = self.edgescreenpos()
-        p1 = self.screenpos()
+
+    def draw0(self, img, zoom, (cx, cy)):
+        def hextooffset((x, y)):
+            """Convert hex coordinates to offset within this image"""
+            wx, wy = vista.grid.hextoworld((x, y))
+            px = int(cx + zoom * wx + 0.5)
+            py = int(cy - zoom * wy + 0.5)
+            return px, py
+        p0 = hextooffset(vista.grid.edgehex((0,0), self.edge))
+        p1 = (cx, cy)
         for p, edge in self.buds:
-            p2 = self.budscreenpos(p, edge)
+            p2 = hextooffset(vista.grid.edgehex((0,0), edge + 3))
             ps = qBezier(p0, p1, p2)
-            pygame.draw.lines(vista.screen, self.color, False, ps, 5)
+            pygame.draw.lines(img, self.color, False, ps, int(vista.zoom * 0.3))
             
 class Organ(BodyPart):
     """A functional body part that terminates a stalk"""
-    def draw(self):
-        p0 = self.screenpos()
-#        p1 = vista.grid.gedge((self.x, self.y), self.edge)
-#        pygame.draw.line(vista.screen, (0, 192, 64), p0, p1, 5)
-        pygame.draw.circle(vista.screen, (0, 192, 64), p0, int(vista.zoom*0.5))
+    def draw0(self, img, zoom, center):
+        r = int(zoom * 0.5)
+        pygame.draw.circle(img, (0, 192, 64), center, r)
 
     def tiles(self):
         return ((self.x, self.y),)
@@ -155,12 +169,13 @@ class Eye(Organ):
     """Extends your visible region"""
     lightradius = 8
 
-    def draw(self):
-        p0 = self.screenpos()
-        p1 = self.edgescreenpos()
-        pygame.draw.line(vista.screen, (0, 192, 64), p0, p1, 5)
-        pygame.draw.circle(vista.screen, (0, 192, 64), p0, int(vista.zoom*0.5))
-        pygame.draw.circle(vista.screen, (255, 255, 255), p0, int(vista.zoom*0.4))
-        pygame.draw.circle(vista.screen, (0, 0, 0), p0, int(vista.zoom*0.2))
+    def draw0(self, img, zoom, center):
+        wx, wy = vista.grid.hextoworld(vista.grid.edgehex((0,0), self.edge))
+        cx, cy = center
+        p0 = int(cx + zoom * wx + 0.5), int(cy - zoom * wy + 0.5)
+        pygame.draw.line(img, (0, 192, 64), p0, center, int(vista.zoom * 0.3))
+        pygame.draw.circle(img, (0, 192, 64), center, int(zoom * 0.5))
+        pygame.draw.circle(img, (255, 255, 255), center, int(zoom * 0.4))
+        pygame.draw.circle(img, (0, 0, 0), center, int(zoom * 0.2))
 
 

@@ -22,7 +22,6 @@ class Mask(object):
         # TODO: set a according to area
         self.a = 6
         self.sx, self.sy = self.worldtomask((self.x1, self.y0))
-        print self.sx, self.sy
 
     def bounds(self):
         return self.x0, self.y0, self.x1, self.y1
