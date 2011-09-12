@@ -18,11 +18,16 @@ class Body(object):
             bud = parent.randombud()
             if not bud: continue
             pos, edge = bud
-            if random.random() < 0.8:
+            r = random.random()
+            if r < 0.7:
                 appspec = randomspec()
                 part = Appendage(self.core, parent, pos, edge, appspec)
-            else:
+            elif r < 0.8:
                 part = Eye(self.core, parent, pos, edge)
+            elif r < 0.9:
+                part = Leaf(self.core, parent, pos, edge)
+            else:
+                part = Mutagenitor(self.core, parent, pos, edge)
             if part.colorcode != parent.budcolors[bud]: continue
             if not self.canaddpart(part): continue
             parent.buds[bud] = part
@@ -215,9 +220,13 @@ class Appendage(BodyPart):
 class Organ(BodyPart):
     """A functional body part that terminates a stalk"""
     draworder = 2
-    def draw0(self, img, zoom, center):
-        r = int(zoom * 0.5)
-        pygame.draw.circle(img, (0, 192, 64), center, r)
+    def draw0(self, img, zoom, center, status):
+        wx, wy = vista.grid.hextoworld(vista.grid.edgehex((0,0), self.edge))
+        cx, cy = center
+        p0 = int(cx + zoom * wx + 0.5), int(cy - zoom * wy + 0.5)
+        color = (128, 0, 0) if self.status == "target" else self.colorbycode(self.colorcode)
+        pygame.draw.line(img, color, p0, center, int(vista.zoom * 0.3))
+        pygame.draw.circle(img, color, center, int(zoom * 0.6))
 
     def tiles(self):
         return ((self.x, self.y),)
@@ -233,8 +242,17 @@ class Eye(Organ):
         p0 = int(cx + zoom * wx + 0.5), int(cy - zoom * wy + 0.5)
         color = (128, 0, 0) if self.status == "target" else self.colorbycode(self.colorcode)
         pygame.draw.line(img, color, p0, center, int(vista.zoom * 0.3))
-        pygame.draw.circle(img, color, center, int(zoom * 0.5))
-        pygame.draw.circle(img, (255, 255, 255), center, int(zoom * 0.4))
-        pygame.draw.circle(img, (0, 0, 0), center, int(zoom * 0.2))
+        pygame.draw.circle(img, color, center, int(zoom * 0.6))
+        pygame.draw.circle(img, (255, 255, 255), center, int(zoom * 0.5))
+        pygame.draw.circle(img, (0, 0, 0), center, int(zoom * 0.25))
+
+class Leaf(Organ):
+    """Collects light and generates energy"""
+    colorcode = 1
+
+class Mutagenitor(Organ):
+    """Collects light and generates mutagen"""
+    colorcode = 2
+
 
 
