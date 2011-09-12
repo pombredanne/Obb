@@ -47,8 +47,14 @@ def setgrect((x0, y0, x1, y1)):
 def worldtogameplay((x, y)):
     return int((x - wx0) * zoom + 0.5), int((wy1 - y) * zoom + 0.5)
 
+def gameplaytoworld((gx, gy)):
+    return wx0 + float(gx) / zoom, wy1 - float(gy) / zoom
+
 def worldtoview((x, y)):
     return worldtogameplay((x, y))  # TODO
+
+def screentoworld((x, y)):
+    return gameplaytoworld((x, y))  # TODO
 
 def clear(color = (64, 64, 64)):
     screen.fill(color)

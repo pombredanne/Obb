@@ -33,8 +33,8 @@ class Mask(object):
         """Return the visibility (0 to 1) of the given world coordinate"""
         px, py = self.worldtomask((x, y))
         if not 0 <= px < self.sx or not 0 <= py < self.sy: return 0
-        alpha = self.blue.get_at((px, py))[3]
-        return 1 - alpha / 255.
+        alpha = self.blue.get_at((px, py))[2]
+        return alpha / 255.
 
     def redraw(self):
         """Draw entire surface from scratch"""

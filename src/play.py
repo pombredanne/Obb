@@ -8,8 +8,12 @@ class Play(context.Context):
 
     def think(self, dt, events, keys, mousepos, buttons):
         self.ton = vista.grid.tnearest(mousepos)
-        if any(event.type == KEYDOWN for event in events):
-            self.body.addrandompart()
+        for event in events:
+            if event.type == KEYDOWN and event.key == K_SPACE:
+                self.body.addrandompart()
+            if event.type == KEYDOWN and event.key == K_v:
+                wpos = vista.screentoworld(mousepos)
+                print "Visibility:", self.body.mask.visibility(wpos)
 
     def draw(self):
         vista.clear()
