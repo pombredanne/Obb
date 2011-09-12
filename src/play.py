@@ -5,6 +5,7 @@ import vista, context, body, settings
 class Play(context.Context):
     def __init__(self):
         self.body = body.Body()
+        self.target = None
 
     def think(self, dt, events, keys, mousepos, buttons):
         for event in events:
@@ -13,12 +14,22 @@ class Play(context.Context):
             if event.type == KEYDOWN and event.key == K_v:
                 wpos = vista.screentoworld(mousepos)
                 print "Visibility:", self.body.mask.visibility(wpos)
-            if event.type == KEYDOWN and event.key == K_x:
-                child = self.pointchildbyedge(mousepos)
-                print "Target:", child
-                if child is not None:
-                    self.body.removebranch(child)
-                
+            if event.type == KEYUP and event.key == K_x:
+                if self.target is not None:
+                    self.body.removebranch(self.target)
+
+        if keys[K_x]:
+            newtarget = self.pointchildbyedge(mousepos)
+            if newtarget != self.target:
+                if self.target is not None:
+                    self.target.setbranchstatus()
+                self.target = newtarget
+                if self.target is not None:
+                    self.target.setbranchstatus("target")
+        elif self.target is not None:
+            self.target.setbranchstatus()
+            self.target = None
+            
                 
         self.body.think(dt)
 
