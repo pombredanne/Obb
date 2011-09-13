@@ -7,6 +7,7 @@ class Body(object):
         self.parts = []
         self.takentiles = {}
         self.takenedges = {}
+        self.buds = {}
         self.core = Core(self, (x, y))
         self.mask = None
         self.addpart(self.core)

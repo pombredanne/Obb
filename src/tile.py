@@ -154,8 +154,6 @@ def drawtile(dedges, color, zoom = 160, tilt = 0, cache = {}):
     cache[key] = img
     return img
 
-
-
 if __name__ == "__main__":
     pygame.init()
     screen = pygame.display.set_mode((400, 400))

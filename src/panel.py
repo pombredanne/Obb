@@ -1,4 +1,4 @@
-
+import pygame
 import settings, body, vista, tile
 
 
@@ -8,6 +8,7 @@ class Panel(object):
         self.tiles = [body.randomspec(2, c) for c in (0,1,2)]
         self.ages = [-2, -2.5, -3]
         self.centers = [(settings.px/2, j*120+60) for j in (0,1,2)]
+        self.selected = None
 
     def think(self, dt):
         for j in (0,1,2):
@@ -24,6 +25,8 @@ class Panel(object):
                 img = tile.drawtile(appspec.dedges, color, 60, age*450)
                 rect = img.get_rect(center = (cx+age*300, cy))
             vista.psurf.blit(img, rect)
+        if self.selected is not None:
+            pygame.draw.circle(vista.psurf, (255, 255, 255), self.centers[self.selected], 60, 2)
 
     def iconp(self, (mx, my)):
         """Any icons under this position?"""
@@ -33,6 +36,9 @@ class Panel(object):
             if age == 0 and (cx - mx) ** 2 + (cy - my) ** 2 < 60 ** 2:
                 return j
         return None
+
+    def selecttile(self, jtile = None):
+        self.selected = jtile if jtile != self.selected else None
 
     def claimtile(self, jtile):
         self.tiles[jtile] = body.randomspec(2, jtile)

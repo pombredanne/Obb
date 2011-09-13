@@ -25,9 +25,15 @@ class Play(context.Context):
             if event.type == KEYUP and event.key == K_F2:
                 vista.zoomout()
             if event.type == MOUSEBUTTONDOWN and event.button == 1:
-                jtile = self.panel.iconp(mousepos)
-                if jtile is not None:
-                    self.panel.claimtile(jtile)
+                if vista.prect.collidepoint(mousepos):  # Click on panel
+                    jtile = self.panel.iconp(mousepos)
+                    if jtile in (None, 0, 1, 2):
+                        self.panel.selecttile(jtile)
+                elif vista.vrect.collidepoint(mousepos):
+                    if self.panel.selected is not None:
+                        edge = vista.grid.nearestedge(vista.screentoworld(mousepos))
+                        
+                        
                 
         if keys[K_x]:
             newtarget = self.pointchildbyedge(mousepos)
