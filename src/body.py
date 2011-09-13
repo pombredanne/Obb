@@ -151,11 +151,11 @@ class BodyPart(object):
 
     @staticmethod
     def colorbycode(colorcode):
-        return [(0,192,64), (128,0,128), (192,64,0)][colorcode]
+        return [(0,192,64), (64,64,192), (160,80,0)][colorcode]
 
 class Core(BodyPart):
     """The central core of the body, that has the funny mouth"""
-    lightradius = 8
+    lightradius = 6
     def __init__(self, body, (x,y) = (0,0)):
         BodyPart.__init__(self, body, None, (x,y), 0)
         for edge in range(6):  # One bud in each of six directions
@@ -223,7 +223,7 @@ class Organ(BodyPart):
 
 class Eye(Organ):
     """Extends your visible region"""
-    lightradius = 8
+    lightradius = 6
     colorcode = 0
 
     def draw0(self, zoom, status):

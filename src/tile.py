@@ -43,7 +43,7 @@ def drawblobs(surf, color, (x0, y0), (x1, y1), width = None, r0 = None, s0 = 0):
             if math.sqrt(z**2 + q**2) > width/2: continue
             if s0 % 2: q = -q
             p = 0.5 * d
-            circs.append((z, p, q, r, (255, 255, 255)))
+            circs.append((z, p, q, r, (255, 255, 0)))
             break
         
     circs.sort()

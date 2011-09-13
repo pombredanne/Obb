@@ -43,6 +43,7 @@ wx0, wy0, wx1, wy1, zoom = -1, -1, 1, 1, 30
 def setgrect((x0, y0, x1, y1)):
     global wx0, wy0, wx1, wy1, gsurf, zoom
     wx0, wy0, wx1, wy1 = x0, y0, x1, y1
+    wx0, wy0, wx1, wy1 = -6, -6, 6, 6
     zoom = min(settings.sx / (wx1 - wx0), settings.sy / (wy1 - wy0))
 #    gsurf = pygame.Surface(worldtogameplay((wx1, wy0)))
 
