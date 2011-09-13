@@ -167,11 +167,9 @@ class Core(BodyPart):
         return ((self.x, self.y),)
 
     def draw0(self, zoom, status):
-        img = pygame.Surface((2*zoom, 2*zoom), SRCALPHA)
-        r = int(zoom * 0.85)
-        color = (128, 0, 0) if status == "target" else (0, 192, 96)
-        pygame.draw.circle(img, color, (zoom, zoom), r)
-        return img
+#        color = (128, 0, 0) if self.status == "target" else self.colorbycode(self.colorcode)
+        color = 0, 192, 96
+        return tile.drawcore(color, zoom)
 
 class AppendageSpec(object):
     """Data to specify the path of an appendage, irrespective of starting position"""
@@ -217,7 +215,7 @@ class Organ(BodyPart):
         p0 = int(cx + zoom * wx + 0.5), int(cy - zoom * wy + 0.5)
         color = (128, 0, 0) if self.status == "target" else self.colorbycode(self.colorcode)
         pygame.draw.line(img, color, p0, center, int(vista.zoom * 0.3))
-        pygame.draw.circle(img, color, center, int(zoom * 0.6))
+        tile.drawblobsphere(img, color, (zoom, zoom), int(0.6*zoom))
         return img
 
     def tiles(self):
@@ -235,7 +233,7 @@ class Eye(Organ):
         p0 = int(cx + zoom * wx + 0.5), int(cy - zoom * wy + 0.5)
         color = (128, 0, 0) if self.status == "target" else self.colorbycode(self.colorcode)
         pygame.draw.line(img, color, p0, center, int(vista.zoom * 0.3))
-        pygame.draw.circle(img, color, center, int(zoom * 0.6))
+        tile.drawblobsphere(img, color, (zoom, zoom), int(0.6*zoom))
         pygame.draw.circle(img, (255, 255, 255), center, int(zoom * 0.5))
         pygame.draw.circle(img, (0, 0, 0), center, int(zoom * 0.25))
         return img

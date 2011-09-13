@@ -10,10 +10,10 @@ def qBezier((x0,y0), (x1,y1), (x2,y2), n = 8):
     cs = [((1-t)**2, 2*t*(1-t), t**2) for t in ts]
     return [(a*x0+b*x1+c*x2, a*y0+b*y1+c*y2) for a,b,c in cs]    
 
-def mutatecolor((r, g, b)):
+def mutatecolor((r, g, b), f = 1):
     def mutate(x):
         return min(max(x + random.randint(-10, 10), 0), 255)
-    return mutate(r), mutate(g), mutate(b)
+    return mutate(r*f), mutate(g*f), mutate(b*f)
 
 def drawblobs(surf, color, (x0, y0), (x1, y1), width = None, r0 = None, s0 = 0):
     """A set of random circles within a rectangle going between the two
@@ -33,9 +33,7 @@ def drawblobs(surf, color, (x0, y0), (x1, y1), width = None, r0 = None, s0 = 0):
         q = random.uniform(-width/2, width/2)
         if math.sqrt(z**2 + q**2) + r > width/2: continue
         p = random.uniform(0, d)
-        R, G, B = color
-        f = 1 - abs(q / width)
-        shade = mutatecolor((int(R*f), int(G*f), int(B*f)))
+        shade = mutatecolor(color, 1 - abs(q / width))
         circs.append((z, p, q, r, shade))
     if random.random() < 0.1:
         while True:  # Add the suction cup
@@ -56,7 +54,34 @@ def drawblobs(surf, color, (x0, y0), (x1, y1), width = None, r0 = None, s0 = 0):
         pygame.draw.circle(surf, shade, (x, y), r, 0)
     random.setstate(rstate)
 
-def drawapp(dedges, color, zoom, edge0 = 3, cache = {}):
+def drawblobsphere(surf, color, (x0, y0), R, r0 = None):
+    """A set of random circles within a sphere"""
+    rstate = random.getstate()
+    seed = x0, y0, R, r0
+    random.seed(seed)
+    circs = []
+    if r0 is None: r0 = R / 10.
+    ncirc = int(50 * R ** 2 / r0 ** 2)
+    for j in range(ncirc):
+        r = int(random.uniform(r0, 2*r0))
+        x = random.uniform(-R, R)
+        y = random.uniform(-R, R)
+        z = random.uniform(-R, R)
+        if math.sqrt(x ** 2 + y ** 2 + z ** 2) + r > R: continue
+        cr, cg, cb = color
+        shade = mutatecolor(color, 1 - 0.35 * (R-(z-x-y)/1.7)/R)
+        circs.append((z, x, y, r, shade))
+    circs.sort()
+        
+    for _, x, y, r, shade in circs:
+        px = int(x0 + x + 0.5)
+        py = int(y0 + y + 0.5)
+        pygame.draw.circle(surf, shade, (px, py), r, 0)
+    random.setstate(rstate)
+
+
+
+def drawapp(dedges, color, zoom = 160, edge0 = 3, cache = {}):
     """Draw appendage"""
     key = tuple(dedges), color, zoom, edge0
     if key in cache:
@@ -82,12 +107,26 @@ def drawapp(dedges, color, zoom, edge0 = 3, cache = {}):
     cache[key] = img
     return img
 
+def drawcore(color, zoom = 160, cache = {}):
+    """Draw the body core"""
+    key = zoom, color
+    if key in cache: return cache[key]
+    if zoom == 160:
+        img = pygame.Surface((2*zoom, 2*zoom), SRCALPHA)
+        drawblobsphere(img, color, (zoom, zoom), int(0.85*zoom))
+    else:
+        img0 = drawcore(color, 160)
+        img = pygame.transform.scale(img0, (2*zoom, 2*zoom))
+    cache[key] = img
+    return img
+
 if __name__ == "__main__":
     pygame.init()
     screen = pygame.display.set_mode((400, 400))
 
     screen.fill((0, 0, 0))
-    drawapp(screen, (1,2,3,4,), (0, 192, 96), (200, 200), 160)
+#    drawapp(screen, (1,2,3,4,), (0, 192, 96), (200, 200), 160)
+    drawblobsphere(screen, (0, 192, 96), (200, 200), 120)
     mini = pygame.transform.smoothscale(screen, (120, 120))
     screen.fill((0, 0, 0))
     screen.blit(mini, mini.get_rect(center = (200, 200)))
