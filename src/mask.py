@@ -76,12 +76,20 @@ class Mask(object):
         key = px0, py0, px1, py1, sx, sy
         if key == self.lastrequest:
             return self.lastresponse
-        if 0 <= px0 < px1 <= self.sx and 0 <= py0 < py1 <= self.sy:
+        if 0 <= px0 and px1 <= self.sx and 0 <= py0 < py1 <= self.sy:
             img = self.surf.subsurface((px0, py0, px1-px0, py1-py0))
         else:
             img = pygame.Surface((px1-px0, py1-py0), SRCALPHA)
-            img.fill((0,0,0,0))
-            # TODO
+            srect = self.surf.get_rect(topleft = (-px0, -py0))
+            img.blit(self.surf, srect)
+            if srect.left > 0:
+                img.fill((0,0,0), img.get_rect(right = srect.left))
+            if srect.right < img.get_width():
+                img.fill((0,0,0), img.get_rect(left = srect.right))
+            if srect.top > 0:
+                img.fill((0,0,0), img.get_rect(bottom = srect.top))
+            if srect.bottom < img.get_height():
+                img.fill((0,0,0), img.get_rect(top = srect.bottom))
         img = pygame.transform.smoothscale(img, (sx, sy))
         self.lastrequest, self.lastresponse = key, img
         return img

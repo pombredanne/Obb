@@ -38,20 +38,32 @@ def init():
     vrect = pygame.Rect(0, 0, settings.sx, settings.sy)
     zoom = 30
 
-wx0, wy0, wx1, wy1, zoom = -1, -1, 1, 1, 30
+
+
+wx0, wy0, wx1, wy1 = -6, -6, 6, 6  # Maximum extent of gameplay window
+zoom = 30
+gx0, gy0 = 0, 0  # Gameplay location of world coordinate (0,0)
 
 def setgrect((x0, y0, x1, y1)):
-    global wx0, wy0, wx1, wy1, gsurf, zoom
+    global wx0, wy0, wx1, wy1, gx0, gy0, zoom
     wx0, wy0, wx1, wy1 = x0, y0, x1, y1
-    wx0, wy0, wx1, wy1 = -6, -6, 6, 6
-    zoom = min(settings.sx / (wx1 - wx0), settings.sy / (wy1 - wy0))
+#    wx0, wy0, wx1, wy1 = -6, -6, 6, 6
+    gx0, gy0 = 240, 240
+    zoom = 30
+#    zoom = min(settings.sx / (wx1 - wx0), settings.sy / (wy1 - wy0))
 #    gsurf = pygame.Surface(worldtogameplay((wx1, wy0)))
 
+def think(dt, (mx, my)):
+    global gx0, gy0
+    if vrect.collidepoint(mx,my):
+        gx0, gy0 = mx, my
+
+
 def worldtogameplay((x, y)):
-    return int((x - wx0) * zoom + 0.5), int((wy1 - y) * zoom + 0.5)
+    return int(gx0 + x * zoom + 0.5), int(gy0 - y * zoom + 0.5)
 
 def gameplaytoworld((gx, gy)):
-    return wx0 + float(gx) / zoom, wy1 - float(gy) / zoom
+    return float(gx - gx0) / zoom, -float(gy - gy0) / zoom
 
 def worldtoview((x, y)):
     return worldtogameplay((x, y))  # TODO
@@ -67,8 +79,10 @@ def screencap():
     pygame.image.save(_screen, "screenshots/screenshot-%s.png" % dstr)
 
 def addmask(mask):
+    x0, y0 = gameplaytoworld((0, vrect.height))  # Bottom left world coordinates
+    x1, y1 = gameplaytoworld((vrect.width, 0))   # Top right world coordinates
     gsx, gsy = worldtogameplay((wx1, wy0))
-    screen.blit(mask.getmask((wx0, wy0, wx1, wy1), (gsx, gsy)), (0,0))
+    screen.blit(mask.getmask((x0, y0, x1, y1), vrect.size), (0,0))
 
 def flip():
 #    screen.blit(gsurf)  # TODO

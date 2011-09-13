@@ -18,6 +18,7 @@ class Play(context.Context):
                 if self.target is not None:
                     self.body.removebranch(self.target)
 
+
         if keys[K_x]:
             newtarget = self.pointchildbyedge(mousepos)
             if newtarget != self.target:
@@ -30,6 +31,7 @@ class Play(context.Context):
             self.target.setbranchstatus()
             self.target = None
             
+        vista.think(dt, mousepos)
                 
         self.body.think(dt)
 
