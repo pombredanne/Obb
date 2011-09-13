@@ -1,6 +1,6 @@
 import pygame, random
 from pygame.locals import *
-import vista, mask
+import vista, mask, tile
 
 class Body(object):
     def __init__(self, (x, y) = (0, 0)):
@@ -145,8 +145,7 @@ class BodyPart(object):
         key = zoom, self.status
         if key != self.lastkey:
             self.lastkey = key
-            self.img = pygame.Surface((2*zoom, 2*zoom), SRCALPHA)
-            self.draw0(self.img, zoom, (zoom, zoom), self.status)
+            self.img = self.draw0(zoom, self.status)
         px, py = vista.worldtoview(vista.grid.hextoworld((self.x, self.y)))
         vista.screen.blit(self.img, (px-zoom, py-zoom))
 
@@ -167,10 +166,12 @@ class Core(BodyPart):
     def tiles(self):
         return ((self.x, self.y),)
 
-    def draw0(self, img, zoom, center, status):
+    def draw0(self, zoom, status):
+        img = pygame.Surface((2*zoom, 2*zoom), SRCALPHA)
         r = int(zoom * 0.85)
         color = (128, 0, 0) if status == "target" else (0, 192, 96)
-        pygame.draw.circle(img, color, center, r)
+        pygame.draw.circle(img, color, (zoom, zoom), r)
+        return img
 
 class AppendageSpec(object):
     """Data to specify the path of an appendage, irrespective of starting position"""
@@ -202,31 +203,22 @@ class Appendage(BodyPart):
             self.buds[bud] = None
             self.budcolors[bud] = self.colorcode
 
-    def draw0(self, img, zoom, (cx, cy), status):
-        def hextooffset((x, y)):
-            """Convert hex coordinates to offset within this image"""
-            wx, wy = vista.grid.hextoworld((x, y))
-            px = int(cx + zoom * wx + 0.5)
-            py = int(cy - zoom * wy + 0.5)
-            return px, py
-        p0 = hextooffset(vista.grid.edgehex((0,0), self.edge))
-        p1 = (cx, cy)
+    def draw0(self, zoom, status):
         color = (128, 0, 0) if self.status == "target" else self.colorbycode(self.colorcode)
-        for p, edge in self.buds:
-            p2 = hextooffset(vista.grid.edgehex((0,0), edge + 3))
-            ps = qBezier(p0, p1, p2)
-            pygame.draw.lines(img, color, False, ps, int(vista.zoom * 0.3))
+        return tile.drawapp(self.appspec.dedges, color, zoom, self.edge)
             
 class Organ(BodyPart):
     """A functional body part that terminates a stalk"""
     draworder = 2
-    def draw0(self, img, zoom, center, status):
+    def draw0(self, zoom, status):
+        img = pygame.Surface((2*zoom, 2*zoom), SRCALPHA)
         wx, wy = vista.grid.hextoworld(vista.grid.edgehex((0,0), self.edge))
-        cx, cy = center
+        center = cx, cy = zoom, zoom
         p0 = int(cx + zoom * wx + 0.5), int(cy - zoom * wy + 0.5)
         color = (128, 0, 0) if self.status == "target" else self.colorbycode(self.colorcode)
         pygame.draw.line(img, color, p0, center, int(vista.zoom * 0.3))
         pygame.draw.circle(img, color, center, int(zoom * 0.6))
+        return img
 
     def tiles(self):
         return ((self.x, self.y),)
@@ -236,15 +228,17 @@ class Eye(Organ):
     lightradius = 8
     colorcode = 0
 
-    def draw0(self, img, zoom, center, status):
+    def draw0(self, zoom, status):
+        img = pygame.Surface((2*zoom, 2*zoom), SRCALPHA)
         wx, wy = vista.grid.hextoworld(vista.grid.edgehex((0,0), self.edge))
-        cx, cy = center
+        center = cx, cy = zoom, zoom
         p0 = int(cx + zoom * wx + 0.5), int(cy - zoom * wy + 0.5)
         color = (128, 0, 0) if self.status == "target" else self.colorbycode(self.colorcode)
         pygame.draw.line(img, color, p0, center, int(vista.zoom * 0.3))
         pygame.draw.circle(img, color, center, int(zoom * 0.6))
         pygame.draw.circle(img, (255, 255, 255), center, int(zoom * 0.5))
         pygame.draw.circle(img, (0, 0, 0), center, int(zoom * 0.25))
+        return img
 
 class Leaf(Organ):
     """Collects light and generates energy"""
