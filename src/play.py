@@ -1,10 +1,11 @@
 import pygame, random
 from pygame.locals import *
-import vista, context, body, settings
+import vista, context, body, settings, panel
 
 class Play(context.Context):
     def __init__(self):
         self.body = body.Body()
+        self.panel = panel.Panel()
         self.target = None
 
     def think(self, dt, events, keys, mousepos, buttons):
@@ -23,9 +24,11 @@ class Play(context.Context):
                 vista.zoomin()
             if event.type == KEYUP and event.key == K_F2:
                 vista.zoomout()
+            if event.type == MOUSEBUTTONDOWN and event.button == 1:
+                jtile = self.panel.iconp(mousepos)
+                if jtile is not None:
+                    self.panel.claimtile(jtile)
                 
-
-
         if keys[K_x]:
             newtarget = self.pointchildbyedge(mousepos)
             if newtarget != self.target:
@@ -39,8 +42,9 @@ class Play(context.Context):
             self.target = None
 
         vista.think(dt, mousepos)
-                
+
         self.body.think(dt)
+        self.panel.think(dt)
 
     def pointchildbyedge(self, screenpos):
         edge = vista.grid.nearestedge(vista.screentoworld(screenpos))
@@ -61,4 +65,5 @@ class Play(context.Context):
 #        vista.grid.drawhex(self.ton, (255, 255, 255))
         self.body.draw()
         vista.addmask(self.body.mask)
+        self.panel.draw()
 

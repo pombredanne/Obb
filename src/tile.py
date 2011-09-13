@@ -137,19 +137,19 @@ def drawhex(color0, color1, zoom = 160, cache = {}):
 
 def drawtile(dedges, color, zoom = 160, tilt = 0, cache = {}):
     """Draw one of the placeable tiles that appears in the side panel"""
-    tilt = -int(tilt / 10 + 0.5) * 10 / 360
+    tilt = -int(tilt / 10 + 0.5) * 10 % 360
     key = tuple(dedges), color, zoom, tilt
     if key in cache:
         return cache[key]
     if tilt == 0:
         if zoom == 160:
-            img = drawhex(mutatecolor(color, 0.4, 0), mutatecolor(color, 0.2, 0))
+            img = drawhex(mutatecolor(color, 0.4, 0), mutatecolor(color, 0.2, 0)).copy()
             img.blit(drawapp(dedges, color, zoom), (0,0))
         else:
             img0 = drawtile(dedges, color)
             img = pygame.transform.scale(img0, (2*zoom, 2*zoom))
     else:
-        img0 = drawtile(dedges, color)
+        img0 = drawtile(dedges, color, zoom)
         img = pygame.transform.rotate(img0, tilt)
     cache[key] = img
     return img
@@ -163,10 +163,11 @@ if __name__ == "__main__":
     screen.fill((0, 0, 0))
 #    drawapp(screen, (1,2,3,4,), (0, 192, 96), (200, 200), 160)
 #    drawblobsphere(screen, (0, 192, 96), (200, 200), 120)
-    screen.blit(drawtile((1,2,3), (0, 192, 96)), (0, 0))
-    mini = pygame.transform.smoothscale(screen, (120, 120))
-    screen.fill((0, 0, 0))
-    screen.blit(mini, mini.get_rect(center = (200, 200)))
+    screen.blit(drawtile((1,2), (0, 192, 96)), (0, 0))
+    screen.blit(drawtile((3,), (0, 192, 96)), (200, 0))
+#    mini = pygame.transform.smoothscale(screen, (120, 120))
+#    screen.fill((0, 0, 0))
+#    screen.blit(mini, mini.get_rect(center = (200, 200)))
 
     while True:
         if any(event.type in (QUIT, KEYDOWN) for event in pygame.event.get()):

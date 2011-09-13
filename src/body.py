@@ -180,9 +180,10 @@ class AppendageSpec(object):
     def outbuds(self, pos, edge):
         return [vista.grid.opposite(pos, edge + dedge) for dedge in self.dedges]
 
-def randomspec(n = 2):
-    return AppendageSpec([random.choice(range(5))+1 for _ in range(n)], random.choice((0,1,2)))
-
+def randomspec(n = 2, color = None):
+    dedges = [random.choice(range(5))+1 for _ in range(n)]
+    if color is None: color = random.choice((0,1,2))
+    return AppendageSpec(dedges, color)
 
 def qBezier((x0,y0), (x1,y1), (x2,y2), n = 6):
     """Quadratic bezier curve"""

@@ -30,9 +30,10 @@ import settings
 #   blocking mask. It doesn't need very high resolution.
 
 def init():
-    global screen, _screen, vrect, prect, zoom
+    global screen, _screen, vrect, prect, zoom, psurf
     flags = FULLSCREEN | HWSURFACE if settings.fullscreen else 0
     screen = pygame.Surface(settings.size, SRCALPHA)
+    psurf = pygame.Surface(settings.psize, SRCALPHA)
     _screen = pygame.display.set_mode(settings.size, flags)
     # TODO: decouple view and screen coordinates
     vrect = pygame.Rect(settings.vx0, settings.vy0, settings.vx, settings.vy)
@@ -96,6 +97,7 @@ def screentoworld((x, y)):
 
 def clear(color = (64, 64, 64)):
     screen.fill(color)
+    psurf.fill((64, 64, 0))
 
 def screencap():
     dstr = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
@@ -110,7 +112,7 @@ def addmask(mask):
 def flip():
 #    screen.blit(gsurf)  # TODO
     _screen.blit(screen, vrect)
-    _screen.fill((80, 40, 0), prect)
+    _screen.blit(psurf, prect)
     pygame.display.flip()
 
 s3 = math.sqrt(3.)
