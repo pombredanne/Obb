@@ -11,12 +11,19 @@ class Play(context.Context):
         for event in events:
             if event.type == KEYDOWN and event.key == K_SPACE:
                 self.body.addrandompart()
+            if event.type == KEYDOWN and event.key == K_BACKSPACE:
+                self.body.addrandompart(20)
             if event.type == KEYDOWN and event.key == K_v:
                 wpos = vista.screentoworld(mousepos)
                 print "Visibility:", self.body.mask.visibility(wpos)
             if event.type == KEYUP and event.key == K_x:
                 if self.target is not None:
                     self.body.removebranch(self.target)
+            if event.type == KEYUP and event.key == K_F1:
+                vista.zoomin()
+            if event.type == KEYUP and event.key == K_F2:
+                vista.zoomout()
+                
 
 
         if keys[K_x]:
@@ -30,7 +37,7 @@ class Play(context.Context):
         elif self.target is not None:
             self.target.setbranchstatus()
             self.target = None
-            
+
         vista.think(dt, mousepos)
                 
         self.body.think(dt)

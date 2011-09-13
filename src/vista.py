@@ -53,10 +53,28 @@ def setgrect((x0, y0, x1, y1)):
 #    zoom = min(settings.sx / (wx1 - wx0), settings.sy / (wy1 - wy0))
 #    gsurf = pygame.Surface(worldtogameplay((wx1, wy0)))
 
+def zoomin():
+    global zoom
+    zoom = max(zoom - 3, 3)
+def zoomout():
+    global zoom
+    zoom = min(zoom + 3, 160)
+
 def think(dt, (mx, my)):
     global gx0, gy0
     if vrect.collidepoint(mx,my):
-        gx0, gy0 = mx, my
+        mx, my = mx - vrect.left, my - vrect.top
+        # Potentially set the window based on mouse position
+        xmin, xmax = vrect.width - wx1 * zoom, -wx0 * zoom
+        ymin, ymax = vrect.height + wy0 * zoom, wy1 * zoom
+        if xmin < xmax:
+            gx0 = xmax + (xmin - xmax) * mx / vrect.width
+        else:
+            gx0 = (xmin + xmax) / 2
+        if ymin < ymax:
+            gy0 = ymax + (ymin - ymax) * my / vrect.height
+        else:
+            gy0 = (ymin + ymax) / 2
 
 
 def worldtogameplay((x, y)):

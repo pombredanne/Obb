@@ -83,13 +83,13 @@ class Mask(object):
             srect = self.surf.get_rect(topleft = (-px0, -py0))
             img.blit(self.surf, srect)
             if srect.left > 0:
-                img.fill((0,0,0), img.get_rect(right = srect.left))
+                img.fill(self.color, img.get_rect(right = srect.left))
             if srect.right < img.get_width():
-                img.fill((0,0,0), img.get_rect(left = srect.right))
+                img.fill(self.color, img.get_rect(left = srect.right))
             if srect.top > 0:
-                img.fill((0,0,0), img.get_rect(bottom = srect.top))
+                img.fill(self.color, img.get_rect(bottom = srect.top))
             if srect.bottom < img.get_height():
-                img.fill((0,0,0), img.get_rect(top = srect.bottom))
+                img.fill(self.color, img.get_rect(top = srect.bottom))
         img = pygame.transform.smoothscale(img, (sx, sy))
         self.lastrequest, self.lastresponse = key, img
         return img
