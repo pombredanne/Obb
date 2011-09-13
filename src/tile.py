@@ -10,9 +10,9 @@ def qBezier((x0,y0), (x1,y1), (x2,y2), n = 8):
     cs = [((1-t)**2, 2*t*(1-t), t**2) for t in ts]
     return [(a*x0+b*x1+c*x2, a*y0+b*y1+c*y2) for a,b,c in cs]    
 
-def mutatecolor((r, g, b), f = 1):
+def mutatecolor((r, g, b), f = 1, d = 10):
     def mutate(x):
-        return min(max(x + random.randint(-10, 10), 0), 255)
+        return min(max(x + random.randint(-d, d), 0), 255)
     return mutate(r*f), mutate(g*f), mutate(b*f)
 
 def drawblobs(surf, color, (x0, y0), (x1, y1), width = None, r0 = None, s0 = 0):
@@ -120,13 +120,50 @@ def drawcore(color, zoom = 160, cache = {}):
     cache[key] = img
     return img
 
+def drawhex(color0, color1, zoom = 160, cache = {}):
+    key = color0, color1, zoom
+    if key in cache:
+        return cache[key]
+    img = pygame.Surface((2*zoom, 2*zoom), SRCALPHA)
+    s3 = math.sqrt(3)
+    ps = [(int(zoom*(1+x)+0.5), int(zoom*(1+y)+0.5)) for x,y in
+          ((1,0),(.5,-s3/2),(-.5,-s3/2),(-1,0),(-.5,s3/2),(.5,s3/2))]
+    pygame.draw.polygon(img, color0, ps, 0)
+    ps = [(int(zoom*(1+.95*x)+0.5), int(zoom*(1+.95*y)+0.5)) for x,y in
+          ((1,0),(.5,-s3/2),(-.5,-s3/2),(-1,0),(-.5,s3/2),(.5,s3/2))]
+    pygame.draw.polygon(img, color1, ps, 0)
+    cache[key] = img
+    return img
+
+def drawtile(dedges, color, zoom = 160, tilt = 0, cache = {}):
+    """Draw one of the placeable tiles that appears in the side panel"""
+    tilt = -int(tilt / 10 + 0.5) * 10 / 360
+    key = tuple(dedges), color, zoom, tilt
+    if key in cache:
+        return cache[key]
+    if tilt == 0:
+        if zoom == 160:
+            img = drawhex(mutatecolor(color, 0.4, 0), mutatecolor(color, 0.2, 0))
+            img.blit(drawapp(dedges, color, zoom), (0,0))
+        else:
+            img0 = drawtile(dedges, color)
+            img = pygame.transform.scale(img0, (2*zoom, 2*zoom))
+    else:
+        img0 = drawtile(dedges, color)
+        img = pygame.transform.rotate(img0, tilt)
+    cache[key] = img
+    return img
+
+
+
 if __name__ == "__main__":
     pygame.init()
     screen = pygame.display.set_mode((400, 400))
 
     screen.fill((0, 0, 0))
 #    drawapp(screen, (1,2,3,4,), (0, 192, 96), (200, 200), 160)
-    drawblobsphere(screen, (0, 192, 96), (200, 200), 120)
+#    drawblobsphere(screen, (0, 192, 96), (200, 200), 120)
+    screen.blit(drawtile((1,2,3), (0, 192, 96)), (0, 0))
     mini = pygame.transform.smoothscale(screen, (120, 120))
     screen.fill((0, 0, 0))
     screen.blit(mini, mini.get_rect(center = (200, 200)))
