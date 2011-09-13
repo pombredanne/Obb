@@ -30,15 +30,14 @@ import settings
 #   blocking mask. It doesn't need very high resolution.
 
 def init():
-    global screen, _screen, vrect, zoom
-    flags = FULLSCREEN if settings.fullscreen else 0
+    global screen, _screen, vrect, prect, zoom
+    flags = FULLSCREEN | HWSURFACE if settings.fullscreen else 0
     screen = pygame.Surface(settings.size, SRCALPHA)
     _screen = pygame.display.set_mode(settings.size, flags)
     # TODO: decouple view and screen coordinates
-    vrect = pygame.Rect(0, 0, settings.sx, settings.sy)
+    vrect = pygame.Rect(settings.vx0, settings.vy0, settings.vx, settings.vy)
+    prect = pygame.Rect(settings.px0, settings.py0, settings.px, settings.py)
     zoom = 30
-
-
 
 wx0, wy0, wx1, wy1 = -6, -6, 6, 6  # Maximum extent of gameplay window
 zoom = 30
@@ -47,11 +46,6 @@ gx0, gy0 = 0, 0  # Gameplay location of world coordinate (0,0)
 def setgrect((x0, y0, x1, y1)):
     global wx0, wy0, wx1, wy1, gx0, gy0, zoom
     wx0, wy0, wx1, wy1 = x0, y0, x1, y1
-#    wx0, wy0, wx1, wy1 = -6, -6, 6, 6
-    gx0, gy0 = 240, 240
-    zoom = 30
-#    zoom = min(settings.sx / (wx1 - wx0), settings.sy / (wy1 - wy0))
-#    gsurf = pygame.Surface(worldtogameplay((wx1, wy0)))
 
 def zoomin():
     global zoom
@@ -62,17 +56,28 @@ def zoomout():
 
 def think(dt, (mx, my)):
     global gx0, gy0
-    if vrect.collidepoint(mx,my):
+    xmin, xmax = vrect.width - wx1 * zoom, -wx0 * zoom
+    ymin, ymax = vrect.height + wy0 * zoom, wy1 * zoom
+    if vrect.collidepoint(mx,my) and pygame.mouse.get_focused():
         mx, my = mx - vrect.left, my - vrect.top
         # Potentially set the window based on mouse position
-        xmin, xmax = vrect.width - wx1 * zoom, -wx0 * zoom
-        ymin, ymax = vrect.height + wy0 * zoom, wy1 * zoom
         if xmin < xmax:
             gx0 = xmax + (xmin - xmax) * mx / vrect.width
         else:
             gx0 = (xmin + xmax) / 2
         if ymin < ymax:
             gy0 = ymax + (ymin - ymax) * my / vrect.height
+        else:
+            gy0 = (ymin + ymax) / 2
+    else:
+        if xmin < xmax:
+            dx = min(max(vrect.width/2, xmin), xmax) - gx0  # TODO: integer math
+            gx0 += dx * math.exp(-dt)
+        else:
+            gx0 = (xmin + xmax) / 2
+        if ymin < ymax:
+            dy = min(max(vrect.height/2, ymin), ymax) - gy0
+            gy0 += dy * math.exp(-dt)
         else:
             gy0 = (ymin + ymax) / 2
 
@@ -105,6 +110,7 @@ def addmask(mask):
 def flip():
 #    screen.blit(gsurf)  # TODO
     _screen.blit(screen, vrect)
+    _screen.fill((80, 40, 0), prect)
     pygame.display.flip()
 
 s3 = math.sqrt(3.)
