@@ -20,7 +20,7 @@ class Mask(object):
             self.x0, self.x1, self.y0, self.y1 = -1, 1, -1, 1
         area = (self.x1 - self.x0) * (self.y1 - self.y0)
         # TODO: set a according to area
-        self.a = 6
+        self.a = 12
         self.sx, self.sy = self.worldtomask((self.x1, self.y0))
 
     def bounds(self):
@@ -103,7 +103,7 @@ class Mask(object):
                 for y in range(2*r):
                     d2 = float((x - r) ** 2 + (y - r) ** 2) / r ** 2
                     d = math.sqrt(d2)
-                    a = max(min(int(255 * 1 / (1 + math.exp(-6 + 12 * d))), 255), 0)
+                    a = max(min(int(255 * 1 / (1 + math.exp(-20 + 24 * d))), 255), 0)
                     img.set_at((x,y), (0, 0, 255, a))
             Mask.circs[r] = img
         return Mask.circs[r]
