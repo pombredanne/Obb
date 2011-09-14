@@ -1,6 +1,6 @@
 import pygame, random
 from pygame.locals import *
-import vista, context, body, settings, panel, tile
+import vista, context, body, settings, panel
 
 class Play(context.Context):
     def __init__(self):

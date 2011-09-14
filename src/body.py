@@ -1,6 +1,6 @@
 import pygame, random
 from pygame.locals import *
-import vista, mask, tile, graphics
+import vista, mask, graphics
 
 class Body(object):
     def __init__(self, (x, y) = (0, 0)):
@@ -168,9 +168,8 @@ class Core(BodyPart):
         return ((self.x, self.y),)
 
     def draw0(self, zoom, status):
-#        color = (128, 0, 0) if self.status == "target" else self.colorbycode(self.colorcode)
-        color = 0, 192, 96
-        return tile.drawcore(color, zoom)
+        color = "core"
+        return graphics.core(color, zoom)
 
 class AppendageSpec(object):
     """Data to specify the path of an appendage, irrespective of starting position"""
@@ -210,14 +209,8 @@ class Organ(BodyPart):
     """A functional body part that terminates a stalk"""
     draworder = 2
     def draw0(self, zoom, status):
-        img = pygame.Surface((2*zoom, 2*zoom), SRCALPHA)
-        wx, wy = vista.grid.hextoworld(vista.grid.edgehex((0,0), self.edge))
-        center = cx, cy = zoom, zoom
-#        p0 = int(cx + zoom * wx + 0.5), int(cy - zoom * wy + 0.5)
         color = self.color
-#        pygame.draw.line(img, color, p0, center, int(vista.zoom * 0.3))
-#        tile.drawblobsphere(img, color, (zoom, zoom), int(0.6*zoom))
-        return graphics.sphere(0.5, color, zoom = zoom)
+        return graphics.organ(0.5, color, self.edge, zoom = zoom)
 
     def tiles(self):
         return ((self.x, self.y),)
@@ -228,16 +221,9 @@ class Eye(Organ):
     color = "app0"
 
     def draw0(self, zoom, status):
-#        img = pygame.Surface((2*zoom, 2*zoom), SRCALPHA)
-#        wx, wy = vista.grid.hextoworld(vista.grid.edgehex((0,0), self.edge))
         center = cx, cy = zoom, zoom
-#        p0 = int(cx + zoom * wx + 0.5), int(cy - zoom * wy + 0.5)
         color = "target" if self.status == "target" else self.color
-#        pygame.draw.line(img, color, p0, center, int(vista.zoom * 0.3))
-        img = graphics.sphere(0.5, color, zoom = zoom)
-        pygame.draw.circle(img, (255, 255, 255), center, int(zoom * 0.35))
-        pygame.draw.circle(img, (0, 0, 0), center, int(zoom * 0.2))
-        return img
+        return graphics.eye(color, self.edge, zoom = zoom)
 
 class Leaf(Organ):
     """Collects light and generates energy"""

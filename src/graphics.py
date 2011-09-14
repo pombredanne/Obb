@@ -9,6 +9,7 @@ colors["app0"] = 0, 1, 0.5, 1
 colors["app1"] = 1, 0.5, 0, 1
 colors["app2"] = 0.5, 0, 1, 1
 colors["target"] = 1, 0, 0, 1
+colors["core"] = 0.2, 1, 0.2, 1
 
 
 def qBezier((x0,y0), (x1,y1), (x2,y2), n = 8, ccache = {}):
@@ -130,6 +131,50 @@ def sphere(Rfac, color=(1, 1, 1, 1), (x0,y0)=(0,0), zoom = settings.tzoom0):
         filtersurface(img, color[0], color[1], color[2], color[3])
     return img
 
+def organ(Rfac, color=(1,1,1,1), edge0=3, zoom = settings.tzoom0):
+    """A sphere on a stalk"""
+    img = app((3,), color, edge0, zoom, segs=3).copy()
+    sphereimg = sphere(Rfac, color, (0,0), zoom)
+    img.blit(sphereimg, sphereimg.get_rect(center = img.get_rect().center))
+    return img
+
+def eyeball(zoom = settings.tzoom0, cache = {}):
+    key = zoom
+    if key in cache: return cache[key]
+    if zoom == settings.tzoom0:
+        img = pygame.Surface((2*zoom, 2*zoom), SRCALPHA)
+        pygame.draw.circle(img, (255, 255, 255), (zoom, zoom), int(zoom * 0.35))
+        pygame.draw.circle(img, (0, 0, 0), (zoom, zoom), int(zoom * 0.2))
+    else:
+        img0 = eyeball()
+        img = pygame.transform.smoothscale(img0, (2*zoom, 2*zoom))
+    cache[key] = img
+    return cache[key]
+
+def eye(color=(1,1,1,1), edge0=3, zoom = settings.tzoom0):
+    """An organ with some circles on it"""
+    img = organ(0.5, color, edge0, zoom)
+    eyeimg = eyeball(zoom)
+    img.blit(eyeimg, eyeimg.get_rect(center = img.get_rect().center))
+    return img
+
+def core(_color, zoom = settings.tzoom0):
+    z = settings.tzoom0
+    img = pygame.Surface((3*z, 3*z), SRCALPHA)
+    stalkimg = pygame.Surface((z, z), SRCALPHA)
+    x0, y0 = stalkimg.get_rect().center
+    for edge in range(6):
+        stalkimg.fill((0,0,0,0))
+        r, g, b, a = colors["app%s" % (edge % 3)]
+        S, C = math.sin(math.radians(60 * edge)), -math.cos(math.radians(60 * edge))
+        dx, dy = 0.3 * S * z, 0.3 * C * z
+        drawgraysegment(stalkimg, (x0,y0), (x0+dx, y0+dy), 0.35 * z)
+        filtersurface(stalkimg, r, g, b, a)
+        x, y = (1.5+.8*S) * z, (1.5+.8*C) * z
+        img.blit(stalkimg, stalkimg.get_rect(center = (x,y)))
+    sphereimg = sphere(0.85, _color, zoom = z)
+    img.blit(sphereimg, sphereimg.get_rect(center = img.get_rect().center))
+    return pygame.transform.smoothscale(img, (3*zoom, 3*zoom))
 
 
 # Coordinates of vertices and edges
