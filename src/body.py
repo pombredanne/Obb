@@ -80,6 +80,8 @@ class Body(object):
         self.removepart(part)
 
     def think(self, dt):
+        for part in self.parts:
+            part.think(dt)
         if self.mask is None:
             self.remakemask()
             vista.setgrect(self.mask.bounds())
@@ -103,6 +105,9 @@ class BodyPart(object):
         self.lastkey = None
         self.budcolors = {}
         self.status = ""
+
+    def think(self, dt):
+        pass
 
     def setbranchstatus(self, status = ""):
         self.status = status
@@ -141,12 +146,15 @@ class BodyPart(object):
         if not buds: return None
         return random.choice(buds)
 
-    def draw(self):
+    def getkey(self):
         zoom = int(vista.zoom + 0.5)
-        key = zoom, self.status
+        return zoom, self.status
+
+    def draw(self):
+        key = self.getkey()
         if key != self.lastkey:
             self.lastkey = key
-            self.img = self.draw0(zoom, self.status)
+            self.img = self.draw0(*key)
         px, py = vista.worldtoview(vista.grid.hextoworld((self.x, self.y)))
         vista.screen.blit(self.img, self.img.get_rect(center = (px, py)))
 
@@ -220,10 +228,25 @@ class Eye(Organ):
     lightradius = 6
     color = "app0"
 
-    def draw0(self, zoom, status):
+    def __init__(self, *args, **kw):
+        Organ.__init__(self, *args, **kw)
+        self.tblink = 0
+
+    def think(self, dt):
+        if self.tblink == 0 and random.random() * 4 < dt:
+            self.tblink = 0.4
+        if self.tblink:
+            self.tblink = max(self.tblink - dt, 0)
+
+    def getkey(self):
+        blink = abs(self.tblink - 0.2) / 0.2 if self.tblink else 1
+        zoom = int(vista.zoom + 0.5)
+        return zoom, self.status, blink
+
+    def draw0(self, zoom, status, blink):
         center = cx, cy = zoom, zoom
         color = "target" if self.status == "target" else self.color
-        return graphics.eye(color, self.edge, zoom = zoom)
+        return graphics.eye(color, self.edge, blink, zoom = zoom)
 
 class Leaf(Organ):
     """Collects light and generates energy"""

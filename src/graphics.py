@@ -138,23 +138,31 @@ def organ(Rfac, color=(1,1,1,1), edge0=3, zoom = settings.tzoom0):
     img.blit(sphereimg, sphereimg.get_rect(center = img.get_rect().center))
     return img
 
-def eyeball(zoom = settings.tzoom0, cache = {}):
-    key = zoom
+def eyeball(blink = 1, edge0 = 3, zoom = settings.tzoom0, cache = {}):
+    blink = int(blink * 6) / 6.
+    edge0 = 0 if blink == 1 else edge0 % 3
+    key = zoom, edge0, blink
     if key in cache: return cache[key]
-    if zoom == settings.tzoom0:
+    if zoom == settings.tzoom0 and edge0 == 0:
         img = pygame.Surface((2*zoom, 2*zoom), SRCALPHA)
-        pygame.draw.circle(img, (255, 255, 255), (zoom, zoom), int(zoom * 0.35))
-        pygame.draw.circle(img, (0, 0, 0), (zoom, zoom), int(zoom * 0.2))
+        if blink == 1:
+            pygame.draw.circle(img, (255, 255, 255), (zoom, zoom), int(zoom * 0.35))
+        else:
+            rect = pygame.Rect(0, 0, int(zoom * 0.7), int(zoom * 0.7 * blink))
+            rect.center = zoom, zoom
+            pygame.draw.ellipse(img, (255, 255, 255), rect)
+        if blink >= 0.5:
+            pygame.draw.circle(img, (0, 0, 0), (zoom, zoom), int(zoom * 0.2))
     else:
-        img0 = eyeball()
-        img = pygame.transform.smoothscale(img0, (2*zoom, 2*zoom))
+        img0 = eyeball(blink)
+        img = pygame.transform.rotozoom(img0, -60 * edge0, float(zoom) / settings.tzoom0)
     cache[key] = img
     return cache[key]
 
-def eye(color=(1,1,1,1), edge0=3, zoom = settings.tzoom0):
+def eye(color=(1,1,1,1), edge0=3, blink = 1, zoom = settings.tzoom0):
     """An organ with some circles on it"""
     img = organ(0.5, color, edge0, zoom)
-    eyeimg = eyeball(zoom)
+    eyeimg = eyeball(blink, edge0, zoom)
     img.blit(eyeimg, eyeimg.get_rect(center = img.get_rect().center))
     return img
 
