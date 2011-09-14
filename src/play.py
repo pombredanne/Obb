@@ -1,11 +1,12 @@
 import pygame, random
 from pygame.locals import *
-import vista, context, body, settings, panel
+import vista, context, body, settings, panel, status
 
 class Play(context.Context):
     def __init__(self):
         self.body = body.Body()
         self.panel = panel.Panel()
+        self.status = status.Status()
         self.target = None
         self.parttobuild = None
         self.edgepoint = None
@@ -71,6 +72,7 @@ class Play(context.Context):
 
         self.body.think(dt)
         self.panel.think(dt)
+        self.status.think(dt)
 
     def pointchildbyedge(self, screenpos):
         edge = vista.grid.nearestedge(vista.screentoworld(screenpos))
@@ -92,4 +94,5 @@ class Play(context.Context):
             self.parttobuild.draw()
         vista.addmask(self.body.mask)
         self.panel.draw()
+        self.status.draw()
 

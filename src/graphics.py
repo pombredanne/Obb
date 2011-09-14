@@ -325,6 +325,20 @@ def loadallappimages(zooms = None):
                         grayapprotozoom(dedges, edge0, zoom, segs)
     return None
 
+def meter(img, level, color1 = (0.5, 0, 1), color0 = (0.2, 0.2, 0.2)):
+    img2 = img.copy()
+    h = img2.get_height()
+    p = h - level
+    arr = pygame.surfarray.pixels3d(img2)
+    x, y, z = color1
+    if x != 1: arr[...,p:,0] *= x
+    if y != 1: arr[...,p:,1] *= y
+    if z != 1: arr[...,p:,2] *= z
+    x, y, z = color0
+    if x != 1: arr[...,:p,0] *= x
+    if y != 1: arr[...,:p,1] *= y
+    if z != 1: arr[...,:p,2] *= z
+    return img2
 
 if __name__ == "__main__":
     pygame.init()
@@ -370,8 +384,12 @@ if __name__ == "__main__":
             filtersurface(img, 1, 1, 0)
             t1 = pygame.time.get_ticks()
             print t1 - t0
-    if True:
+    if False:
         img = sphere(0.5, color = "ghost", zoom = 60)
+    if True:
+        img = vista.Surface(40, 400, (0, 0, 0))
+        drawgraysegment(img, (20,0), (20,400), 30)
+        img = meter(img, 100)
         
     t0 = pygame.time.get_ticks()
     screen.blit(img, (0,0))
