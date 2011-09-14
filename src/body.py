@@ -31,7 +31,6 @@ class Body(object):
                 part = Mutagenitor(self.core, parent, pos, edge)
             if part.color != parent.budcolors[bud]: continue
             if not self.canaddpart(part): continue
-            parent.buds[bud] = part
             self.addpart(part)
             added += 1
             if added == n: return n
@@ -58,6 +57,8 @@ class Body(object):
     def addpart(self, part):
         assert self.canaddpart(part)
         self.parts.append(part)
+        if part.parent is not None:
+            part.parent.buds[((part.x, part.y), part.edge)] = part
         part.status = ""
         tiles, edges = part.claimedsets()
         for tile in tiles: self.takentiles[tile] = part
