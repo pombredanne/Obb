@@ -29,7 +29,7 @@ class Body(object):
                 part = Leaf(self.core, parent, pos, edge)
             else:
                 part = Mutagenitor(self.core, parent, pos, edge)
-            if part.colorcode != parent.budcolors[bud]: continue
+            if part.color != parent.budcolors[bud]: continue
             if not self.canaddpart(part): continue
             parent.buds[bud] = part
             self.addpart(part)
@@ -162,7 +162,7 @@ class Core(BodyPart):
         for edge in range(6):  # One bud in each of six directions
             oppedge = vista.grid.opposite((x, y), edge)
             self.buds[oppedge] = None
-            self.budcolors[oppedge] = edge % 3
+            self.budcolors[oppedge] = "app%s" % (edge % 3)
 
     def tiles(self):
         return ((self.x, self.y),)
@@ -201,7 +201,7 @@ class Appendage(BodyPart):
         self.color = appspec.color
         for bud in self.appspec.outbuds((x, y), edge):
             self.buds[bud] = None
-            self.budcolors[bud] = self.colorcode
+            self.budcolors[bud] = self.color
 
     def draw0(self, zoom, status):
         return graphics.app(self.appspec.dedges, self.color, self.edge, zoom)
@@ -213,11 +213,11 @@ class Organ(BodyPart):
         img = pygame.Surface((2*zoom, 2*zoom), SRCALPHA)
         wx, wy = vista.grid.hextoworld(vista.grid.edgehex((0,0), self.edge))
         center = cx, cy = zoom, zoom
-        p0 = int(cx + zoom * wx + 0.5), int(cy - zoom * wy + 0.5)
-        color = (128, 0, 0) if self.status == "target" else self.colorbycode(self.colorcode)
-        pygame.draw.line(img, color, p0, center, int(vista.zoom * 0.3))
-        tile.drawblobsphere(img, color, (zoom, zoom), int(0.6*zoom))
-        return img
+#        p0 = int(cx + zoom * wx + 0.5), int(cy - zoom * wy + 0.5)
+        color = self.color
+#        pygame.draw.line(img, color, p0, center, int(vista.zoom * 0.3))
+#        tile.drawblobsphere(img, color, (zoom, zoom), int(0.6*zoom))
+        return graphics.sphere(0.5, color, zoom = zoom)
 
     def tiles(self):
         return ((self.x, self.y),)
@@ -225,27 +225,27 @@ class Organ(BodyPart):
 class Eye(Organ):
     """Extends your visible region"""
     lightradius = 6
-    colorcode = 0
+    color = "app0"
 
     def draw0(self, zoom, status):
-        img = pygame.Surface((2*zoom, 2*zoom), SRCALPHA)
-        wx, wy = vista.grid.hextoworld(vista.grid.edgehex((0,0), self.edge))
+#        img = pygame.Surface((2*zoom, 2*zoom), SRCALPHA)
+#        wx, wy = vista.grid.hextoworld(vista.grid.edgehex((0,0), self.edge))
         center = cx, cy = zoom, zoom
-        p0 = int(cx + zoom * wx + 0.5), int(cy - zoom * wy + 0.5)
-        color = (128, 0, 0) if self.status == "target" else self.colorbycode(self.colorcode)
-        pygame.draw.line(img, color, p0, center, int(vista.zoom * 0.3))
-        tile.drawblobsphere(img, color, (zoom, zoom), int(0.6*zoom))
-        pygame.draw.circle(img, (255, 255, 255), center, int(zoom * 0.5))
-        pygame.draw.circle(img, (0, 0, 0), center, int(zoom * 0.25))
+#        p0 = int(cx + zoom * wx + 0.5), int(cy - zoom * wy + 0.5)
+        color = "target" if self.status == "target" else self.color
+#        pygame.draw.line(img, color, p0, center, int(vista.zoom * 0.3))
+        img = graphics.sphere(0.5, color, zoom = zoom)
+        pygame.draw.circle(img, (255, 255, 255), center, int(zoom * 0.35))
+        pygame.draw.circle(img, (0, 0, 0), center, int(zoom * 0.2))
         return img
 
 class Leaf(Organ):
     """Collects light and generates energy"""
-    colorcode = 1
+    color = "app1"
 
 class Mutagenitor(Organ):
     """Collects light and generates mutagen"""
-    colorcode = 2
+    color = "app2"
 
 
 

@@ -67,9 +67,70 @@ def segmentcircles((dx, dy), width = None, r0 = None, s0 = 0, cache = {}):
     cache[seed] = circs
     return circs
 
+def spherecircles(R, r0 = None, lvector = (-1,-1,2), cache = {}):
+    """Specs for a bunch of circles in a spherical cluster"""
+    seed = R, r0, tuple(lvector)
+    if seed in cache: return cache[seed]
+    lx, ly, lz = lvector
+    sl = math.sqrt(lx ** 2 + ly ** 2 + lz ** 2)
+    rstate = random.getstate()
+    random.seed(seed)
+    circs = []
+    if r0 is None: r0 = R / 10.
+    ncirc = int(40 * R ** 2 / r0 ** 2)
+    for j in range(ncirc):
+        r = int(random.uniform(r0, 2*r0))
+        x = int(random.uniform(-R, R)+0.5)
+        y = int(random.uniform(-R, R)+0.5)
+        z = int(random.uniform(-R, R)+0.5)
+        if math.sqrt(x ** 2 + y ** 2 + z ** 2) + r > R: continue
+        g = int(255 * (0.55 + 0.45 * (lx*x+ly*y+lz*z)/sl/R))
+        circs.append((z, (x, y, r, g)))
+    random.setstate(rstate)
+    circs = [circ for z,circ in sorted(circs)]
+    cache[seed] = circs
+    return circs
+
 def drawgraysegment(surf, (x0, y0), (x1, y1), width = None, r0 = None, s0 = None):
     circs = segmentcircles((x1-x0,y1-y0), width, r0, s0)
     drawgraycircles(surf, circs, (x0,y0))
+
+def drawgraysphere(surf, (x0, y0), R, r0 = None):
+    circs = spherecircles(R, r0)
+    drawgraycircles(surf, circs, (x0,y0))
+
+def graysphere(R, r0 = None, cache = {}):
+    R = int(R)
+    key = R, r0
+    if key in cache: return cache[key]
+    img = pygame.Surface((2*R,2*R), SRCALPHA)
+    drawgraysphere(img, (R,R), R, r0)
+    cache[key] = img
+    return img
+
+def grayspherezoom(Rfac, (x0,y0)=(0,0), zoom = settings.tzoom0, cache = {}):
+    R = int(Rfac * settings.tzoom0)
+    key = R, zoom
+    if key in cache: return cache[key]
+    if zoom == settings.tzoom0:
+        img = pygame.Surface((2*zoom, 2*zoom), SRCALPHA)
+        sphereimg = graysphere(R)
+        img.blit(sphereimg, sphereimg.get_rect(center = ((1+x0)*zoom, (1+y0)*zoom)))
+    else:
+        img0 = grayspherezoom(Rfac, (x0,y0))
+        img = pygame.transform.smoothscale(img0, (2*zoom, 2*zoom))
+    cache[key] = img
+    return cache[key]
+
+def sphere(Rfac, color=(1, 1, 1, 1), (x0,y0)=(0,0), zoom = settings.tzoom0):
+    img = grayspherezoom(Rfac, (x0,y0), zoom)
+    if color in colors: color = colors[color]
+    if color not in ((1,1,1), (1,1,1,1)):
+        img = img.copy()
+        filtersurface(img, color[0], color[1], color[2], color[3])
+    return img
+
+
 
 # Coordinates of vertices and edges
 vpos = [(1,0),(.5,-.5),(-.5,-.5),(-1,0),(-.5,.5),(.5,.5)]
@@ -203,10 +264,11 @@ if __name__ == "__main__":
     screen.fill((0, 0, 0))
     img = pygame.Surface((200, 200), SRCALPHA)
 
-    t0 = pygame.time.get_ticks()
-    loadallappimages([60])
-    t1 = pygame.time.get_ticks()
-    print t1 - t0
+    if False:
+        t0 = pygame.time.get_ticks()
+        loadallappimages([60])
+        t1 = pygame.time.get_ticks()
+        print t1 - t0
 
     
     if False:
@@ -232,13 +294,15 @@ if __name__ == "__main__":
             filtersurface(img, 1, 0.6, 0)
             t1 = pygame.time.get_ticks()
             print t1 - t0
-    if True:
+    if False:
         for _ in range(10):
             t0 = pygame.time.get_ticks()
             img = app((1,2,3), (1, 0.8, 0), 1, 60)
             filtersurface(img, 1, 1, 0)
             t1 = pygame.time.get_ticks()
             print t1 - t0
+    if True:
+        img = sphere(0.5, color = "target", zoom = 60)
         
     t0 = pygame.time.get_ticks()
     screen.blit(img, (0,0))
