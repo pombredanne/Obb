@@ -189,10 +189,15 @@ def core(_color, zoom = settings.tzoom0):
 vpos = [(1,0),(.5,-.5),(-.5,-.5),(-1,0),(-.5,.5),(.5,.5)]
 epos = [(0,.5),(.75,.25),(.75,-.25),(0,-.5),(-.75,-.25),(-.75,.25)]
 s3 = math.sqrt(3)
-spos = lambda x,y: (int(settings.tzoom0*(1+x)+.5), int(settings.tzoom0*(1-s3*y)+.5))
-vps = [spos(x,y) for x,y in vpos]  # Vertex positions
-vips = [spos(.92*x,.92*y) for x,y in vpos]  # inner vertex positions
-eps = [spos(x,y) for x,y in epos]
+spos = lambda x,y: (int(settings.tzoom0*(1+x)+.5), int(settings.tzoom0*(1-y)+.5))
+vps = [spos(x,s3*y) for x,y in vpos]  # Vertex positions
+vips = [spos(.92*x,.92*s3*y) for x,y in vpos]  # inner vertex positions
+eps = [spos(x,s3*y) for x,y in epos]
+if settings.twisty:
+    angles = [math.radians(60*a+10) for a in range(6)]
+    eips = [spos(.5*math.sin(a),.5*math.cos(a)) for a in angles]
+else:
+    eips = [spos(0,0) for a in range(6)]
 
 def graystalk(dedge, segs = 8, cache = {}):
     """Image containing a single gray stalk"""
@@ -202,12 +207,11 @@ def graystalk(dedge, segs = 8, cache = {}):
     z = settings.tzoom0
     img = pygame.Surface((2*z,2*z), SRCALPHA)
     p0 = eps[edge0]
-    p1 = (z+10,z)
-#    p2 = eps[(edge0+dedge)%6]
-#    ps = [(int(x+.5),int(y+.5)) for x,y in qBezier(p0, p1, p2, 8)]
-    p2 = (z-10,z)
+    p1 = eips[edge0]
+    p2 = eips[(edge0+dedge)%6]
     p3 = eps[(edge0+dedge)%6]
-    ps = [(int(x+.5),int(y+.5)) for x,y in cBezier(p0, p1, p2, p3, 8)]
+    ps = cBezier(p0, p1, p2, p3, 8)
+    ps = [(int(x+.5),int(y+.5)) for x,y in ps]
     for j in range(segs):
         drawgraysegment(img, ps[j], ps[j+1], int(z*0.3), None, j)
     cache[key] = img

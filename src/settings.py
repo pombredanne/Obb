@@ -13,6 +13,8 @@ tzoom0 = 120  # Default tile size (should be rather large)
 zooms = 16, 24, 32, 40, 48, 60
 ptilesize = 60 # Size of selectable tiles in the panel
 
+twisty = False  # Twisty paths
+
 fullscreen = "--fullscreen" in sys.argv
 showfps = True
 
