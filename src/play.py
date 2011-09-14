@@ -63,11 +63,6 @@ class Play(context.Context):
 
     def draw(self):
         vista.clear()
-#        for x in range(-6, 6):
-#            for y in range(-6, 6):
-#                vista.grid.tracehex((x,y))
-#        vista.grid.drawhex(self.ton, (255, 255, 255))
-#        vista.grid.drawhex((0,0))
         if self.panel.selected is not None:
             self.body.tracehexes()
         self.body.draw()

@@ -176,7 +176,7 @@ def core(_color, zoom = settings.tzoom0):
         r, g, b, a = colors["app%s" % (edge % 3)]
         S, C = math.sin(math.radians(60 * edge)), -math.cos(math.radians(60 * edge))
         dx, dy = 0.3 * S * z, 0.3 * C * z
-        drawgraysegment(stalkimg, (x0,y0), (x0+dx, y0+dy), 0.35 * z)
+        drawgraysegment(stalkimg, (x0,y0), (x0+dx, y0+dy), 0.3 * z)
         filtersurface(stalkimg, r, g, b, a)
         x, y = (1.5+.8*S) * z, (1.5+.8*C) * z
         img.blit(stalkimg, stalkimg.get_rect(center = (x,y)))

@@ -217,13 +217,14 @@ class Appendage(BodyPart):
             self.budcolors[bud] = self.color
 
     def draw0(self, zoom, status):
-        return graphics.app(self.appspec.dedges, self.color, self.edge, zoom)
+        color = status or self.color
+        return graphics.app(self.appspec.dedges, color, self.edge, zoom)
             
 class Organ(BodyPart):
     """A functional body part that terminates a stalk"""
     draworder = 2
     def draw0(self, zoom, status):
-        color = self.color
+        color = status or self.color
         return graphics.organ(0.5, color, self.edge, zoom = zoom)
 
     def tiles(self):
@@ -251,7 +252,7 @@ class Eye(Organ):
 
     def draw0(self, zoom, status, blink):
         center = cx, cy = zoom, zoom
-        color = "target" if self.status == "target" else self.color
+        color = status or self.color
         return graphics.eye(color, self.edge, blink, zoom = zoom)
 
 class Leaf(Organ):

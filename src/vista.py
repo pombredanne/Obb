@@ -98,10 +98,14 @@ def gameplaytoworld((gx, gy)):
     return float(gx - gx0) / zoom, -float(gy - gy0) / zoom
 
 def worldtoview((x, y)):
-    return worldtogameplay((x, y))  # TODO
+    return worldtogameplay((x, y))  # TODO... maybe?
+
+def worldtoscreen((x, y)):
+    vx, vy = worldtogameplay((x, y))
+    return settings.vx0 + vx, settings.vy0 + vy
 
 def screentoworld((x, y)):
-    return gameplaytoworld((x, y))  # TODO
+    return gameplaytoworld((x - settings.vx0, y - settings.vy0))
 
 def clear(color = (64, 64, 64)):
     screen.fill(color)
