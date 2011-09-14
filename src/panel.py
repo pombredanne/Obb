@@ -5,10 +5,13 @@ import settings, body, vista, graphics
 class Panel(object):
     """Place where available tiles appear and you can pick them"""
     def __init__(self):
-        self.tiles = [body.randomspec(2, c) for c in (0,1,2)]
+        self.tiles = [self.newspec(c) for c in (0,1,2)]
         self.ages = [-2, -2.5, -3]
         self.centers = [(settings.px/2, (j*2+1)*settings.ptilesize) for j in (0,1,2)]
         self.selected = None
+
+    def newspec(self, jtile):
+        return body.randomspec(2, "app%s" % jtile)
 
     def think(self, dt):
         for j in (0,1,2):
@@ -40,8 +43,10 @@ class Panel(object):
     def selecttile(self, jtile = None):
         self.selected = jtile if jtile != self.selected else None
 
-    def claimtile(self, jtile):
-        self.tiles[jtile] = body.randomspec(2, jtile)
+    def claimtile(self, jtile = None):
+        if jtile is None: jtile = self.selected
+        self.tiles[jtile] = self.newspec(jtile)
         self.ages[jtile] = -6
+        self.selected = None
 
 

@@ -7,7 +7,7 @@ class Body(object):
         self.parts = []
         self.takentiles = {}
         self.takenedges = {}
-        self.buds = {}
+        self.takenbuds = {}
         self.core = Core(self, (x, y))
         self.mask = None
         self.addpart(self.core)
@@ -37,6 +37,18 @@ class Body(object):
             if added == n: return n
         return added
 
+    def canplaceapp(self, edge, appspec):
+        """If you can place the specified app on the specified edge,
+        return the corresponding part. Otherwise return None"""
+        for bud in (edge, vista.HexGrid.opposite(*edge)):
+            if bud not in self.takenbuds: continue
+            parent = self.takenbuds[bud]
+            if parent.buds[bud] is not None: continue
+            part = Appendage(self.core, parent, bud[0], bud[1], appspec)
+            if part.color != parent.budcolors[bud]: continue
+            return part
+        return None
+
     def canaddpart(self, part):
         tiles, edges = part.claimedsets()
         if any(tile in self.takentiles for tile in tiles): return False
@@ -46,9 +58,11 @@ class Body(object):
     def addpart(self, part):
         assert self.canaddpart(part)
         self.parts.append(part)
+        part.status = ""
         tiles, edges = part.claimedsets()
         for tile in tiles: self.takentiles[tile] = part
         for edge in edges: self.takenedges[edge] = part
+        for bud in part.buds: self.takenbuds[bud] = part
         if part.lightradius > 0 and self.mask is not None:
             self.mask.addp(*part.lightcircle())
             vista.setgrect(self.mask.bounds())
@@ -67,6 +81,7 @@ class Body(object):
         tiles, edges = part.claimedsets()
         for tile in tiles: del self.takentiles[tile]
         for edge in edges: del self.takenedges[edge]
+        for bud in part.buds: del self.takenbuds[bud]
         assert part not in self.takentiles.values()
         assert part not in self.takenedges.values()
         if part.lightradius > 0:

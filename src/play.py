@@ -7,8 +7,25 @@ class Play(context.Context):
         self.body = body.Body()
         self.panel = panel.Panel()
         self.target = None
+        self.parttobuild = None
+        self.edgepoint = None
 
     def think(self, dt, events, keys, mousepos, buttons):
+
+        if vista.vrect.collidepoint(mousepos):
+            edge = vista.grid.nearestedge(vista.screentoworld(mousepos))
+            if self.panel.selected is not None:
+                if edge != self.edgepoint:
+                    appspec = self.panel.tiles[self.panel.selected]
+                    self.parttobuild = self.body.canplaceapp(edge, appspec)
+                    if self.parttobuild is not None:
+                        canbuild = self.body.canaddpart(self.parttobuild)
+                        self.parttobuild.status = "ghost" if canbuild else "badghost"
+        else:
+            edge = None
+            self.parttobuild = None
+        self.edgepoint = edge
+
         for event in events:
             if event.type == KEYDOWN and event.key == K_SPACE:
                 self.body.addrandompart()
@@ -30,9 +47,12 @@ class Play(context.Context):
                     if jtile in (None, 0, 1, 2):
                         self.panel.selecttile(jtile)
                 elif vista.vrect.collidepoint(mousepos):
-                    if self.panel.selected is not None:
-                        edge = vista.grid.nearestedge(vista.screentoworld(mousepos))
-                
+                    if self.parttobuild is not None and self.body.canaddpart(self.parttobuild):
+                        self.body.addpart(self.parttobuild)
+                        self.panel.claimtile()
+
+
+
         if keys[K_x]:
             newtarget = self.pointchildbyedge(mousepos)
             if newtarget != self.target:
@@ -66,6 +86,8 @@ class Play(context.Context):
         if self.panel.selected is not None:
             self.body.tracehexes()
         self.body.draw()
+        if self.parttobuild is not None:
+            self.parttobuild.draw()
         vista.addmask(self.body.mask)
         self.panel.draw()
 

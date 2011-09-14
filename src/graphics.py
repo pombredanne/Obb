@@ -10,6 +10,8 @@ colors["app1"] = 0.8, 0.4, 0, 1
 colors["app2"] = 0.7, 0, 1, 1
 colors["target"] = 1, 0, 0, 1
 colors["core"] = 0.2, 1, 0.2, 1
+colors["ghost"] = 1, 1, 1, 0.4
+colors["badghost"] = 1, 0, 0, 0.4
 
 
 def qBezier((x0,y0), (x1,y1), (x2,y2), n = 8, ccache = {}):
@@ -35,7 +37,7 @@ def filtersurface(surf, x, y, z, a=1):
     if x != 1: arr[...,0] *= x
     if y != 1: arr[...,1] *= y
     if z != 1: arr[...,2] *= z
-    if a != 1: arr[...,3] *= a
+    if a != 1: pygame.surfarray.pixels_alpha(surf)[:] *= a
 
 def maketransparent(surf):
     filtersurface(surf, 1, 1, 1, 0.5)
@@ -359,7 +361,7 @@ if __name__ == "__main__":
             t1 = pygame.time.get_ticks()
             print t1 - t0
     if True:
-        img = sphere(0.5, color = "target", zoom = 60)
+        img = sphere(0.5, color = "ghost", zoom = 60)
         
     t0 = pygame.time.get_ticks()
     screen.blit(img, (0,0))
