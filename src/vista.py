@@ -44,14 +44,16 @@ def Surface(x, y = None, color = None, alpha = True):
     return surf
 
 def init():
-    global screen, _screen, vrect, prect, zoom, psurf
+    global screen, _screen, vrect, prect, zoom, psurf, rsurf, rrect
     flags = FULLSCREEN | HWSURFACE if settings.fullscreen else 0
     _screen = pygame.display.set_mode(settings.size, flags)
     screen = Surface(settings.size, alpha = False)
     psurf = Surface(settings.psize, alpha = False)
+    rsurf = Surface(settings.rsize, alpha = False)
     # TODO: decouple view and screen coordinates
     vrect = pygame.Rect(settings.vx0, settings.vy0, settings.vx, settings.vy)
     prect = pygame.Rect(settings.px0, settings.py0, settings.px, settings.py)
+    rrect = pygame.Rect(settings.rx0, settings.ry0, settings.rx, settings.ry)
 
 wx0, wy0, wx1, wy1 = -6, -6, 6, 6  # Maximum extent of gameplay window
 zoom = max(settings.zooms)
@@ -126,6 +128,7 @@ def screentoworld((x, y)):
 def clear(color = (64, 64, 64)):
     screen.fill(color)
     psurf.fill((64, 64, 0))
+    rsurf.fill((64, 64, 0))
 
 def screencap():
     dstr = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
@@ -142,6 +145,7 @@ def flip():
 #    screen.blit(gsurf)  # TODO
     _screen.blit(screen, vrect)
     _screen.blit(psurf, prect)
+    _screen.blit(rsurf, rrect)
     pygame.display.flip()
 
 s3 = math.sqrt(3.)

@@ -5,9 +5,13 @@ size = sx, sy = 854, 480
 # Main game viewport
 vsize = vx, vy = 480, 480
 vx0, vy0 = 187, 0
-# Tile panel
+# Tile panel (left)
 psize = px, py = 187, 480
 px0, py0 = 0, 0
+# Status panel (right)
+rsize = rx, ry = 187, 480
+rx0, ry0 = 667, 0
+
 tzoom0 = 120  # Default tile size (should be rather large)
 zooms = 16, 24, 32, 40, 48, 60
 ptilesize = 60 # Size of selectable tiles in the panel
