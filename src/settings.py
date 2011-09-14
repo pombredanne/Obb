@@ -8,10 +8,10 @@ vx0, vy0 = 187, 0
 # Tile panel
 psize = px, py = 187, 480
 px0, py0 = 0, 0
-
 tzoom0 = 120  # Default tile size (should be rather large)
 zooms = 16, 24, 32, 40, 48, 60
 ptilesize = 60 # Size of selectable tiles in the panel
+
 
 twisty = True  # Twisty paths
 

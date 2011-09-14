@@ -115,6 +115,7 @@ class Body(object):
 class BodyPart(object):
     lightradius = 0  # How much does this part extend your visibility
     draworder = 0
+    growtime = 0
     def __init__(self, body, parent, (x,y), edge = 0):
         self.body = body
         self.parent = parent
@@ -127,9 +128,12 @@ class BodyPart(object):
         self.lastkey = None
         self.budcolors = {}
         self.status = ""
+        self.growtimer = self.growtime
 
     def think(self, dt):
-        pass
+        if self.growtimer > 0:
+            if not self.parent or not self.parent.growtimer:
+                self.growtimer = max(self.growtimer - dt, 0)
 
     def setbranchstatus(self, status = ""):
         self.status = status
@@ -170,7 +174,7 @@ class BodyPart(object):
 
     def getkey(self):
         zoom = int(vista.zoom + 0.5)
-        return zoom, self.status
+        return zoom, self.status, self.growtimer
 
     def draw(self):
         key = self.getkey()
@@ -187,6 +191,7 @@ class BodyPart(object):
 class Core(BodyPart):
     """The central core of the body, that has the funny mouth"""
     lightradius = 6
+    growtime = 3.8
     def __init__(self, body, (x,y) = (0,0)):
         BodyPart.__init__(self, body, None, (x,y), 0)
         for edge in range(6):  # One bud in each of six directions
@@ -197,9 +202,9 @@ class Core(BodyPart):
     def tiles(self):
         return ((self.x, self.y),)
 
-    def draw0(self, zoom, status):
+    def draw0(self, zoom, status, growtimer):
         color = "core"
-        return graphics.core(color, zoom)
+        return graphics.core(color, growtimer, zoom)
 
 class AppendageSpec(object):
     """Data to specify the path of an appendage, irrespective of starting position"""
@@ -224,6 +229,7 @@ def qBezier((x0,y0), (x1,y1), (x2,y2), n = 6):
 class Appendage(BodyPart):
     """A stalk that leads to one or more subsequent buds"""
     draworder = 1
+    growtime = 0.3
     def __init__(self, body, parent, (x,y), edge, appspec):
         BodyPart.__init__(self, body, parent, (x,y), edge)
         self.appspec = appspec
@@ -232,16 +238,28 @@ class Appendage(BodyPart):
             self.buds[bud] = None
             self.budcolors[bud] = self.color
 
-    def draw0(self, zoom, status):
+    def getkey(self):
+        zoom = int(vista.zoom + 0.5)
+        segs = 8 - int(8. * self.growtimer / self.growtime) if self.growtimer else 8
+        if "ghost" in self.status: segs = 8
+        return zoom, self.status, segs
+
+    def draw0(self, zoom, status, segs):
         color = status or self.color
-        return graphics.app(self.appspec.dedges, color, self.edge, zoom)
+        return graphics.app(self.appspec.dedges, color, self.edge, zoom, segs = segs)
             
 class Organ(BodyPart):
     """A functional body part that terminates a stalk"""
     draworder = 2
-    def draw0(self, zoom, status):
+    growtime = 0.3
+    def draw0(self, zoom, status, growtimer):
         color = status or self.color
-        return graphics.organ(0.5, color, self.edge, zoom = zoom)
+        if growtimer:
+            segs = min(8 - int(8. * growtimer / self.growtime), 3)
+            R = int(max(10 - 20 * growtimer / self.growtime, 0)) * 0.1
+        else:
+            segs, R = 3, 1
+        return graphics.organ(0.5*R, color, self.edge, zoom = zoom, segs = segs)
 
     def tiles(self):
         return ((self.x, self.y),)
@@ -256,17 +274,22 @@ class Eye(Organ):
         self.tblink = 0
 
     def think(self, dt):
+        Organ.think(self, dt)
         if self.tblink == 0 and random.random() * 4 < dt:
             self.tblink = 0.4
         if self.tblink:
             self.tblink = max(self.tblink - dt, 0)
+        if self.growtimer:
+            self.tblink = 0.2
 
     def getkey(self):
         blink = abs(self.tblink - 0.2) / 0.2 if self.tblink else 1
         zoom = int(vista.zoom + 0.5)
-        return zoom, self.status, blink
+        return zoom, self.status, self.growtimer, blink
 
-    def draw0(self, zoom, status, blink):
+    def draw0(self, zoom, status, growtimer, blink):
+        if growtimer:
+            return Organ.draw0(self, zoom, status, growtimer)
         center = cx, cy = zoom, zoom
         color = status or self.color
         return graphics.eye(color, self.edge, blink, zoom = zoom)

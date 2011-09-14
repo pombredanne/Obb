@@ -51,6 +51,8 @@ class Play(context.Context):
                         self.body.addpart(self.parttobuild)
                         self.panel.claimtile()
 
+        if keys[K_F5]:
+            self.body.addrandompart()
 
 
         if keys[K_x]:
