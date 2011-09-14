@@ -90,6 +90,12 @@ class Body(object):
         for part in sorted(self.parts, key = lambda p: p.draworder):
             part.draw()
 
+    def tracehexes(self, color = (128, 128, 128)):
+        tiles = set([(part.x, part.y) for part in self.parts])
+        for tile in tiles:
+            vista.HexGrid.tracehex(tile, color)
+
+
 class BodyPart(object):
     lightradius = 0  # How much does this part extend your visibility
     draworder = 0
@@ -120,7 +126,7 @@ class BodyPart(object):
 
     def tiles(self):
         return ()
-    
+
     def edges(self):
         return self.buds.keys()
 

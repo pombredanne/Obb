@@ -5,9 +5,9 @@ from pygame.locals import *
 import vista, settings
 
 colors = {}
-colors["app0"] = 0, 1, 0.5, 1
-colors["app1"] = 1, 0.5, 0, 1
-colors["app2"] = 0.5, 0, 1, 1
+colors["app0"] = 0, 0.8, 0.4, 1
+colors["app1"] = 0.8, 0.4, 0, 1
+colors["app2"] = 0.7, 0, 1, 1
 colors["target"] = 1, 0, 0, 1
 colors["core"] = 0.2, 1, 0.2, 1
 

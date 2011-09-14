@@ -166,6 +166,13 @@ class HexGrid(object):
         return HexGrid.hextoworld(HexGrid.edgehex((x, y), e))
 
     @staticmethod
+    def vertexworld((x, y), v):
+        """World coordinates of given vertex"""
+        dx, dy = [(1,0),(.5,-.5),(-.5,-.5),(-1,0),(-.5,.5),(.5,.5)][v%6]
+        wx, wy = HexGrid.hextoworld((x,y))
+        return wx+dx, wy+s3*dy
+
+    @staticmethod
     def worldtohex((x, y)):
         """Convert hex coordinates to world coordinates"""
         return 2./3 * x, -x/3. + y/s3
@@ -213,11 +220,18 @@ class HexGrid(object):
                 for x in (x0,x0+1) for y in (y0,y0+1)]
         return min(d2s)[1]
 
-    def drawhex(self, (x, y), color=None):
+    @staticmethod
+    def drawhex((x, y), color=None):
         if color is None:
-            color = [(64,0,0),(0,64,0),(0,0,64)][(y-x)%3]
-        vs = [self.gvertex((x, y), v) for v in range(6)]        
+            # TODO: support alpha
+            color = [(32,0,0,32),(0,32,0,32),(0,0,32,32)][(y-x)%3]
+        vs = [worldtogameplay(HexGrid.vertexworld((x, y), v)) for v in range(6)]
         pygame.draw.polygon(screen, color, vs)
+
+    @staticmethod
+    def tracehex((x, y), color=(128, 128, 128)):
+        vs = [worldtogameplay(HexGrid.vertexworld((x, y), v)) for v in range(6)]
+        pygame.draw.aalines(screen, color, True, vs)
 
 grid = HexGrid(a = 30)
 
