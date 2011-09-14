@@ -1,4 +1,4 @@
-import pygame, math, datetime
+import pygame, math, datetime, collections
 from pygame.locals import *
 import settings
 
@@ -29,12 +29,26 @@ import settings
 # Mask coordinates: The mask is the surface that has the visibility-
 #   blocking mask. It doesn't need very high resolution.
 
+def Surface(x, y = None, color = None, alpha = True):
+    if y is None:
+        if isinstance(x, collections.Sequence):
+            x, y = x
+        else:
+            y = x
+    if alpha:
+        surf = pygame.Surface((x,y), SRCALPHA).convert_alpha()
+    else:
+        surf = pygame.Surface((x,y), SRCALPHA).convert()
+    if color is not None:
+        surf.fill(color)
+    return surf
+
 def init():
     global screen, _screen, vrect, prect, zoom, psurf
     flags = FULLSCREEN | HWSURFACE if settings.fullscreen else 0
     _screen = pygame.display.set_mode(settings.size, flags)
-    screen = pygame.Surface(settings.size, SRCALPHA).convert()
-    psurf = pygame.Surface(settings.psize, SRCALPHA).convert()
+    screen = Surface(settings.size, alpha = False)
+    psurf = Surface(settings.psize, alpha = False)
     # TODO: decouple view and screen coordinates
     vrect = pygame.Rect(settings.vx0, settings.vy0, settings.vx, settings.vy)
     prect = pygame.Rect(settings.px0, settings.py0, settings.px, settings.py)
@@ -63,11 +77,13 @@ def think(dt, (mx, my)):
     xmin, xmax = vrect.width - wx1 * zoom, -wx0 * zoom
     ymin, ymax = vrect.height + wy0 * zoom, wy1 * zoom
     f = math.exp(-0.5 * dt)
-    if vrect.collidepoint(mx,my) and pygame.mouse.get_focused():
+#    if vrect.collidepoint(mx,my) and pygame.mouse.get_focused():
+    if pygame.mouse.get_focused():
         mx, my = mx - vrect.left, my - vrect.top
         # Potentially set the window based on mouse position
         if xmin < xmax:
             gx0 = xmax + (xmin - xmax) * mx / vrect.width
+            gx0 = max(min(gx0, xmax), xmin)
         else:
             dx = (xmin + xmax) / 2 - gx0
             gx0 += dx * f

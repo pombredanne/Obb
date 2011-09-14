@@ -214,7 +214,7 @@ class BodyPart(object):
 class Core(BodyPart):
     """The central core of the body, that has the funny mouth"""
     lightradius = 6
-    growtime = 3.8
+    growtime = 1.8
     def __init__(self, body, (x,y) = (0,0)):
         BodyPart.__init__(self, body, None, (x,y), 0)
         for edge in range(6):  # One bud in each of six directions

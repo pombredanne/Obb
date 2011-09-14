@@ -106,7 +106,7 @@ def graysphere(R, r0 = None, cache = {}):
     R = int(R)
     key = R, r0
     if key in cache: return cache[key]
-    img = pygame.Surface((2*R,2*R), SRCALPHA)
+    img = vista.Surface(2*R)
     drawgraysphere(img, (R,R), R, r0)
     cache[key] = img
     return img
@@ -116,7 +116,7 @@ def grayspherezoom(Rfac, (x0,y0)=(0,0), zoom = settings.tzoom0, cache = {}):
     key = R, zoom
     if key in cache: return cache[key]
     if zoom == settings.tzoom0:
-        img = pygame.Surface((2*zoom, 2*zoom), SRCALPHA)
+        img = vista.Surface(2*zoom)
         sphereimg = graysphere(R)
         img.blit(sphereimg, sphereimg.get_rect(center = ((1+x0)*zoom, (1+y0)*zoom)))
     else:
@@ -147,7 +147,7 @@ def eyeball(blink = 1, edge0 = 3, zoom = settings.tzoom0, cache = {}):
     key = zoom, edge0, blink
     if key in cache: return cache[key]
     if zoom == settings.tzoom0 and edge0 == 0:
-        img = pygame.Surface((2*zoom, 2*zoom), SRCALPHA)
+        img = vista.Surface(2*zoom)
         if blink == 1:
             pygame.draw.circle(img, (255, 255, 255), (zoom, zoom), int(zoom * 0.35))
         else:
@@ -172,10 +172,10 @@ def eye(color=(1,1,1,1), edge0=3, blink = 1, zoom = settings.tzoom0):
 stalkimages = []
 def core(_color, growth = 0, zoom = settings.tzoom0):
     z = settings.tzoom0
-    img = pygame.Surface((3*z, 3*z), SRCALPHA)
+    img = vista.Surface(3*z)
     if not stalkimages:
         for edge in range(6):
-            stalkimg = pygame.Surface((z, z), SRCALPHA)
+            stalkimg = vista.Surface(z)
             x0, y0 = stalkimg.get_rect().center
             stalkimg.fill((0,0,0,0))
             r, g, b, a = colors["app%s" % (edge % 3)]
@@ -189,7 +189,7 @@ def core(_color, growth = 0, zoom = settings.tzoom0):
         x0, y0 = stalkimg.get_rect().center
         S, C = math.sin(math.radians(60 * edge)), -math.cos(math.radians(60 * edge))
         dx, dy = 0.3 * S * z, 0.3 * C * z
-        dr = min(max((1 - growth) * 1.6 - 0.2 * (5 - edge), 0), 0.5) if growth != 1 else 0
+        dr = min(max((1 - growth) * 4 - 0.2 * (5 - edge), 0), 0.5) if growth != 1 else 0
         x, y = (1.5+(.65-dr)*S) * z, (1.5+(.65-dr)*C) * z
         img.blit(stalkimg, stalkimg.get_rect(center = (x,y)))
     sphereimg = sphere(0.75, _color, zoom = z)
@@ -217,7 +217,7 @@ def graystalk(dedge, segs = 8, cache = {}):
     if key in cache: return cache[key]
     edge0 = 3
     z = settings.tzoom0
-    img = pygame.Surface((2*z,2*z), SRCALPHA)
+    img = vista.Surface(2*z)
     p0 = eps[edge0]
     p1 = eips[edge0]
     p2 = eips[(edge0+dedge)%6]
@@ -280,7 +280,7 @@ def graytile(dedges, cache={}):
     dedges = tuple(sorted(dedges, key=lambda x:abs(x-3.1)))
     if dedges in cache: return cache[dedges]
     if heximg is None:
-        heximg = pygame.Surface((2*settings.tzoom0, 2*settings.tzoom0), SRCALPHA)
+        heximg = vista.Surface(2*settings.tzoom0)
         pygame.draw.polygon(heximg, (128, 128, 128), vps, 0)
         pygame.draw.polygon(heximg, (64, 64, 64), vips, 0)
     img = heximg.copy()
@@ -331,7 +331,7 @@ if __name__ == "__main__":
     screen = pygame.display.set_mode((400, 400))
 
     screen.fill((0, 0, 0))
-    img = pygame.Surface((200, 200), SRCALPHA)
+    img = vista.Surface(200)
 
     if False:
         t0 = pygame.time.get_ticks()

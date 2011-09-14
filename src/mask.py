@@ -1,5 +1,6 @@
 import pygame, math
 from pygame.locals import *
+import vista
 
 class Mask(object):
     """A fog-of-war style mask (black with a variable alpha)"""
@@ -38,9 +39,9 @@ class Mask(object):
 
     def redraw(self):
         """Draw entire surface from scratch"""
-        self.surf = pygame.Surface((self.sx, self.sy), SRCALPHA)
+        self.surf = vista.Surface(self.sx, self.sy)
         self.surf.fill(self.color)
-        self.blue = pygame.Surface((self.sx, self.sy), SRCALPHA)
+        self.blue = vista.Surface(self.sx, self.sy)
         self.blue.fill((0,0,0))
         for p, r in self.ps:
             self.addcirc(p, r)
@@ -79,7 +80,7 @@ class Mask(object):
         if 0 <= px0 and px1 <= self.sx and 0 <= py0 < py1 <= self.sy:
             img = self.surf.subsurface((px0, py0, px1-px0, py1-py0))
         else:
-            img = pygame.Surface((px1-px0, py1-py0), SRCALPHA)
+            img = vista.Surface(px1-px0, py1-py0)
             srect = self.surf.get_rect(topleft = (-px0, -py0))
             img.blit(self.surf, srect)
             if srect.left > 0:
@@ -98,7 +99,7 @@ class Mask(object):
     def getcirc(r):
         if r not in Mask.circs:
             # TODO: pygame.surfarray
-            img = pygame.Surface((2*r, 2*r), SRCALPHA)
+            img = vista.Surface(2*r)
             for x in range(2*r):
                 for y in range(2*r):
                     d2 = float((x - r) ** 2 + (y - r) ** 2) / r ** 2
