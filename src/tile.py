@@ -2,7 +2,7 @@
 
 import pygame, math, random
 from pygame.locals import *
-import vista
+import vista, settings
 
 def qBezier((x0,y0), (x1,y1), (x2,y2), n = 8):
     """Quadratic bezier curve"""
@@ -14,6 +14,7 @@ def mutatecolor((r, g, b), f = 1, d = 10):
     def mutate(x):
         return min(max(x + random.randint(-d, d), 0), 255)
     return mutate(r*f), mutate(g*f), mutate(b*f)
+
 
 def drawblobs(surf, color, (x0, y0), (x1, y1), width = None, r0 = None, s0 = 0):
     """A set of random circles within a rectangle going between the two
@@ -33,7 +34,7 @@ def drawblobs(surf, color, (x0, y0), (x1, y1), width = None, r0 = None, s0 = 0):
         q = random.uniform(-width/2, width/2)
         if math.sqrt(z**2 + q**2) + r > width/2: continue
         p = random.uniform(0, d)
-        shade = mutatecolor(color, 1 - abs(q / width))
+        shade = mutatecolor(color, 1 - abs(q / width), 0)
         circs.append((z, p, q, r, shade))
     if random.random() < 0.1:
         while True:  # Add the suction cup
@@ -47,7 +48,7 @@ def drawblobs(surf, color, (x0, y0), (x1, y1), width = None, r0 = None, s0 = 0):
             break
         
     circs.sort()
-        
+
     for _, p, q, r, shade in circs:
         x = int(x0 + (p * dx + q * dy) / d + 0.5)
         y = int(y0 + (p * dy - q * dx) / d + 0.5)
@@ -72,7 +73,7 @@ def drawblobsphere(surf, color, (x0, y0), R, r0 = None):
         shade = mutatecolor(color, 1 - 0.35 * (R-(z-x-y)/1.7)/R)
         circs.append((z, x, y, r, shade))
     circs.sort()
-        
+    
     for _, x, y, r, shade in circs:
         px = int(x0 + x + 0.5)
         py = int(y0 + y + 0.5)
@@ -80,47 +81,52 @@ def drawblobsphere(surf, color, (x0, y0), R, r0 = None):
     random.setstate(rstate)
 
 
-
-def drawapp(dedges, color, zoom = 160, edge0 = 3, cache = {}):
+def drawapp(dedges, color, zoom = settings.tzoom0, edge0 = 3, cache = {}):
     """Draw appendage"""
     key = tuple(dedges), color, zoom, edge0
     if key in cache:
         return cache[key]
-    if zoom == 160:
+    if zoom == settings.tzoom0:
         img = pygame.Surface((2*zoom, 2*zoom), SRCALPHA)
-        def hextooffset((x, y)):
-            """Convert hex coordinates to offset within this image"""
-            wx, wy = vista.grid.hextoworld((x, y))
-            px = int(zoom + zoom * wx + 0.5)
-            py = int(zoom - zoom * wy + 0.5)
-            return px, py
-        p0 = hextooffset(vista.grid.edgehex((0,0), edge0))
-        p1 = (zoom, zoom)
-        p2s = [hextooffset(vista.grid.edgehex((0,0), edge0 + dedge)) for dedge in dedges]
-        pss = [qBezier(p0, p1, p2) for p2 in p2s]
-        for j in range(len(pss[0])-1):
-            for ps in pss:
-                drawblobs(img, color, ps[j], ps[j+1], 0.3*zoom, s0=j)
+        if len(dedges) == 1:
+            def hextooffset((x, y)):
+                """Convert hex coordinates to offset within this image"""
+                wx, wy = vista.grid.hextoworld((x, y))
+                px = int(zoom + zoom * wx + 0.5)
+                py = int(zoom - zoom * wy + 0.5)
+                return px, py
+            p0 = hextooffset(vista.grid.edgehex((0,0), edge0))
+            p1 = (zoom, zoom)
+            p2s = [hextooffset(vista.grid.edgehex((0,0), edge0 + dedge)) for dedge in dedges]
+            pss = [qBezier(p0, p1, p2) for p2 in p2s]
+            img.lock()
+            for j in range(len(pss[0])-1):
+                for ps in pss:
+                    drawblobs(img, color, ps[j], ps[j+1], 0.3*zoom, s0=j)
+            img.unlock()
+        else:
+            for dedge in dedges:
+                img.blit(drawapp((dedge,), color), (0,0))
     else:
-        img0 = drawapp(dedges, color, 160, edge0)
+        img0 = drawapp(dedges, color, settings.tzoom0, edge0)
         img = pygame.transform.scale(img0, (2*zoom, 2*zoom))
     cache[key] = img
     return img
 
-def drawcore(color, zoom = 160, cache = {}):
+def drawcore(color, zoom = settings.tzoom0, cache = {}):
     """Draw the body core"""
     key = zoom, color
     if key in cache: return cache[key]
-    if zoom == 160:
+    if zoom == settings.tzoom0:
         img = pygame.Surface((2*zoom, 2*zoom), SRCALPHA)
         drawblobsphere(img, color, (zoom, zoom), int(0.85*zoom))
     else:
-        img0 = drawcore(color, 160)
+        img0 = drawcore(color, settings.tzoom0)
         img = pygame.transform.scale(img0, (2*zoom, 2*zoom))
     cache[key] = img
     return img
 
-def drawhex(color0, color1, zoom = 160, cache = {}):
+def drawhex(color0, color1, zoom = settings.tzoom0, cache = {}):
     key = color0, color1, zoom
     if key in cache:
         return cache[key]
@@ -135,14 +141,14 @@ def drawhex(color0, color1, zoom = 160, cache = {}):
     cache[key] = img
     return img
 
-def drawtile(dedges, color, zoom = 160, tilt = 0, cache = {}):
+def drawtile(dedges, color, zoom = settings.tzoom0, tilt = 0, cache = {}):
     """Draw one of the placeable tiles that appears in the side panel"""
     tilt = -int(tilt / 10 + 0.5) * 10 % 360
     key = tuple(dedges), color, zoom, tilt
     if key in cache:
         return cache[key]
     if tilt == 0:
-        if zoom == 160:
+        if zoom == settings.tzoom0:
             img = drawhex(mutatecolor(color, 0.4, 0), mutatecolor(color, 0.2, 0)).copy()
             img.blit(drawapp(dedges, color, zoom), (0,0))
         else:
@@ -153,6 +159,34 @@ def drawtile(dedges, color, zoom = 160, tilt = 0, cache = {}):
         img = pygame.transform.rotate(img0, tilt)
     cache[key] = img
     return img
+
+drawqueue = []
+
+def queueapp(dedges, colors, zoom = None):
+    if zoom is None: zoom = vista.zoom
+    for color in colors:
+        for edge0 in range(6):
+            spec = tuple(dedges), color, 60, edge0
+            drawqueue.append(("app", spec))
+
+def killtime(tmax = 20):
+    tstart = pygame.time.get_ticks()
+    tend = tstart + tmax
+    n = 0
+    while drawqueue and pygame.time.get_ticks() < tend:
+        name, spec = drawqueue[0]
+        del drawqueue[0]
+        if name == "app":
+            drawapp(*spec)
+        n += 1
+    print pygame.time.get_ticks() - tstart, n, len(drawqueue), name, spec
+
+for a in range(5):
+    for b in range(5):
+        if a > b: continue
+        dedges = (a+1,) if a == b else (a+1,b+1)
+        queueapp(dedges, [(0,192,64), (64,64,192), (160,80,0)])
+
 
 if __name__ == "__main__":
     pygame.init()

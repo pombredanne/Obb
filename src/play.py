@@ -1,6 +1,6 @@
 import pygame, random
 from pygame.locals import *
-import vista, context, body, settings, panel
+import vista, context, body, settings, panel, tile
 
 class Play(context.Context):
     def __init__(self):
@@ -51,6 +51,7 @@ class Play(context.Context):
 
         self.body.think(dt)
         self.panel.think(dt)
+#        tile.killtime()
 
     def pointchildbyedge(self, screenpos):
         edge = vista.grid.nearestedge(vista.screentoworld(screenpos))

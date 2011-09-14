@@ -1,6 +1,6 @@
 import pygame, random
 from pygame.locals import *
-import vista, mask, tile
+import vista, mask, tile, graphics
 
 class Body(object):
     def __init__(self, (x, y) = (0, 0)):
@@ -148,7 +148,7 @@ class BodyPart(object):
             self.lastkey = key
             self.img = self.draw0(zoom, self.status)
         px, py = vista.worldtoview(vista.grid.hextoworld((self.x, self.y)))
-        vista.screen.blit(self.img, (px-zoom, py-zoom))
+        vista.screen.blit(self.img, self.img.get_rect(center = (px, py)))
 
     @staticmethod
     def colorbycode(colorcode):
@@ -174,16 +174,16 @@ class Core(BodyPart):
 
 class AppendageSpec(object):
     """Data to specify the path of an appendage, irrespective of starting position"""
-    def __init__(self, dedges, colorcode):
+    def __init__(self, dedges, color):
         self.dedges = sorted(set(dedges))
-        self.colorcode = colorcode
+        self.color = color
     
     def outbuds(self, pos, edge):
         return [vista.grid.opposite(pos, edge + dedge) for dedge in self.dedges]
 
 def randomspec(n = 2, color = None):
     dedges = [random.choice(range(5))+1 for _ in range(n)]
-    if color is None: color = random.choice((0,1,2))
+    if color is None: color = "app%s" % random.choice((0,1,2))
     return AppendageSpec(dedges, color)
 
 def qBezier((x0,y0), (x1,y1), (x2,y2), n = 6):
@@ -198,14 +198,13 @@ class Appendage(BodyPart):
     def __init__(self, body, parent, (x,y), edge, appspec):
         BodyPart.__init__(self, body, parent, (x,y), edge)
         self.appspec = appspec
-        self.colorcode = appspec.colorcode
+        self.color = appspec.color
         for bud in self.appspec.outbuds((x, y), edge):
             self.buds[bud] = None
             self.budcolors[bud] = self.colorcode
 
     def draw0(self, zoom, status):
-        color = (128, 0, 0) if self.status == "target" else self.colorbycode(self.colorcode)
-        return tile.drawapp(self.appspec.dedges, color, zoom, self.edge)
+        return graphics.app(self.appspec.dedges, self.color, self.edge, zoom)
             
 class Organ(BodyPart):
     """A functional body part that terminates a stalk"""

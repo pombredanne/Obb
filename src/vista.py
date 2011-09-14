@@ -38,10 +38,9 @@ def init():
     # TODO: decouple view and screen coordinates
     vrect = pygame.Rect(settings.vx0, settings.vy0, settings.vx, settings.vy)
     prect = pygame.Rect(settings.px0, settings.py0, settings.px, settings.py)
-    zoom = 30
 
 wx0, wy0, wx1, wy1 = -6, -6, 6, 6  # Maximum extent of gameplay window
-zoom = 30
+zoom = max(settings.zooms)
 gx0, gy0 = 0, 0  # Gameplay location of world coordinate (0,0)
 
 def setgrect((x0, y0, x1, y1)):
@@ -50,37 +49,46 @@ def setgrect((x0, y0, x1, y1)):
 
 def zoomin():
     global zoom
-    zoom = max(zoom - 3, 3)
+    zs = [z for z in settings.zooms if z > zoom]
+    if zs:
+        zoom = min(zs)
 def zoomout():
     global zoom
-    zoom = min(zoom + 3, 160)
+    zs = [z for z in settings.zooms if z < zoom]
+    if zs:
+        zoom = max(zs)
 
 def think(dt, (mx, my)):
     global gx0, gy0
     xmin, xmax = vrect.width - wx1 * zoom, -wx0 * zoom
     ymin, ymax = vrect.height + wy0 * zoom, wy1 * zoom
+    f = math.exp(-0.5 * dt)
     if vrect.collidepoint(mx,my) and pygame.mouse.get_focused():
         mx, my = mx - vrect.left, my - vrect.top
         # Potentially set the window based on mouse position
         if xmin < xmax:
             gx0 = xmax + (xmin - xmax) * mx / vrect.width
         else:
-            gx0 = (xmin + xmax) / 2
+            dx = (xmin + xmax) / 2 - gx0
+            gx0 += dx * f
         if ymin < ymax:
             gy0 = ymax + (ymin - ymax) * my / vrect.height
         else:
-            gy0 = (ymin + ymax) / 2
+            dy = (ymin + ymax) / 2 - gy0
+            gy0 += dy * f
     else:
         if xmin < xmax:
             dx = min(max(vrect.width/2, xmin), xmax) - gx0  # TODO: integer math
-            gx0 += dx * math.exp(-dt)
+            gx0 += dx * f
         else:
-            gx0 = (xmin + xmax) / 2
+            dx = (xmin + xmax) / 2 - gx0
+            gx0 += dx * f
         if ymin < ymax:
             dy = min(max(vrect.height/2, ymin), ymax) - gy0
-            gy0 += dy * math.exp(-dt)
+            gy0 += dy * f
         else:
-            gy0 = (ymin + ymax) / 2
+            dy = (ymin + ymax) / 2 - gy0
+            gy0 += dy * f
 
 
 def worldtogameplay((x, y)):
