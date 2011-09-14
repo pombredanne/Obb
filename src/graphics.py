@@ -77,7 +77,7 @@ epos = [(0,.5),(.75,.25),(.75,-.25),(0,-.5),(-.75,-.25),(-.75,.25)]
 s3 = math.sqrt(3)
 spos = lambda x,y: (int(settings.tzoom0*(1+x)+.5), int(settings.tzoom0*(1-s3*y)+.5))
 vps = [spos(x,y) for x,y in vpos]  # Vertex positions
-vips = [spos(.95*x,.95*y) for x,y in vpos]  # inner vertex positions
+vips = [spos(.92*x,.92*y) for x,y in vpos]  # inner vertex positions
 eps = [spos(x,y) for x,y in epos]
 
 def graystalk(dedge, segs = 8, cache = {}):

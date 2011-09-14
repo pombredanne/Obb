@@ -7,7 +7,7 @@ pygame.init()
 def main():
     vista.init()
     pygame.display.set_caption("Ubb")
-    graphics.loadallappimages(settings.zooms)
+#    graphics.loadallappimages(settings.zooms)
     context.push(play.Play())
     clock = pygame.time.Clock()
     while context.top():

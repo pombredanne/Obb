@@ -7,10 +7,10 @@ class Mask(object):
     def __init__(self, ps = (), color = (0, 0, 0), a = None):
         self.color = tuple(color)
         self.ps = list(ps)
-        self.setrange()
+        self.setrange(a)
         self.redraw()
 
-    def setrange(self):
+    def setrange(self, a=None):
         if self.ps:
             self.x0 = min(x - r for (x, y), r in self.ps) - 0.1
             self.y0 = min(y - r for (x, y), r in self.ps) - 0.1
@@ -20,7 +20,7 @@ class Mask(object):
             self.x0, self.x1, self.y0, self.y1 = -1, 1, -1, 1
         area = (self.x1 - self.x0) * (self.y1 - self.y0)
         # TODO: set a according to area
-        self.a = 12
+        self.a = a if a is not None else 12
         self.sx, self.sy = self.worldtomask((self.x1, self.y0))
 
     def bounds(self):
@@ -107,4 +107,36 @@ class Mask(object):
                     img.set_at((x,y), (0, 0, 255, a))
             Mask.circs[r] = img
         return Mask.circs[r]
+
+
+if __name__ == "__main__":
+    pygame.init()
+    screen = pygame.display.set_mode((480, 480))
+
+    screen.fill((0, 0, 255))
+
+
+    mask = Mask([((0,0),10)])
+    surf = pygame.transform.smoothscale(mask.surf, (480, 480))
+
+#    maskimg = pygame.Surface((480, 480), SRCALPHA)
+#    maskimg.fill((0,0,0,0))
+#    pygame.draw.circle(maskimg, (0, 255, 0, 128), (240, 240), 200, 0)
+#    pygame.draw.circle(maskimg, (0, 255, 0), (240, 240), 100, 0)
+
+    clock = pygame.time.Clock()
+    while True:
+        clock.tick()
+        pygame.display.set_caption("%.1ffps" % clock.get_fps())
+        if any(event.type in (QUIT, KEYDOWN) for event in pygame.event.get()):
+            break
+        screen.fill((0, 0, 255))
+        t0 = pygame.time.get_ticks()
+        screen.blit(surf, (0,0))
+        t1 = pygame.time.get_ticks()
+        print t1 - t0
+
+        pygame.display.flip()
+
+
 

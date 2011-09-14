@@ -32,8 +32,6 @@ class Play(context.Context):
                 elif vista.vrect.collidepoint(mousepos):
                     if self.panel.selected is not None:
                         edge = vista.grid.nearestedge(vista.screentoworld(mousepos))
-                        
-                        
                 
         if keys[K_x]:
             newtarget = self.pointchildbyedge(mousepos)
@@ -51,7 +49,6 @@ class Play(context.Context):
 
         self.body.think(dt)
         self.panel.think(dt)
-#        tile.killtime()
 
     def pointchildbyedge(self, screenpos):
         edge = vista.grid.nearestedge(vista.screentoworld(screenpos))

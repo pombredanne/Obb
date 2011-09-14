@@ -32,9 +32,9 @@ import settings
 def init():
     global screen, _screen, vrect, prect, zoom, psurf
     flags = FULLSCREEN | HWSURFACE if settings.fullscreen else 0
-    screen = pygame.Surface(settings.size, SRCALPHA)
-    psurf = pygame.Surface(settings.psize, SRCALPHA)
     _screen = pygame.display.set_mode(settings.size, flags)
+    screen = pygame.Surface(settings.size, SRCALPHA).convert()
+    psurf = pygame.Surface(settings.psize, SRCALPHA).convert()
     # TODO: decouple view and screen coordinates
     vrect = pygame.Rect(settings.vx0, settings.vy0, settings.vx, settings.vy)
     prect = pygame.Rect(settings.px0, settings.py0, settings.px, settings.py)
@@ -112,6 +112,7 @@ def screencap():
     pygame.image.save(_screen, "screenshots/screenshot-%s.png" % dstr)
 
 def addmask(mask):
+    global screen
     x0, y0 = gameplaytoworld((0, vrect.height))  # Bottom left world coordinates
     x1, y1 = gameplaytoworld((vrect.width, 0))   # Top right world coordinates
     gsx, gsy = worldtogameplay((wx1, wy0))
