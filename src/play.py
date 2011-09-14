@@ -36,7 +36,7 @@ class Play(context.Context):
                 print "Visibility:", self.body.mask.visibility(wpos)
             if event.type == KEYUP and event.key == K_x:
                 if self.target is not None:
-                    self.body.removebranch(self.target)
+                    self.target.die()
             if event.type == KEYUP and event.key == K_F1:
                 vista.zoomin()
             if event.type == KEYUP and event.key == K_F2:

@@ -170,7 +170,7 @@ def eye(color=(1,1,1,1), edge0=3, blink = 1, zoom = settings.tzoom0):
     return img
 
 stalkimages = []
-def core(_color, growtimer = 0, zoom = settings.tzoom0):
+def core(_color, growth = 0, zoom = settings.tzoom0):
     z = settings.tzoom0
     img = pygame.Surface((3*z, 3*z), SRCALPHA)
     if not stalkimages:
@@ -189,7 +189,7 @@ def core(_color, growtimer = 0, zoom = settings.tzoom0):
         x0, y0 = stalkimg.get_rect().center
         S, C = math.sin(math.radians(60 * edge)), -math.cos(math.radians(60 * edge))
         dx, dy = 0.3 * S * z, 0.3 * C * z
-        dr = min(max(growtimer * 1.6 - 0.2 * (5 - edge), 0), 0.5) if growtimer else 0
+        dr = min(max((1 - growth) * 1.6 - 0.2 * (5 - edge), 0), 0.5) if growth != 1 else 0
         x, y = (1.5+(.65-dr)*S) * z, (1.5+(.65-dr)*C) * z
         img.blit(stalkimg, stalkimg.get_rect(center = (x,y)))
     sphereimg = sphere(0.75, _color, zoom = z)

@@ -22,13 +22,13 @@ class Body(object):
             r = random.random()
             if r < 0.7:
                 appspec = randomspec()
-                part = Appendage(self.core, parent, pos, edge, appspec)
+                part = Appendage(self, parent, pos, edge, appspec)
             elif r < 0.8:
-                part = Eye(self.core, parent, pos, edge)
+                part = Eye(self, parent, pos, edge)
             elif r < 0.9:
-                part = Leaf(self.core, parent, pos, edge)
+                part = Leaf(self, parent, pos, edge)
             else:
-                part = Mutagenitor(self.core, parent, pos, edge)
+                part = Mutagenitor(self, parent, pos, edge)
             if part.color != parent.budcolors[bud]: continue
             if not self.canaddpart(part): continue
             self.addpart(part)
@@ -43,7 +43,7 @@ class Body(object):
             if bud not in self.takenbuds: continue
             parent = self.takenbuds[bud]
             if parent.buds[bud] is not None: continue
-            part = Appendage(self.core, parent, bud[0], bud[1], appspec)
+            part = Appendage(self, parent, bud[0], bud[1], appspec)
             if part.color != parent.budcolors[bud]: continue
             return part
         return None
@@ -74,6 +74,8 @@ class Body(object):
         self.mask = mask.Mask(circles)
 
     def removepart(self, part):
+        """This is like the manual override. Shouldn't be called directly.
+        Instead call part.die()"""
         assert not isinstance(part, Core)
         self.parts.remove(part)
         edge = (part.x, part.y), part.edge
@@ -116,6 +118,7 @@ class BodyPart(object):
     lightradius = 0  # How much does this part extend your visibility
     draworder = 0
     growtime = 0
+    dietime = 0.1
     def __init__(self, body, parent, (x,y), edge = 0):
         self.body = body
         self.parent = parent
@@ -129,11 +132,25 @@ class BodyPart(object):
         self.budcolors = {}
         self.status = ""
         self.growtimer = self.growtime
+        self.dietimer = None
 
     def think(self, dt):
         if self.growtimer > 0:
             if not self.parent or not self.parent.growtimer:
                 self.growtimer = max(self.growtimer - dt, 0)
+        elif self.dietimer is not None:
+            candie = all(part is None for part in self.buds.values())
+            if candie:
+                self.dietimer -= dt
+                if self.dietimer < 0:
+                    self.body.removepart(self)
+
+    def die(self):
+        for part in self.buds.values():
+            if part is not None:
+                part.die()
+        self.dietimer = self.dietime
+        
 
     def setbranchstatus(self, status = ""):
         self.status = status
@@ -174,7 +191,13 @@ class BodyPart(object):
 
     def getkey(self):
         zoom = int(vista.zoom + 0.5)
-        return zoom, self.status, self.growtimer
+        if self.dietimer is not None:
+            growth = self.dietimer / self.dietime
+        elif self.growtimer:
+            growth = 1 - self.growtimer / self.growtime
+        else:
+            growth = 1
+        return zoom, self.status, growth
 
     def draw(self):
         key = self.getkey()
@@ -202,9 +225,9 @@ class Core(BodyPart):
     def tiles(self):
         return ((self.x, self.y),)
 
-    def draw0(self, zoom, status, growtimer):
+    def draw0(self, zoom, status, growth):
         color = "core"
-        return graphics.core(color, growtimer, zoom)
+        return graphics.core(color, growth, zoom)
 
 class AppendageSpec(object):
     """Data to specify the path of an appendage, irrespective of starting position"""
@@ -238,25 +261,21 @@ class Appendage(BodyPart):
             self.buds[bud] = None
             self.budcolors[bud] = self.color
 
-    def getkey(self):
-        zoom = int(vista.zoom + 0.5)
-        segs = 8 - int(8. * self.growtimer / self.growtime) if self.growtimer else 8
-        if "ghost" in self.status: segs = 8
-        return zoom, self.status, segs
-
-    def draw0(self, zoom, status, segs):
+    def draw0(self, zoom, status, growth):
         color = status or self.color
+        segs =  int(8. * growth) if growth != 1 else 8
+        if "ghost" in self.status: segs = 8
         return graphics.app(self.appspec.dedges, color, self.edge, zoom, segs = segs)
             
 class Organ(BodyPart):
     """A functional body part that terminates a stalk"""
     draworder = 2
     growtime = 0.3
-    def draw0(self, zoom, status, growtimer):
+    def draw0(self, zoom, status, growth):
         color = status or self.color
-        if growtimer:
-            segs = min(8 - int(8. * growtimer / self.growtime), 3)
-            R = int(max(10 - 20 * growtimer / self.growtime, 0)) * 0.1
+        if growth != 1:
+            segs = min(int(8. * growth), 3)
+            R = int(max(20 * growth - 10, 0)) * 0.1
         else:
             segs, R = 3, 1
         return graphics.organ(0.5*R, color, self.edge, zoom = zoom, segs = segs)
@@ -276,20 +295,20 @@ class Eye(Organ):
     def think(self, dt):
         Organ.think(self, dt)
         if self.tblink == 0 and random.random() * 4 < dt:
-            self.tblink = 0.4
+            self.tblink = 0.3
         if self.tblink:
             self.tblink = max(self.tblink - dt, 0)
         if self.growtimer:
-            self.tblink = 0.2
+            self.tblink = 0.45
 
     def getkey(self):
-        blink = abs(self.tblink - 0.2) / 0.2 if self.tblink else 1
-        zoom = int(vista.zoom + 0.5)
-        return zoom, self.status, self.growtimer, blink
+        blink = abs(self.tblink - 0.15) / 0.15 if self.tblink else 1
+        while blink > 1.0001: blink = abs(blink - 2)
+        return Organ.getkey(self) + (blink,)
 
-    def draw0(self, zoom, status, growtimer, blink):
-        if growtimer:
-            return Organ.draw0(self, zoom, status, growtimer)
+    def draw0(self, zoom, status, growth, blink):
+        if growth != 1:
+            return Organ.draw0(self, zoom, status, growth)
         center = cx, cy = zoom, zoom
         color = status or self.color
         return graphics.eye(color, self.edge, blink, zoom = zoom)
