@@ -36,7 +36,7 @@ colors["mutagenitor"] = "app2"
 colors["coil"] = "app1"
 
 
-#costs = {"eye":30, "brain":60, "eyebrain": 120, "mutagenitor":80, "tripleeye": 0, "coil":20}
-costs = {"coil":20}
+costs = {"eye":30, "brain":60, "eyebrain": 120, "mutagenitor":80, "tripleeye": 0, "coil":20}
+#costs = {"coil":20}
 
 

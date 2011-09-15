@@ -1,4 +1,4 @@
-import pygame, math, datetime, collections
+import pygame, math, datetime, collections, random
 from pygame.locals import *
 import settings
 
@@ -46,6 +46,7 @@ def Surface(x, y = None, color = None, alpha = True):
 def init():
     global screen, _screen, vrect, prect, zoom, psurf, rsurf, rrect
     global zoominimg, zoominrect, zoomoutimg, zoomoutrect
+    global stars
     flags = FULLSCREEN | HWSURFACE if settings.fullscreen else 0
     _screen = pygame.display.set_mode(settings.size, flags)
     screen = Surface(settings.size, alpha = False)
@@ -59,6 +60,8 @@ def init():
     zoomoutimg = Surface(40, 40, (128, 128, 128))
     zoominrect = zoominimg.get_rect(bottomright = (settings.vx0 + settings.vx - 4, settings.vy0 + settings.vy - 4))
     zoomoutrect = zoominimg.get_rect(bottomleft = (settings.vx0 + 4, settings.vy0 + settings.vy - 4))
+    stars = [(random.randint(64, 255), random.randint(-10000, 10000), random.randint(-10000, 10000)) for _ in range(settings.vx * settings.vy / 2000)]
+    stars.sort()
 
 
 wx0, wy0, wx1, wy1 = -6, -6, 6, 6  # Maximum extent of gameplay window
@@ -140,6 +143,13 @@ def clear(color = (0, 0, 0)):
     screen.fill(color)
     psurf.fill((144, 144, 192))
     rsurf.fill((144, 144, 192))
+    if settings.showstars:
+        for c, x, y in stars:
+            px = int(x+gx0*c/400)%settings.vx
+            py = int(y+gy0*c/400)%settings.vy
+            screen.set_at((px, py), (c, c, c))
+        
+
 
 def screencap():
     dstr = datetime.datetime.now().strftime("%Y%m%d%H%M%S")

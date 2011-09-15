@@ -418,12 +418,13 @@ class TripleEyeCircles(ColorCircles):
 
     def draw(self, surf, scale, offset, growth, edge0, blink):
         ColorCircles.draw(self, surf, scale, offset, growth, edge0, blink)
-        angle = edge0 * 60
-        ds = [(0.3*math.sin(math.radians(angle+da)), 0.3*math.cos(math.radians(angle+da))) for da in (0, 120, 240)]
-        for j, (dx, dy) in enumerate(ds):
-            eimg = eyeball(0.65*scale, edge0-2*j, 0.9*blink)
-            x, y = surf.get_rect().center
-            surf.blit(eimg, eimg.get_rect(center=(int(x+dx*scale),int(y+dy*scale))))
+        if growth == 1:
+            angle = -edge0 * 60
+            ds = [(0.3*math.sin(math.radians(angle+da)), 0.3*math.cos(math.radians(angle+da))) for da in (0, 120, 240)]
+            for j, (dx, dy) in enumerate(ds):
+                eimg = eyeball(0.65*scale, edge0-2*j, 0.9*blink)
+                x, y = surf.get_rect().center
+                surf.blit(eimg, eimg.get_rect(center=(int(x+dx*scale),int(y+dy*scale))))
 
     def img(self, growth = 1, color = None, edge0 = 3, blink = 1, zoom = settings.tzoom0):
         gimg = self.graytile(zoom, growth, edge0, blink).copy()
@@ -732,8 +733,8 @@ if __name__ == "__main__":
 #        img = grayapp((2,3))
 #        img = brain.grayimg(160)
 #        filtercolorsurface(img, (1, 0.8, 0.8, 1), (0, 0.5, 1, 1))
-#        img = tripleeye.img(zoom = 80)
-        img = coil.img(zoom = 80)
+        img = tripleeye.img(zoom = 80, edge0 = 2)
+#        img = coil.img(zoom = 80)
 #        img = eyebrain.img(zoom = 80)
 #        helixcircles.draw(img, 1, (100, 200), (0, -160))
 #        img = helixmeter(200)

@@ -21,16 +21,14 @@ class Body(object):
             if not bud: continue
             pos, edge = bud
             r = random.random()
-            if r < 0.7:
+            if r < 0.8:
                 appspec = mechanics.randomspec()
                 part = Appendage(self, parent, pos, edge, appspec)
-            elif r < 0.8:
-                part = Eye(self, parent, pos, edge)
-            elif r < 0.9:
-                part = Leaf(self, parent, pos, edge)
+                if part.color != parent.budcolors[bud]: continue
             else:
-                part = Mutagenitor(self, parent, pos, edge)
-            if part.color != parent.budcolors[bud]: continue
+                ostr, otype = random.choice(otypes.items())
+                if mechanics.colors[ostr] != parent.budcolors[bud]: continue
+                part = otype(self, parent, pos, edge)
             if not self.canaddpart(part): continue
             self.addpart(part)
             added += 1
@@ -59,8 +57,6 @@ class Body(object):
     def canplaceorgan(self, edge, ostr):
         """If you can place the specified organ type on the specified edge,
         return the corresponding part. Otherwise return None"""
-        otypes = {"eye":Eye, "brain":Brain, "eyebrain":EyeBrain, "tripleeye":TripleEye,
-                "mutagenitor":Mutagenitor, "coil":Coil}
         otype = otypes[ostr]
         for bud in (edge, vista.HexGrid.opposite(*edge)):
             if bud not in self.takenbuds: continue
@@ -342,6 +338,7 @@ class Brain(Organ):
 
 class EyeBrain(Brain):
     """Hey, you got eyeballs in my brain! Hey, you got brains in my eyeball!"""
+    lightradius = 5
 
     def draw0(self, zoom, status, growth):
         return graphics.eyebrain.img(zoom = zoom, growth = growth, color = status, edge0 = self.edge)
@@ -363,6 +360,12 @@ class Coil(Organ):
 
     def draw0(self, zoom, status, growth):
         return graphics.coil.img(zoom = zoom, growth = growth, color = status, edge0 = self.edge)
+
+
+
+otypes = {"eye":Eye, "brain":Brain, "eyebrain":EyeBrain, "tripleeye":TripleEye,
+        "mutagenitor":Mutagenitor, "coil":Coil}
+
 
 
 

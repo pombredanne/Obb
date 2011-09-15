@@ -18,6 +18,8 @@ zoom0 = 48
 ptilesize = 60 # Size of selectable tiles in the panel
 largeiconsize = 60
 
+showstars = True
+
 twisty = True  # Twisty paths
 
 fullscreen = "--fullscreen" in sys.argv
