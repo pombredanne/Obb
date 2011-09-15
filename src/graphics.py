@@ -207,6 +207,44 @@ class AppCircles(Circles):
 
 appcircles = AppCircles()
 
+def heximg(scale, cache = {}):
+    if scale in cache: return cache[scale]
+    s3 = math.sqrt(3)
+    img = vista.Surface(2*scale)
+    spos = lambda x,y: (int(scale*(1+x)+.5), int(scale*(1-y)+.5))
+    vpos = [(1,0),(.5,-.5),(-.5,-.5),(-1,0),(-.5,.5),(.5,.5)]
+    vps = [spos(x,s3*y) for x,y in vpos]  # Vertex positions
+    vips = [spos(.92*x,.92*s3*y) for x,y in vpos]  # inner vertex positions
+    pygame.draw.polygon(img, (128, 128, 128), vps, 0)
+    pygame.draw.polygon(img, (64, 64, 64), vips, 0)
+    cache[scale] = img
+    return img
+    
+
+class PanelTile(Circles):
+    """A hexagonal tile that appears on the left"""
+    def getargs(self, dedges):
+        return tuple(dedges),
+    
+    def getcircles(self, dedges):
+        for circ in appcircles.getcircles(dedges, 3, 0.3, 8):
+            yield circ
+
+    def draw(self, surf, scale, offset, dedges):
+        himg = heximg(scale)
+        surf.blit(himg, himg.get_rect(center = surf.get_rect().center))
+        Circles.draw(self, surf, scale, offset, dedges)
+
+    def img(self, dedges, color, zoom = settings.tzoom0):
+        gimg = self.graytile(zoom, dedges).copy()
+        if color in colors:
+            color = colors[color]
+        filtersurface(gimg, *color)
+        return gimg
+
+paneltile = PanelTile()
+
+
 class SphereCircles(Circles):
     def getargs(self, R, r0 = 0.05, lvector = (-1,-1,2)):
         return R, r0, tuple(lvector)
@@ -242,11 +280,11 @@ class OrganCircles(Circles):
             yield circ
 
     def img(self, growth = 1, color = None, edge0 = 3, zoom = settings.tzoom0):
-        grayimg = self.graytile(zoom, growth, edge0)
+        gimg = self.graytile(zoom, growth, edge0).copy()
         if color in colors:
             color = colors[color]
-        filtersurface(grayimg, *color)
-        return grayimg
+        filtersurface(gimg, *color)
+        return gimg
 
 organ = OrganCircles()
 
@@ -286,14 +324,14 @@ class EyeCircles(ColorCircles):
         surf.blit(eimg, eimg.get_rect(center=surf.get_rect().center))
 
     def img(self, growth = 1, color = None, edge0 = 2, blink = 0.6, zoom = settings.tzoom0):
-        grayimg = self.graytile(zoom, growth, edge0, blink)
+        gimg = self.graytile(zoom, growth, edge0, blink).copy()
         if color in colors:
             color = colors[color]
         if color is None:
-            filtercolorsurface(grayimg, colors["app0"], (1, 1, 1, 1))
+            filtercolorsurface(gimg, colors["app0"], (1, 1, 1, 1))
         else:
-            filtercolorsurface(grayimg, color, color)
-        return grayimg
+            filtercolorsurface(gimg, color, color)
+        return gimg
 
 eye = EyeCircles()
 
@@ -327,14 +365,14 @@ class BrainCircles(ColorCircles):
             yield z, x, y, r, (0, g, 0)
 
     def img(self, growth = 1, color = None, edge0 = 3, zoom = settings.tzoom0):
-        grayimg = self.graytile(zoom, growth, edge0)
+        gimg = self.graytile(zoom, growth, edge0).copy()
         if color in colors:
             color = colors[color]
         if color is None:
-            filtercolorsurface(grayimg, colors["brain"], colors["app0"])
+            filtercolorsurface(gimg, colors["brain"], colors["app0"])
         else:
-            filtercolorsurface(grayimg, color, color)
-        return grayimg
+            filtercolorsurface(gimg, color, color)
+        return gimg
 
 
 brain = BrainCircles()
@@ -456,55 +494,6 @@ def app(dedges, color=(1, 1, 1, 1), edge0 = 3, zoom = settings.tzoom0, segs = 8)
         filtersurface(img, color[0], color[1], color[2], color[3])
     return img
 
-heximg = None
-def graytile(dedges, cache={}):
-    global heximg
-    dedges = tuple(sorted(dedges, key=lambda x:abs(x-3.1)))
-    if dedges in cache: return cache[dedges]
-    if heximg is None:
-        heximg = vista.Surface(2*settings.tzoom0)
-        pygame.draw.polygon(heximg, (128, 128, 128), vps, 0)
-        pygame.draw.polygon(heximg, (64, 64, 64), vips, 0)
-    img = heximg.copy()
-
-
-    appimg = appcircles.grayimg(settings.tzoom0, dedges)
-    img.blit(appimg, (0, 0))
-    cache[dedges] = img
-    return img
-
-def graytilerotozoom(dedges, zoom = settings.ptilesize, tilt = 0, cache = {}):
-    tilt = int(tilt / 10 + 0.5) * 10 % 360
-    dedges = tuple(sorted(dedges, key=lambda x:abs(x-3.1)))
-    key = dedges, zoom, tilt
-    if key in cache: return cache[key]
-    img = graytile(dedges)
-    if tilt != 0 or zoom != settings.tzoom0:
-        img = pygame.transform.rotozoom(img, -tilt, float(zoom) / settings.tzoom0)
-    cache[key] = img
-    return cache[key]
-
-def tile(dedges, color=(1, 1, 1, 1), zoom = settings.ptilesize, tilt = 0):
-    """Draw one of the placeable tiles that appears in the side panel"""
-    img = graytilerotozoom(dedges, zoom, tilt)
-    if color in colors: color = colors[color]
-    if color not in ((1,1,1), (1,1,1,1)):
-        img = img.copy()
-        filtersurface(img, color[0], color[1], color[2], color[3])
-    return img
-
-def loadallappimages(zooms = None):
-    if zooms is None:
-        for dedges in mechanics.dedgesets:
-            for segs in (1,2,3,4,5,6,7,8):
-                grayapp(dedges, segs)
-    else:
-        for dedges in mechanics.dedgesets:
-            for edge0 in range(6):
-                for segs in (1,2,3,4,5,6,7,8):
-                    for zoom in zooms:
-                        grayapprotozoom(dedges, edge0, zoom, segs)
-    return None
 
 def meter(img, level, color1 = (0.5, 0, 1), color0 = (0.2, 0.2, 0.2)):
     img2 = img.copy()
@@ -595,7 +584,8 @@ if __name__ == "__main__":
 #        img = grayapp((2,3))
 #        img = brain.grayimg(160)
 #        filtercolorsurface(img, (1, 0.8, 0.8, 1), (0, 0.5, 1, 1))
-        img = eye.img(zoom = 80)
+#        img = eye.img(zoom = 80)
+        img = paneltile.img((2,3), "app0")
     if False:
         img = vista.Surface(40, 400, (0, 0, 0))
         drawgrayhelix(img, (20,0), (20,400))
