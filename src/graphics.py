@@ -93,6 +93,41 @@ def spherecircles(R, r0 = None, lvector = (-1,-1,2), cache = {}):
     circs = [circ for z,circ in sorted(circs)]
     cache[seed] = circs
     return circs
+    
+def helixcircles((dx, dy), offs = None, R = None, r = None, coil = None, cache = {}):
+    if offs is None: offs = (0, 0.4)
+    offs = tuple(sorted(offs))
+    key = dx, dy, offs, R, r, coil
+    if key in cache: return cache[key]
+    if R is None: R = 8
+    if r is None: r = int(R / 2)
+    if coil is None: coil = 50
+    d = math.sqrt(dx ** 2 + dy ** 2)
+    circs = []
+    nextrung = 0
+    for j in range(int(2. * d / r)):
+        h = j / (2. / r)
+        angles = [(h / coil + off) * 2 * math.pi for off in offs]
+        Ss = [math.sin(angle) for angle in angles]
+        Cs = [math.cos(angle) for angle in angles]
+        xs = [int(R * S * dy / d + h * dx / d + 0.5) for S in Ss]
+        ys = [int(-R * S * dx / d + h * dy / d + 0.5) for S in Ss]
+        gs = [int(255 * (0.8 + 0.2 * C)) for C in Cs]
+        zs = Cs
+        for z,x,y,g in zip(zs, xs, ys, gs):
+            circs.append((z, (x, y, r, g)))
+        if len(offs) == 2 and h > nextrung:
+            nextrung += 2 * r
+            (x0, x1), (y0, y1), (g0, g1), (z0, z1) = xs, ys, gs, zs
+            for k in (.1,.2,.3,.4,.5,.6,.7,.8,.9):
+                x = int(x0 + k * (x1 - x0))
+                y = int(y0 + k * (y1 - y0))
+                z = z0 + k * (z1 - z0)
+                g = int(g0 + k * (g1 - g0))
+                circs.append((z, (x, y, int(r*.6), g)))
+    circs = [circ for z,circ in sorted(circs)]
+    cache[key] = circs
+    return circs
 
 def drawgraysegment(surf, (x0, y0), (x1, y1), width = None, r0 = None, s0 = None):
     circs = segmentcircles((x1-x0,y1-y0), width, r0, s0)
@@ -101,6 +136,10 @@ def drawgraysegment(surf, (x0, y0), (x1, y1), width = None, r0 = None, s0 = None
 def drawgraysphere(surf, (x0, y0), R, r0 = None):
     circs = spherecircles(R, r0)
     drawgraycircles(surf, circs, (x0,y0))
+
+def drawgrayhelix(surf, (x0, y0), (x1, y1), offs = None, R = None, r = None, coil = None):
+    circs = helixcircles((x1-x0, y1-y0), offs, R, r, coil)
+    drawgraycircles(surf, circs, (x0, y0))
 
 def graysphere(R, r0 = None, cache = {}):
     R = int(R)
@@ -388,7 +427,7 @@ if __name__ == "__main__":
         img = sphere(0.5, color = "ghost", zoom = 60)
     if True:
         img = vista.Surface(40, 400, (0, 0, 0))
-        drawgraysegment(img, (20,0), (20,400), 30)
+        drawgrayhelix(img, (20,0), (20,400))
         img = meter(img, 100)
         
     t0 = pygame.time.get_ticks()

@@ -13,7 +13,9 @@ class Meter(object):
         self.rate = 1.
 
     def getimg(self, height):
-        return vista.Surface(10, height, (255,255,255))
+        img = vista.Surface(30, height)
+        graphics.drawgrayhelix(img, (15, height), (15, 0))
+        return img
 
     def think(self, dt):
         self.amount += dt * self.rate
