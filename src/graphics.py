@@ -314,7 +314,7 @@ organ = OrganCircles()
 
 def eyeball(R, edge0 = 3, blink = 1, color = (0, 255, 0), cache = {}):
     R = int(R + 0.5)
-    blink = int(blink * 6) / 6.
+    blink = int(blink * 20) / 20.
     edge0 = 0 if blink == 1 else edge0 % 3
     key = R, edge0, blink, color
     if key in cache: return cache[key]
@@ -347,7 +347,7 @@ class EyeCircles(ColorCircles):
         eimg = eyeball(scale, edge0, blink)
         surf.blit(eimg, eimg.get_rect(center=surf.get_rect().center))
 
-    def img(self, growth = 1, color = None, edge0 = 2, blink = 0.6, zoom = settings.tzoom0):
+    def img(self, growth = 1, color = None, edge0 = 2, blink = 1, zoom = settings.tzoom0):
         gimg = self.graytile(zoom, growth, edge0, blink).copy()
         if color in colors:
             color = colors[color]
@@ -358,6 +358,45 @@ class EyeCircles(ColorCircles):
         return gimg
 
 eye = EyeCircles()
+
+class TripleEyeCircles(ColorCircles):
+    def getargs(self, growth = 1, edge0 = 3, blink = 1, r0 = 0.05, width = 0.3, lvector = (-1,-1,2)):
+        segs = min(int(growth * 6), 3)
+        R = (growth - 0.5) * 0.7
+        return R, edge0, segs, r0, width, tuple(lvector)
+
+    def getcircles(self, R, edge0, segs, r0, width, lvector):
+        dx, dy = eps[edge0]
+        for z, x, y, r, g in spherecircles.getcircles(R*.7, r0, lvector):
+            yield z, x+dx*.45, y+dy*.45, r, (g, 0, 0)
+        for z, x, y, r, g in app.getcircles((3,), edge0, width, segs):
+            yield z, x, y, r, (g, 0, 0)
+        angle = edge0 * 60
+        ds = [(0.25*math.sin(math.radians(angle+da)), 0.25*math.cos(math.radians(angle+da))) for da in (0, 120, 240)]
+        for z, x, y, r, g in spherecircles.getcircles(R, r0, lvector):
+            for dx, dy in ds:
+                yield z, x+dx, y+dy, r, (g, 0, 0)
+
+    def draw(self, surf, scale, offset, growth, edge0, blink):
+        ColorCircles.draw(self, surf, scale, offset, growth, edge0, blink)
+        angle = edge0 * 60
+        ds = [(0.3*math.sin(math.radians(angle+da)), 0.3*math.cos(math.radians(angle+da))) for da in (0, 120, 240)]
+        for j, (dx, dy) in enumerate(ds):
+            eimg = eyeball(0.65*scale, edge0-2*j, 0.9*blink)
+            x, y = surf.get_rect().center
+            surf.blit(eimg, eimg.get_rect(center=(int(x+dx*scale),int(y+dy*scale))))
+
+    def img(self, growth = 1, color = None, edge0 = 3, blink = 1, zoom = settings.tzoom0):
+        gimg = self.graytile(zoom, growth, edge0, blink).copy()
+        if color in colors:
+            color = colors[color]
+        if not color:
+            filtercolorsurface(gimg, colors["app0"], colors["eye"])
+        else:
+            filtercolorsurface(gimg, color, color)
+        return gimg
+
+tripleeye = TripleEyeCircles()
 
 class LobeCircles(SphereCircles):
     def getargs(self, R, angle = 0, r0 = 0.05, lvector = (-1, -1, 2)):
@@ -434,6 +473,46 @@ class EyeBrainCircles(BrainCircles):
         return gimg
 
 eyebrain = EyeBrainCircles()
+
+class MutagenitorCircles(ColorCircles):
+    def getargs(self, growth = 1, edge0 = 3, lvector = (-1,-1,2)):
+        segs = min(int(growth * 6), 3)
+        R0 = growth - 0.6
+        R1 = growth - 0.8
+        r0 = 0.05
+        width = 0.3
+        return R0, R1, edge0, segs, r0, width, tuple(lvector)
+
+    def getcircles(self, R0, R1, edge0, segs, r0, width, lvector):
+#        angle = edge0 * 60 + 180
+        dx, dy = eps[edge0]
+
+        for z, x, y, r, g in spherecircles.getcircles(R0, r0, lvector):
+            yield z, x, y, r, (0, g, 0)
+        for z, x, y, r, g in spherecircles.getcircles(R0*.5, r0, lvector):
+            yield z, x+dx*.45, y+dy*.45, r, (g, 0, 0)
+
+            yield z, x-dx*.35, y-dy*.35, r, (g, 0, 0)
+            yield z, x-dy*.35, y+dx*.35, r, (g, 0, 0)
+            yield z, x+dy*.35, y-dx*.35, r, (g, 0, 0)
+            yield z+.35, x, y, r, (g, 0, 0)
+        for z, x, y, r, g in app.getcircles((3,), edge0, width, segs):
+            yield z, x, y, r, (0, g, 0)
+
+    def img(self, growth = 1, color = None, edge0 = 3, zoom = settings.tzoom0):
+        gimg = self.graytile(zoom, growth, edge0).copy()
+        if color in colors:
+            color = colors[color]
+        if not color:
+            filtercolorsurface(gimg, colors["eye"], colors["app2"])
+        else:
+            filtercolorsurface(gimg, color, color)
+        return gimg
+
+mutagenitor = MutagenitorCircles()
+
+
+
 
 class HelixCircles(Circles):
     def getargs(self, (dx, dy), offs = (0, 0.4), R = 12, r = 4, coil = 60):
@@ -544,8 +623,10 @@ def meter(img, level, color1 = (0.5, 0, 1), color0 = (0.2, 0.2, 0.2)):
 def icon(name):
     s = settings.largeiconsize
     img = vista.Surface(s)
-    if name in ("eye", "brain", "eyebrain"):
+    if name in ("eye", "brain", "eyebrain", "tripleeye"):
         r, g, b, a = colors["app0"]
+    elif name in ("mutagenitor",):
+        r, g, b, a = colors["app2"]
     color0 = int(r*255), int(g*255), int(b*255)
     color1 = int(r*128), int(g*128), int(b*128)
     img.fill(color0)
@@ -615,11 +696,12 @@ if __name__ == "__main__":
 #        img = grayapp((2,3))
 #        img = brain.grayimg(160)
 #        filtercolorsurface(img, (1, 0.8, 0.8, 1), (0, 0.5, 1, 1))
-#        img = eye.img(zoom = 80)
+        img = tripleeye.img(zoom = 80)
 #        img = eyebrain.img(zoom = 80)
 #        helixcircles.draw(img, 1, (100, 200), (0, -160))
-        img = helixmeter(200)
-        img = meter(img, 120)
+#        img = helixmeter(200)
+#        img = meter(img, 120)
+#        img = mutagenitor.img(zoom = 80)
 
         pass
     if False:

@@ -59,7 +59,8 @@ class Body(object):
     def canplaceorgan(self, edge, otype):
         """If you can place the specified organ type on the specified edge,
         return the corresponding part. Otherwise return None"""
-        otypes = {"eye":Eye, "brain":Brain, "eyebrain":EyeBrain}
+        otypes = {"eye":Eye, "brain":Brain, "eyebrain":EyeBrain, "tripleeye":TripleEye,
+                "mutagenitor":Mutagenitor}
         if isinstance(otype, str): otype = otypes[otype]
         for bud in (edge, vista.HexGrid.opposite(*edge)):
             if bud not in self.takenbuds: continue
@@ -318,6 +319,15 @@ class Eye(Organ):
     def draw0(self, zoom, status, growth, blink):
         return graphics.eye.img(zoom = zoom, growth = growth, color = status, edge0 = self.edge, blink = blink)
 
+class TripleEye(Eye):
+    lightradius = 8
+    color = "app0"
+
+    def draw0(self, zoom, status, growth, blink):
+        return graphics.tripleeye.img(zoom = zoom, growth = growth, color = status, edge0 = self.edge, blink = blink)
+
+
+
 class Brain(Organ):
     """Lets you control more organs"""
     color = "app0"
@@ -342,6 +352,9 @@ class Leaf(Organ):
 class Mutagenitor(Organ):
     """Collects light and generates mutagen"""
     color = "app2"
+
+    def draw0(self, zoom, status, growth):
+        return graphics.mutagenitor.img(zoom = zoom, growth = growth, color = status, edge0 = self.edge)
 
 
 
