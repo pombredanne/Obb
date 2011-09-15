@@ -12,6 +12,7 @@ colors["target"] = 1, 0, 0, 1
 colors["core"] = 0.2, 1, 0.2, 1
 colors["ghost"] = 1, 1, 1, 0.4
 colors["badghost"] = 1, 0, 0, 0.4
+colors["brain"] = 1, 0.85, 0.85, 1
 
 
 def qBezier((x0,y0), (x1,y1), (x2,y2), n = 8, ccache = {}):
@@ -28,22 +29,30 @@ def cBezier((x0,y0), (x1,y1), (x2,y2), (x3,y3), n = 8, ccache = {}):
         ccache[n] = [((1-t)**3, 3*t*(1-t)**2, 3*t**2*(1-t), t**3) for t in ts]
     return [(a*x0+b*x1+c*x2+d*x3, a*y0+b*y1+c*y2+d*y3) for a,b,c,d in ccache[n]]
 
-def drawgraycircles(surf, circs, (x0, y0) = (0, 0)):
+def drawgraycircles(surf, circs):
     for _, x, y, r, g in circs:
-        pygame.draw.circle(surf, (g,g,g), (x+x0, y+y0), r, 0)
+        pygame.draw.circle(surf, (g,g,g), (x, y), r, 0)
 
-def drawchannelcircles(surf, allcircs, (x0, y0) = (0, 0)):
+def drawcolorcircles(surf, circs):
+    for _, x, y, r, color in circs:
+        pygame.draw.circle(surf, color, (x, y), r, 0)
+
+def drawchannelcircles(surf, allcircs):
     assert len(allcircs) <= 3
     circs = [(z,x,y,r,(g,0,0)) for z,x,y,r,g in allcircs[0]]
     if len(allcircs) > 1: circs += [(z,x,y,r,(0,g,0)) for z,x,y,r,g in allcircs[1]]
     if len(allcircs) > 2: circs += [(z,x,y,r,(0,0,g)) for z,x,y,r,g in allcircs[2]]
     for _, x, y, r, color in sorted(circs):
-        pygame.draw.circle(surf, color, (x+x0, y+y0), r, 0)
+        pygame.draw.circle(surf, color, (x, y), r, 0)
 
-# This function is idempotent. Just in case anyone asks.
-def normcircles(circs):
-    circs[:] = [(z, int(x+.5), int(y+.5), int(r+.5), min(max(int(g+.5),0),255))
+def normcircles(circs, scale=1, (x0, y0) = (0, 0)):
+    return [(z, int(scale*(x+x0)+.5), int(scale*(y+y0)+.5), max(int(scale*r+.5),1), min(max(int(255*g+.5),0),255))
                 for z,x,y,r,g in sorted(circs)]
+
+def normcolorcircles(circs, scale=1, (x0, y0) = (0, 0)):
+    return [(z, int(scale*(x+x0)+.5), int(scale*(y+y0)+.5), max(int(scale*r+.5),1),
+             (min(max(int(255*R+.5),0),255), min(max(int(255*G+.5),0),255), min(max(int(255*B+.5),0),255)))
+                for z,x,y,r,(R,G,B) in sorted(circs)]
 
 def filtersurface(surf, x, y, z, a=1):
     arr = pygame.surfarray.pixels3d(surf)
@@ -51,6 +60,18 @@ def filtersurface(surf, x, y, z, a=1):
     if y != 1: arr[...,1] *= y
     if z != 1: arr[...,2] *= z
     if a != 1: pygame.surfarray.pixels_alpha(surf)[:] *= a
+
+def filtercolorsurface(surf, (x0,y0,z0,a0), (x1,y1,z1,a1)=(0,0,0,0), (x2,y2,z2,a2)=(0,0,0,0)):
+    arr = pygame.surfarray.pixels3d(surf)
+    r = arr[...,0] * x0 + arr[...,1] * x1 + arr[...,2] * x2
+    g = arr[...,0] * y0 + arr[...,1] * y1 + arr[...,2] * y2
+    b = arr[...,0] * z0 + arr[...,1] * z1 + arr[...,2] * z2
+    arr[...,0] = r
+    arr[...,1] = g
+    arr[...,2] = b
+    # TODO: what to do about transparency here??
+    if a0 != 1: pygame.surfarray.pixels_alpha(surf)[:] *= a0
+
 
 def maketransparent(surf):
     filtersurface(surf, 1, 1, 1, 0.5)
@@ -61,54 +82,59 @@ class Circles(object):
         self.cache = {}
         self.imgcache = {}
 
-    def setdefaults(self, *args):
-        """Return a list that's in the same order as the args to getkey
-        and getcircles"""
+    def getargs(self, *args):
+        """Return a sequence that's in the same order as the args to getkey
+        and getcircles, with all the defaults filled in"""
         return args
 
     def getkey(self, *args):
-        return tuple(args)
+        """args will exclude scale and offset"""
+        return tuple((tuple(arg) if isinstance(arg, list) else arg) for arg in args)
 
-    def getimgkey(self, *args):
-        return tuple(args)
+    def getdrawargs(self, *args, **kw):
+        return args, kw
+
+    def getdrawkey(self, args, kw):
+        return tuple(args), tuple(kw.items())
 
     def getcircles(self):
         """Be a generator, make things easier"""
         raise NotImplementedError
 
     def __call__(self, *args, **kw):
-        args = self.setdefaults(*args, **kw)
+        """Return the list of circles (in world coordinates)
+        args should exclude scale and offset"""
+        args = self.getargs(*args, **kw)
         key = self.getkey(*args)
         if key in self.cache: return self.cache[key]
         rstate = random.getstate()
         random.seed(key)
         circs = list(self.getcircles(*args))
-        normcircles(circs)
         random.setstate(rstate)
         self.cache[key] = circs
         return circs
 
-    def draw(self, surf, offset, *args, **kw):
+    def draw(self, surf, scale, offset, *args, **kw):
         circs = self(*args, **kw)
-        drawgraycircles(surf, circs, offset)
+        circs = normcircles(circs, scale, offset)
+        drawgraycircles(surf, circs)
 
-    def issuedraw(self, img, size, *args):
-        self.draw(img, (size, size), *args)
-
-    def grayimg(self, size, *args, **kw):
-        size = int(size)
-        key = self.getimgkey(size, *args, **kw)
+    def grayimg(self, scale, *args, **kw):
+        scale = int(scale)
+        drawargs, drawkw = self.getdrawargs(*args, **kw)
+        key = scale, self.getdrawkey(drawargs, drawkw)
         if key in self.imgcache: return self.imgcache[key]
-        img = vista.Surface(2*size)
-        self.issuedraw(img, *key)
+        img = vista.Surface(2*scale)
+        offset = (1,1)
+        self.draw(img, scale, offset, *drawargs, **drawkw)
         self.imgcache[key] = img
         return img
 
     def graytile(self, zoom = settings.tzoom0, *args, **kw):
-        key = zoom, self.getimgkey(*args, **kw)
+        key = zoom, self.getdrawkey(*self.getdrawargs(*args, **kw))
         if key in self.imgcache: return self.imgcache[key]
         if zoom == settings.tzoom0:
-            img0 = self.grayimg(*args, **kw)
+            img0 = self.grayimg(zoom, *args, **kw)
             img = vista.Surface(2*zoom)
             img.blit(img0, img0.get_rect(center = (zoom,zoom)))
         else:
@@ -117,15 +143,20 @@ class Circles(object):
         self.imgcache[key] = img
         return img
 
+class ColorCircles(Circles):
+    """Allow for up to 3 colors"""
+    def draw(self, surf, scale, offset, *args, **kw):
+        circs = self(*args, **kw)
+        circs = normcolorcircles(circs, scale, offset)
+        drawcolorcircles(surf, circs)
 
 class SegmentCircles(Circles):
-    def setdefaults(self, (dx, dy), width = None, r0 = None, s0 = 0):
-        d = math.sqrt(dx ** 2 + dy ** 2)
-        if width is None: width = d
-        if r0 is None: r0 = width / 8
-        return (dx, dy), d, width, r0, s0
+    def getargs(self, (dx, dy), width, r0 = None, s0 = 0):
+        if r0 is None: r0 = 0.03
+        return (dx, dy), width, r0, s0
 
-    def getcircles(self, (dx, dy), d, width, r0, s0):
+    def getcircles(self, (dx, dy), width, r0, s0):
+        d = math.sqrt(dx ** 2 + dy ** 2)
         ncirc = int(4 * width * d / r0 ** 2)
         for j in range(ncirc):
             r = random.uniform(r0, 2*r0)
@@ -133,15 +164,23 @@ class SegmentCircles(Circles):
             q = random.uniform(-width/2, width/2)
             if math.sqrt(z**2 + q**2) + r > width/2: continue
             p = random.uniform(0, d)
-            g = 255 * (1 - abs(q / width))
+            g = 1 - abs(q / width)
             x = (p * dx + q * dy) / d
             y = (p * dy - q * dx) / d
             yield z, x, y, r, g
+        if random.random() < 0.5:  # Gross blobby nodules??
+            z = random.uniform(-width/2, width/2)
+            q = random.uniform(0.3*width, 0.5*width) * random.choice([-1,1])
+            p = random.uniform(0, d)
+            x = (p * dx + q * dy) / d
+            y = (p * dy - q * dx) / d
+            yield z, x, y, 2*r0, 1
+            
 
 segmentcircles = SegmentCircles()
 
 class StalkCircles(Circles):
-    def setdefaults(self, ps, width = 0.3 * settings.tzoom0):
+    def getargs(self, ps, width = 0.3):
         return tuple(ps), width
     
     def getcircles(self, ps, width):
@@ -150,13 +189,10 @@ class StalkCircles(Circles):
             for z, x, y, r, g in segmentcircles((x1-x0, y1-y0), width, None, j):
                 yield z, x+x0, y+y0, r, g
 
-    def getimgkey(self, size, ps, width = 0.3 * settings.tzoom0):
-        return size, tuple(ps), width
-
 stalkcircles = StalkCircles()
 
 class AppCircles(Circles):
-    def setdefaults(self, dedges, edge0 = 3, width = 0.3 * settings.tzoom0, segs = 8):
+    def getargs(self, dedges, edge0 = 3, width = 0.3, segs = 8):
         return tuple(dedges), edge0, width, segs
     
     def getcircles(self, dedges, edge0, width, segs):
@@ -169,21 +205,15 @@ class AppCircles(Circles):
             for circ in stalkcircles.getcircles(ps[:segs+1], width):
                 yield circ
 
-    def getimgkey(self, size, dedges, edge0 = 3, width = 0.3 * settings.tzoom0, segs = 8):
-        return size, tuple(dedges), edge0, width, segs
-
-
 appcircles = AppCircles()
 
-
-
 class SphereCircles(Circles):
-    def setdefaults(self, R, r0 = None, lvector = (-1,-1,2)):
-        if r0 is None: r0 = R / 10.
+    def getargs(self, R, r0 = 0.05, lvector = (-1,-1,2)):
         return R, r0, tuple(lvector)
 
     def getcircles(self, R, r0, (lx, ly, lz)):
         sl = math.sqrt(lx ** 2 + ly ** 2 + lz ** 2)
+        fx, fy, fz = [l / sl / (R-r0) for l in (lx, ly, lz)]
         ncirc = int(40 * R ** 2 / r0 ** 2)
         for j in range(ncirc):
             r = random.uniform(r0, 2*r0)
@@ -191,22 +221,84 @@ class SphereCircles(Circles):
             y = random.uniform(-R, R)
             z = random.uniform(-R, R)
             if math.sqrt(x ** 2 + y ** 2 + z ** 2) + r > R: continue
-            g = 255 * (0.55 + 0.45 * (lx*x+ly*y+lz*z)/sl/R)
+            g = 0.55 + 0.45 * (fx*x+fy*y+fz*z)
             yield z, x, y, r, g
-
-    def getimgkey(self, size, r0 = None):
-        return size, r0
-
-    def issuedraw(self, img, size, *args):
-        self.draw(img, (size, size), size, *args)
-
-
 
 spherecircles = SphereCircles()
 
+class OrganCircles(Circles):
+    def getargs(self, growth = 1, edge0 = 3, r0 = 0.05, width = 0.3, lvector = (-1,-1,2)):
+        segs = min(int(growth * 6), 3)
+        R = growth - 0.5
+        return R, edge0, segs, r0, width, tuple(lvector)
+
+    def getcircles(self, R, edge0, segs, r0, width, lvector):
+        for circ in spherecircles.getcircles(R, r0, lvector):
+            yield circ
+        dx, dy = eps[edge0]
+        for z, x, y, r, g in spherecircles.getcircles(R*.5, r0, lvector):
+            yield z, x+dx*.45, y+dy*.45, r, g
+        for circ in appcircles.getcircles((3,), edge0, width, segs):
+            yield circ
+
+    def img(self, growth = 1, color = None, edge0 = 3, zoom = settings.tzoom0):
+        grayimg = self.graytile(zoom, growth, edge0)
+        if color in colors:
+            color = colors[color]
+        filtersurface(grayimg, *color)
+        return grayimg
+
+organ = OrganCircles()
+
+def eyeball(R, edge0 = 3, blink = 1, color = (0, 255, 0), cache = {}):
+    R = int(R + 0.5)
+    blink = int(blink * 6) / 6.
+    edge0 = 0 if blink == 1 else edge0 % 3
+    key = R, edge0, blink, color
+    if key in cache: return cache[key]
+    img = vista.Surface(2*R)
+    if blink == 1:
+        pygame.draw.circle(img, color, (R, R), int(R * 0.35))
+    else:
+        rect = pygame.Rect(0, 0, int(R * 0.7), int(R * 0.7 * blink))
+        rect.center = R, R
+        pygame.draw.ellipse(img, color, rect)
+    if blink >= 0.4:
+        pygame.draw.circle(img, (0, 0, 0), (R, R), int(R * 0.15))
+    if edge0:
+        img = pygame.transform.rotozoom(img, -60 * edge0, 1)
+    cache[key] = img
+    return cache[key]
+
+class EyeCircles(ColorCircles):
+    def getargs(self, growth = 1, edge0 = 3, blink = 1, r0 = 0.05, width = 0.3, lvector = (-1,-1,2)):
+        segs = min(int(growth * 6), 3)
+        R = growth - 0.5
+        return R, edge0, segs, r0, width, tuple(lvector)
+
+    def getcircles(self, R, edge0, segs, r0, width, lvector):
+        for z, x, y, r, g in organ.getcircles(R, edge0, segs, r0, width, lvector):
+            yield z, x, y, r, (g, 0, 0)
+
+    def draw(self, surf, scale, offset, growth, edge0, blink):
+        ColorCircles.draw(self, surf, scale, offset, growth, edge0, blink)
+        eimg = eyeball(scale, edge0, blink)
+        surf.blit(eimg, eimg.get_rect(center=surf.get_rect().center))
+
+    def img(self, growth = 1, color = None, edge0 = 2, blink = 0.6, zoom = settings.tzoom0):
+        grayimg = self.graytile(zoom, growth, edge0, blink)
+        if color in colors:
+            color = colors[color]
+        if color is None:
+            filtercolorsurface(grayimg, colors["app0"], (1, 1, 1, 1))
+        else:
+            filtercolorsurface(grayimg, color, color)
+        return grayimg
+
+eye = EyeCircles()
+
 class LobeCircles(SphereCircles):
-    def setdefaults(self, R, angle = 0, r0 = None, lvector = (-1,-1,2)):
-        if r0 is None: r0 = R / 10.
+    def getargs(self, R, angle = 0, r0 = 0.05, lvector = (-1, -1, 2)):
         return R, angle, r0, tuple(lvector)
 
     def getcircles(self, R, angle, r0, lvector):
@@ -217,15 +309,35 @@ class LobeCircles(SphereCircles):
             x, y = C * x - S * y, C * y + S * x
             yield z, x, y, r, g
 
-    def getimgkey(self, size, angle = 0, r0 = None):
-        return size, angle, r0
-
-    def issuedraw(self, img, size, *args):
-        self.draw(img, (size, size), size, *args)
-
-
-
 lobecircles = LobeCircles()
+
+class BrainCircles(ColorCircles):
+    def getargs(self, growth = 1, edge0 = 3, lvector = (-1,-1,2)):
+        segs = min(int(growth * 6), 3)
+        R = growth - 0.5
+        r0 = 0.05
+        width = 0.3
+        return R, edge0, segs, r0, width, tuple(lvector)
+
+    def getcircles(self, R, edge0, segs, r0, width, lvector):
+        angle = edge0 * 60 + 180
+        for z, x, y, r, g in lobecircles.getcircles(R, angle, r0, lvector):
+            yield z, x, y, r, (g, 0, 0)
+        for z, x, y, r, g in appcircles.getcircles((3,), edge0, width, segs):
+            yield z, x, y, r, (0, g, 0)
+
+    def img(self, growth = 1, color = None, edge0 = 3, zoom = settings.tzoom0):
+        grayimg = self.graytile(zoom, growth, edge0)
+        if color in colors:
+            color = colors[color]
+        if color is None:
+            filtercolorsurface(grayimg, colors["brain"], colors["app0"])
+        else:
+            filtercolorsurface(grayimg, color, color)
+        return grayimg
+
+
+brain = BrainCircles()
 
 class HelixCircles(Circles):
     def setdefaults(self, (dx, dy), offs = None, R = None, r = None, coil = None):
@@ -263,68 +375,6 @@ class HelixCircles(Circles):
 
 helixcircles = HelixCircles()
 
-
-def sphere(Rfac, color=(1, 1, 1, 1), zoom = settings.tzoom0):
-    R = int(Rfac * settings.tzoom0)
-    img = spherecircles.graytile(zoom, R)
-    if color in colors: color = colors[color]
-    if color not in ((1,1,1), (1,1,1,1)):
-        img = img.copy()
-        filtersurface(img, color[0], color[1], color[2], color[3])
-    return img
-
-def lobes(Rfac, color=(1, 1, 1, 1), angle = 0, zoom = settings.tzoom0):
-    R = int(Rfac * settings.tzoom0)
-    img = lobecircles.graytile(zoom, R, angle)
-    if color in colors: color = colors[color]
-    if color not in ((1,1,1), (1,1,1,1)):
-        img = img.copy()
-        filtersurface(img, color[0], color[1], color[2], color[3])
-    return img
-
-def organ(Rfac, color=(1,1,1,1), edge0=3, zoom = settings.tzoom0, segs = 3):
-    """A sphere on a stalk"""
-    img = app((3,), color, edge0, zoom, segs=segs).copy()
-    if Rfac:
-        sphereimg = sphere(Rfac, color, (0,0), zoom)
-        img.blit(sphereimg, sphereimg.get_rect(center = img.get_rect().center))
-    return img
-
-def brain(Rfac = 0.6, color=None, edge0=3, zoom = settings.tzoom0, segs = 3):
-    img = app((3,), color or colors["app0"], edge0, zoom, segs=segs).copy()
-    if Rfac:
-        lobeimg = lobes(Rfac, color or (1,.8,.8,1), (edge0%3)*60, zoom)
-        img.blit(lobeimg, lobeimg.get_rect(center = img.get_rect().center))
-    return img
-
-# TODO: support transparency in eyeballs
-def eyeball(blink = 1, edge0 = 3, zoom = settings.tzoom0, cache = {}):
-    blink = int(blink * 6) / 6.
-    edge0 = 0 if blink == 1 else edge0 % 3
-    key = zoom, edge0, blink
-    if key in cache: return cache[key]
-    if zoom == settings.tzoom0 and edge0 == 0:
-        img = vista.Surface(2*zoom)
-        if blink == 1:
-            pygame.draw.circle(img, (255, 255, 255), (zoom, zoom), int(zoom * 0.35))
-        else:
-            rect = pygame.Rect(0, 0, int(zoom * 0.7), int(zoom * 0.7 * blink))
-            rect.center = zoom, zoom
-            pygame.draw.ellipse(img, (255, 255, 255), rect)
-        if blink >= 0.5:
-            pygame.draw.circle(img, (0, 0, 0), (zoom, zoom), int(zoom * 0.16))
-    else:
-        img0 = eyeball(blink)
-        img = pygame.transform.rotozoom(img0, -60 * edge0, float(zoom) / settings.tzoom0)
-    cache[key] = img
-    return cache[key]
-
-def eye(color=(1,1,1,1), edge0=3, blink = 1, zoom = settings.tzoom0):
-    """An organ with some circles on it"""
-    img = organ(0.5, color, edge0, zoom)
-    eyeimg = eyeball(blink, edge0, zoom)
-    img.blit(eyeimg, eyeimg.get_rect(center = img.get_rect().center))
-    return img
 
 # TODO: implement blinkage
 def eyebrain(Rfac = 0.6, color=None, edge0=3, blink = 1, zoom = settings.tzoom0, segs = 3):
@@ -377,7 +427,7 @@ s3 = math.sqrt(3)
 spos = lambda x,y: (int(settings.tzoom0*(1+x)+.5), int(settings.tzoom0*(1-y)+.5))
 vps = [spos(x,s3*y) for x,y in vpos]  # Vertex positions
 vips = [spos(.92*x,.92*s3*y) for x,y in vpos]  # inner vertex positions
-spos = lambda x,y: (settings.tzoom0*x, -settings.tzoom0*y)
+spos = lambda x,y: (x, -y)
 eps = [spos(x,s3*y) for x,y in epos]
 if settings.twisty:
     angles = [math.radians(60*a+10) for a in range(6)]
@@ -542,7 +592,10 @@ if __name__ == "__main__":
 #        img = sphere(0.5, color = "ghost", zoom = 60)
 #        img = brain()
 #        img = brain(edge0=1)
-        img = grayapp((2,3))
+#        img = grayapp((2,3))
+#        img = brain.grayimg(160)
+#        filtercolorsurface(img, (1, 0.8, 0.8, 1), (0, 0.5, 1, 1))
+        img = eye.img(zoom = 80)
     if False:
         img = vista.Surface(40, 400, (0, 0, 0))
         drawgrayhelix(img, (20,0), (20,400))
