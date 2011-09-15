@@ -96,12 +96,20 @@ class Status(object):
     """Handles logic for the right-hand status panel"""
     def __init__(self):
         self.mutagenmeter = MutagenMeter()
-    
+        self.selected = None
+
+    def select(self, name = None):
+        self.selected = name if name != self.selected else None
+
     def think(self, dt, mousepos):
         self.mutagenmeter.think(dt)
         icon = self.iconpoint(mousepos)
         if icon is not None:
             icon.pointedto = True
+        if self.selected is not None:
+            for icon in self.mutagenmeter.icons:
+                if icon.name == self.selected:
+                    icon.pointedto = True
 
     def iconpoint(self, mousepos):
         for icon in self.mutagenmeter.icons:

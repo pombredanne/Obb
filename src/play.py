@@ -10,6 +10,7 @@ class Play(context.Context):
         self.target = None
         self.parttobuild = None
         self.edgepoint = None
+        self.iconclicked = None
 
     def think(self, dt, events, keys, mousepos, buttons):
 
@@ -75,8 +76,10 @@ class Play(context.Context):
             jtile = self.panel.iconp(mousepos)
             if jtile in (None, 0, 1, 2):
                 self.panel.selecttile(jtile)
+            self.status.select()
         elif icon is not None:
-            print icon.name
+            self.status.select(icon.name)
+            self.panel.selecttile()
         elif vista.vrect.collidepoint(mousepos):
             if self.parttobuild is not None and self.canbuild and self.body.canaddpart(self.parttobuild):
                 self.body.addpart(self.parttobuild)
@@ -96,7 +99,7 @@ class Play(context.Context):
 
     def draw(self):
         vista.clear()
-        if self.panel.selected is not None:
+        if self.panel.selected is not None or self.status.selected is not None:
             self.body.tracehexes()
         self.body.draw()
         if self.parttobuild is not None:
