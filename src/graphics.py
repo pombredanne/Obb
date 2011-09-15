@@ -13,7 +13,7 @@ colors["core"] = 0.2, 1, 0.2, 1
 colors["ghost"] = 1, 1, 1, 0.4
 colors["badghost"] = 1, 0, 0, 0.4
 colors["brain"] = 1, 0.85, 0.85, 1
-
+colors["eye"] = 1, 1, 1, 1
 
 def qBezier((x0,y0), (x1,y1), (x2,y2), n = 8, ccache = {}):
     """Quadratic bezier curve"""
@@ -328,7 +328,7 @@ class EyeCircles(ColorCircles):
         if color in colors:
             color = colors[color]
         if color is None:
-            filtercolorsurface(gimg, colors["app0"], (1, 1, 1, 1))
+            filtercolorsurface(gimg, colors["app0"], colors["eye"])
         else:
             filtercolorsurface(gimg, color, color)
         return gimg
@@ -374,18 +374,46 @@ class BrainCircles(ColorCircles):
             filtercolorsurface(gimg, color, color)
         return gimg
 
-
 brain = BrainCircles()
 
-class HelixCircles(Circles):
-    def setdefaults(self, (dx, dy), offs = None, R = None, r = None, coil = None):
-        if offs is None: offs = (0, 0.4)
-        offs = tuple(sorted(offs))
-        if R is None: R = 16
-        if r is None: r = int(R / 3)
-        if coil is None: coil = R*6
-        return (dx, dy), offs, R, r, coil
+class EyeBrainCircles(BrainCircles):
+    def getargs(self, growth = 1, edge0 = 3, blink = 1, lvector = (-1,-1,2)):
+        segs = min(int(growth * 6), 3)
+        R = growth - 0.5
+        if growth != 1: blink = 1
+        r0 = 0.05
+        width = 0.3
+        return R, edge0, blink, segs, r0, width, tuple(lvector)
 
+    def getcircles(self, R, edge0, blink, segs, r0, width, lvector):
+        return brain.getcircles(R, edge0, segs, r0, width, lvector)
+
+    def draw(self, surf, scale, offset, growth, edge0, blink):
+        brain.draw(surf, scale, offset, growth, edge0)
+        x0, y0 = surf.get_rect().center
+        for dedge,r in ((0,0.3),(1,0.4),(2,0.1),(2,0.45),(3,0.35),(4,0.4),(5,.25)):
+            angle = math.radians((edge0 + dedge) * 60 + 20)
+            dx = int(scale * r * math.sin(angle) / 1.2)
+            dy = -int(scale * r * math.cos(angle) / 1.2)
+            eyeimg = eyeball(int(0.3*scale), (dedge+edge0)%6, blink=1-r/2, color=(0,0,255))
+            surf.blit(eyeimg, eyeimg.get_rect(center = (x0+dx,y0+dy)))
+
+    def img(self, growth = 1, color = None, edge0 = 3, blink = 1, zoom = settings.tzoom0):
+        gimg = self.graytile(zoom, growth, edge0, blink).copy()
+        if color in colors:
+            color = colors[color]
+        if color is None:
+            filtercolorsurface(gimg, colors["brain"], colors["app0"], colors["eye"])
+        else:
+            filtercolorsurface(gimg, color, color, color)
+        return gimg
+
+eyebrain = EyeBrainCircles()
+
+class HelixCircles(Circles):
+    def getargs(self, (dx, dy), offs = (0, 0.4), R = 12, r = 4, coil = 60):
+        return (dx, dy), tuple(offs), R, r, coil
+    
     def getcircles(self, (dx, dy), offs, R, r, coil):
         d = math.sqrt(dx ** 2 + dy ** 2)
         nextrung = r
@@ -394,9 +422,9 @@ class HelixCircles(Circles):
             angles = [(h / coil + off) * 2 * math.pi for off in offs]
             Ss = [math.sin(angle) for angle in angles]
             Cs = [math.cos(angle) for angle in angles]
-            xs = [int(R * S * dy / d + h * dx / d + 0.5) for S in Ss]
-            ys = [int(-R * S * dx / d + h * dy / d + 0.5) for S in Ss]
-            gs = [int(255 * (0.8 + 0.2 * C)) for C in Cs]
+            xs = [R * S * dy / d + h * dx / d for S in Ss]
+            ys = [-R * S * dx / d + h * dy / d for S in Ss]
+            gs = [0.8 + 0.2 * C for C in Cs]
             zs = Cs
             for z,x,y,g in zip(zs, xs, ys, gs):
                 yield z, x, y, r, g
@@ -405,29 +433,23 @@ class HelixCircles(Circles):
                 (x0, x1), (y0, y1), (g0, g1), (z0, z1) = xs, ys, gs, zs
                 for k in range(20):
                     k *= 0.05
-                    x = int(x0 + k * (x1 - x0))
-                    y = int(y0 + k * (y1 - y0))
+                    x = x0 + k * (x1 - x0)
+                    y = y0 + k * (y1 - y0)
                     z = z0 + k * (z1 - z0)
-                    g = int(g0 + k * (g1 - g0))
+                    g = g0 + k * (g1 - g0)
                     yield z, x, y, r*.6, g
 
 helixcircles = HelixCircles()
 
-
-# TODO: implement blinkage
-def eyebrain(Rfac = 0.6, color=None, edge0=3, blink = 1, zoom = settings.tzoom0, segs = 3):
-    img = app((3,), color or colors["app0"], edge0, zoom, segs=segs).copy()
-    if Rfac:
-        lobeimg = lobes(Rfac, color or (1,.8,.8,1), (edge0%3)*60, zoom)
-        img.blit(lobeimg, lobeimg.get_rect(center = img.get_rect().center))
-        x0, y0 = img.get_rect().center
-        for dedge,r in ((0,0.3),(1,0.4),(2,0.1),(2,0.45),(3,0.35),(4,0.4),(5,.25)):
-            angle = math.radians((edge0 + dedge) * 60 + 20)
-            dx = int(zoom * r * math.sin(angle) * Rfac / 0.6)
-            dy = -int(zoom * r * math.cos(angle) * Rfac / 0.6)
-            eyeimg = eyeball(1-r/2, (dedge+edge0)%6, int(zoom/2.5))
-            img.blit(eyeimg, eyeimg.get_rect(center = (x0+dx,y0+dy)))
+def helixmeter(height, f=3):
+    img = vista.Surface(40*f, f*height)
+    helixcircles.draw(img, f, (20, height), (0, -height))
+    if f != 1:
+        img = pygame.transform.smoothscale(img, (40, height))
     return img
+
+
+    
 
 
 stalkimages = []
@@ -459,12 +481,8 @@ def core(_color, growth = 0, zoom = settings.tzoom0):
 
 
 # Coordinates of vertices and edges
-vpos = [(1,0),(.5,-.5),(-.5,-.5),(-1,0),(-.5,.5),(.5,.5)]
 epos = [(0,.5),(.75,.25),(.75,-.25),(0,-.5),(-.75,-.25),(-.75,.25)]
 s3 = math.sqrt(3)
-spos = lambda x,y: (int(settings.tzoom0*(1+x)+.5), int(settings.tzoom0*(1-y)+.5))
-vps = [spos(x,s3*y) for x,y in vpos]  # Vertex positions
-vips = [spos(.92*x,.92*s3*y) for x,y in vpos]  # inner vertex positions
 spos = lambda x,y: (x, -y)
 eps = [spos(x,s3*y) for x,y in epos]
 if settings.twisty:
@@ -472,27 +490,6 @@ if settings.twisty:
     eips = [spos(.5*math.sin(a),.5*math.cos(a)) for a in angles]
 else:
     eips = [spos(0,0) for a in range(6)]
-
-def grayapprotozoom(dedges, edge0 = 3, zoom = None, segs = 8, cache = {}):
-    """A gray appendange that may be coming in from a different angle"""
-    dedges = tuple(sorted(dedges, key=lambda x:abs(x-3.1)))
-    if zoom is None: zoom = settings.tzoom0
-    key = dedges, edge0, zoom, segs
-    if key in cache: return cache[key]
-    img = appcircles.grayimg(settings.tzoom0, dedges, edge0=edge0, segs=segs)
-    if zoom != settings.tzoom0:
-        img = pygame.transform.smoothscale(img, (2*zoom, 2*zoom))
-    cache[key] = img
-    return cache[key]
-
-def app(dedges, color=(1, 1, 1, 1), edge0 = 3, zoom = settings.tzoom0, segs = 8):
-    """A general appendage"""
-    img = grayapprotozoom(dedges, edge0, zoom, segs)
-    if color in colors: color = colors[color]
-    if color not in ((1,1,1), (1,1,1,1)):
-        img = img.copy()
-        filtersurface(img, color[0], color[1], color[2], color[3])
-    return img
 
 
 def meter(img, level, color1 = (0.5, 0, 1), color0 = (0.2, 0.2, 0.2)):
@@ -585,7 +582,12 @@ if __name__ == "__main__":
 #        img = brain.grayimg(160)
 #        filtercolorsurface(img, (1, 0.8, 0.8, 1), (0, 0.5, 1, 1))
 #        img = eye.img(zoom = 80)
-        img = paneltile.img((2,3), "app0")
+#        img = eyebrain.img(zoom = 80)
+#        helixcircles.draw(img, 1, (100, 200), (0, -160))
+        img = helixmeter(200)
+        img = meter(img, 120)
+
+        pass
     if False:
         img = vista.Surface(40, 400, (0, 0, 0))
         drawgrayhelix(img, (20,0), (20,400))
