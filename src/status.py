@@ -13,9 +13,9 @@ class Meter(object):
         self.rate = 1.
 
     def getimg(self, height):
-        img = vista.Surface(30, height)
-        graphics.drawgrayhelix(img, (15, height), (15, 0))
-        return img
+        img = vista.Surface(60, 2*height)
+        graphics.drawgrayhelix(img, (30, 2*height), (30, 0))
+        return pygame.transform.smoothscale(img, (30, height))
 
     def think(self, dt):
         self.amount += dt * self.rate

@@ -125,10 +125,10 @@ def worldtoscreen((x, y)):
 def screentoworld((x, y)):
     return gameplaytoworld((x - settings.vx0, y - settings.vy0))
 
-def clear(color = (64, 64, 64)):
+def clear(color = (0, 0, 0)):
     screen.fill(color)
-    psurf.fill((64, 64, 0))
-    rsurf.fill((64, 64, 0))
+    psurf.fill((144, 144, 192))
+    rsurf.fill((144, 144, 192))
 
 def screencap():
     dstr = datetime.datetime.now().strftime("%Y%m%d%H%M%S")

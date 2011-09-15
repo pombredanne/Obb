@@ -5,7 +5,7 @@ import vista
 class Mask(object):
     """A fog-of-war style mask (black with a variable alpha)"""
     circs = {}
-    def __init__(self, ps = (), color = (0, 0, 0), a = None):
+    def __init__(self, ps = (), color = (64, 64, 64), a = None):
         self.color = tuple(color)
         self.ps = list(ps)
         self.setrange(a)

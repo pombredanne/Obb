@@ -99,9 +99,9 @@ def helixcircles((dx, dy), offs = None, R = None, r = None, coil = None, cache =
     offs = tuple(sorted(offs))
     key = dx, dy, offs, R, r, coil
     if key in cache: return cache[key]
-    if R is None: R = 8
+    if R is None: R = 16
     if r is None: r = int(R / 2)
-    if coil is None: coil = 50
+    if coil is None: coil = R*6
     d = math.sqrt(dx ** 2 + dy ** 2)
     circs = []
     nextrung = 0
@@ -119,7 +119,8 @@ def helixcircles((dx, dy), offs = None, R = None, r = None, coil = None, cache =
         if len(offs) == 2 and h > nextrung:
             nextrung += 2 * r
             (x0, x1), (y0, y1), (g0, g1), (z0, z1) = xs, ys, gs, zs
-            for k in (.1,.2,.3,.4,.5,.6,.7,.8,.9):
+            for k in range(20):
+                k *= 0.05
                 x = int(x0 + k * (x1 - x0))
                 y = int(y0 + k * (y1 - y0))
                 z = z0 + k * (z1 - z0)
