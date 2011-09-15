@@ -13,9 +13,7 @@ class Meter(object):
         self.rate = 50.
 
     def getimg(self, height):
-        img = vista.Surface(60, 2*height)
-        graphics.helixcircles.draw(img, (30, 0), (0, 2*height))
-        return pygame.transform.smoothscale(img, (30, height))
+        return graphics.helixmeter(height)
 
     def think(self, dt):
         self.amount = min(self.amount + dt * self.rate, self.height)
@@ -100,7 +98,7 @@ class Status(object):
         self.selected = None
         self.control = 5
         self.maxcontrol = 10
-        self.brainimg = graphics.brain(zoom = 40)
+        self.brainimg = graphics.brain.img(zoom = 40)
         self.brainrect = self.brainimg.get_rect(bottomleft = (0, 480+6))
 
     def select(self, name = None):

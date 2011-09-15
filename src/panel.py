@@ -25,12 +25,8 @@ class Panel(object):
         for j, (age, appspec, (cx, cy)) in enumerate(zip(self.ages, self.tiles, self.centers)):
             color = "app%s" % j
             if age < -1: continue
-            if age == 0:
-                img = graphics.tile(appspec.dedges, color)
-                rect = img.get_rect(center = (cx, cy))
-            else:
-                img = graphics.tile(appspec.dedges, color, tilt = age*450)
-                rect = img.get_rect(center = (cx+age*300, cy))
+            img = graphics.drawpaneltile(appspec.dedges, color, tilt = age*450)
+            rect = img.get_rect(center = (cx, cy))
             vista.psurf.blit(img, rect)
         if self.selected is not None:
             pygame.draw.circle(vista.psurf, (255, 255, 255), self.centers[self.selected], settings.ptilesize, 2)

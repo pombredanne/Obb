@@ -192,7 +192,8 @@ class StalkCircles(Circles):
 stalkcircles = StalkCircles()
 
 class AppCircles(Circles):
-    def getargs(self, dedges, edge0 = 3, width = 0.3, segs = 8):
+    def getargs(self, dedges, growth = 1, edge0 = 3, width = 0.3):
+        segs = int(growth * 8)
         return tuple(dedges), edge0, width, segs
     
     def getcircles(self, dedges, edge0, width, segs):
@@ -205,7 +206,15 @@ class AppCircles(Circles):
             for circ in stalkcircles.getcircles(ps[:segs+1], width):
                 yield circ
 
-appcircles = AppCircles()
+    def img(self, dedges, color, growth = 1, edge0 = 3, zoom = settings.tzoom0):
+        gimg = self.graytile(zoom, tuple(dedges), growth, edge0).copy()
+        if color in colors:
+            color = colors[color]
+        filtersurface(gimg, *color)
+        return gimg
+
+
+app = AppCircles()
 
 def heximg(scale, cache = {}):
     if scale in cache: return cache[scale]
@@ -225,9 +234,12 @@ class PanelTile(Circles):
     """A hexagonal tile that appears on the left"""
     def getargs(self, dedges):
         return tuple(dedges),
+
+    def getdrawkey(self, (dedges,), kw):
+        return tuple(dedges),
     
     def getcircles(self, dedges):
-        for circ in appcircles.getcircles(dedges, 3, 0.3, 8):
+        for circ in app.getcircles(dedges, 3, 0.3, 8):
             yield circ
 
     def draw(self, surf, scale, offset, dedges):
@@ -243,6 +255,10 @@ class PanelTile(Circles):
         return gimg
 
 paneltile = PanelTile()
+
+def drawpaneltile(dedges, color, tilt = 0):
+    img = paneltile.img(dedges, color, zoom = settings.ptilesize)
+    return pygame.transform.rotate(img, -tilt) if tilt else img
 
 
 class SphereCircles(Circles):
@@ -262,6 +278,14 @@ class SphereCircles(Circles):
             g = 0.55 + 0.45 * (fx*x+fy*y+fz*z)
             yield z, x, y, r, g
 
+    def img(self, R, color = None, zoom = settings.tzoom0):
+        gimg = self.graytile(zoom, R).copy()
+        if color in colors:
+            color = colors[color]
+        filtersurface(gimg, *color)
+        return gimg
+
+
 spherecircles = SphereCircles()
 
 class OrganCircles(Circles):
@@ -276,7 +300,7 @@ class OrganCircles(Circles):
         dx, dy = eps[edge0]
         for z, x, y, r, g in spherecircles.getcircles(R*.5, r0, lvector):
             yield z, x+dx*.45, y+dy*.45, r, g
-        for circ in appcircles.getcircles((3,), edge0, width, segs):
+        for circ in app.getcircles((3,), edge0, width, segs):
             yield circ
 
     def img(self, growth = 1, color = None, edge0 = 3, zoom = settings.tzoom0):
@@ -327,7 +351,7 @@ class EyeCircles(ColorCircles):
         gimg = self.graytile(zoom, growth, edge0, blink).copy()
         if color in colors:
             color = colors[color]
-        if color is None:
+        if not color:
             filtercolorsurface(gimg, colors["app0"], colors["eye"])
         else:
             filtercolorsurface(gimg, color, color)
@@ -361,14 +385,14 @@ class BrainCircles(ColorCircles):
         angle = edge0 * 60 + 180
         for z, x, y, r, g in lobecircles.getcircles(R, angle, r0, lvector):
             yield z, x, y, r, (g, 0, 0)
-        for z, x, y, r, g in appcircles.getcircles((3,), edge0, width, segs):
+        for z, x, y, r, g in app.getcircles((3,), edge0, width, segs):
             yield z, x, y, r, (0, g, 0)
 
     def img(self, growth = 1, color = None, edge0 = 3, zoom = settings.tzoom0):
         gimg = self.graytile(zoom, growth, edge0).copy()
         if color in colors:
             color = colors[color]
-        if color is None:
+        if not color:
             filtercolorsurface(gimg, colors["brain"], colors["app0"])
         else:
             filtercolorsurface(gimg, color, color)
@@ -452,32 +476,34 @@ def helixmeter(height, f=3):
     
 
 
+# TODO
 stalkimages = []
 def core(_color, growth = 0, zoom = settings.tzoom0):
-    z = settings.tzoom0
-    img = vista.Surface(3*z)
-    if not stalkimages:
-        for edge in range(6):
-            stalkimg = vista.Surface(z)
-            x0, y0 = stalkimg.get_rect().center
-            stalkimg.fill((0,0,0,0))
-            r, g, b, a = colors["app%s" % (edge % 3)]
-            S, C = math.sin(math.radians(60 * edge)), -math.cos(math.radians(60 * edge))
-            dx, dy = 0.3 * S * z, 0.3 * C * z
-            segmentcircles.draw(stalkimg, (x0,y0), (dx, dy), 0.3 * z)
-            filtersurface(stalkimg, r, g, b, a)
-            stalkimages.append(stalkimg)
-    for edge in range(6):
-        stalkimg = stalkimages[edge]
-        x0, y0 = stalkimg.get_rect().center
-        S, C = math.sin(math.radians(60 * edge)), -math.cos(math.radians(60 * edge))
-        dx, dy = 0.3 * S * z, 0.3 * C * z
-        dr = min(max((1 - growth) * 4 - 0.2 * (5 - edge), 0), 0.5) if growth != 1 else 0
-        x, y = (1.5+(.65-dr)*S) * z, (1.5+(.65-dr)*C) * z
-        img.blit(stalkimg, stalkimg.get_rect(center = (x,y)))
-    sphereimg = sphere(0.75, _color, zoom = z)
-    img.blit(sphereimg, sphereimg.get_rect(center = img.get_rect().center))
-    return pygame.transform.smoothscale(img, (3*zoom, 3*zoom))
+#    z = settings.tzoom0
+#    img = vista.Surface(3*z)
+#    if not stalkimages:
+#        for edge in range(6):
+#            stalkimg = vista.Surface(z)
+#            x0, y0 = stalkimg.get_rect().center
+#            stalkimg.fill((0,0,0,0))
+#            r, g, b, a = colors["app%s" % (edge % 3)]
+#            S, C = math.sin(math.radians(60 * edge)), -math.cos(math.radians(60 * edge))
+#            dx, dy = 0.3 * S * z, 0.3 * C * z
+#            segmentcircles.draw(stalkimg, (x0,y0), (dx, dy), 0.3 * z)
+#            filtersurface(stalkimg, r, g, b, a)
+#            stalkimages.append(stalkimg)
+#    for edge in range(6):
+#        stalkimg = stalkimages[edge]
+#        x0, y0 = stalkimg.get_rect().center
+#        S, C = math.sin(math.radians(60 * edge)), -math.cos(math.radians(60 * edge))
+#        dx, dy = 0.3 * S * z, 0.3 * C * z
+#        dr = min(max((1 - growth) * 4 - 0.2 * (5 - edge), 0), 0.5) if growth != 1 else 0
+#        x, y = (1.5+(.65-dr)*S) * z, (1.5+(.65-dr)*C) * z
+#        img.blit(stalkimg, stalkimg.get_rect(center = (x,y)))
+    sphereimg = spherecircles.img(R = 0.75, color = "core", zoom = zoom)
+    return sphereimg
+#    img.blit(sphereimg, sphereimg.get_rect(center = img.get_rect().center))
+#    return pygame.transform.smoothscale(img, (3*zoom, 3*zoom))
 
 
 # Coordinates of vertices and edges

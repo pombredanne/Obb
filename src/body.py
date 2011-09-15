@@ -278,10 +278,7 @@ class Appendage(BodyPart):
             self.budcolors[bud] = self.color
 
     def draw0(self, zoom, status, growth):
-        color = status or self.color
-        segs =  int(8. * growth) if growth != 1 else 8
-        if "ghost" in self.status: segs = 8
-        return graphics.app(self.appspec.dedges, color, self.edge, zoom, segs = segs)
+        return graphics.app.img(dedges = self.appspec.dedges, color = status or self.color, edge0 = self.edge, zoom = zoom, growth = growth)
             
 class Organ(BodyPart):
     """A functional body part that terminates a stalk"""
@@ -289,13 +286,7 @@ class Organ(BodyPart):
     growtime = 0.3
     controlneed = 1
     def draw0(self, zoom, status, growth):
-        color = status or self.color
-        if growth != 1:
-            segs = min(int(8. * growth), 3)
-            R = int(max(20 * growth - 10, 0)) * 0.1
-        else:
-            segs, R = 3, 1
-        return graphics.organ(0.5*R, color, self.edge, zoom = zoom, segs = segs)
+        return graphics.organ.img(zoom = zoom, color = status or self.color, edge0 = self.edge)
 
     def tiles(self):
         return ((self.x, self.y),)
@@ -325,10 +316,7 @@ class Eye(Organ):
         return Organ.getkey(self) + (blink,)
 
     def draw0(self, zoom, status, growth, blink):
-        if growth != 1:
-            return Organ.draw0(self, zoom, status, growth)
-        color = status or self.color
-        return graphics.eye(color, self.edge, blink, zoom = zoom)
+        return graphics.eye.img(zoom = zoom, growth = growth, color = status, edge0 = self.edge, blink = blink)
 
 class Brain(Organ):
     """Lets you control more organs"""
@@ -337,26 +325,14 @@ class Brain(Organ):
     controlneed = 0
 
     def draw0(self, zoom, status, growth):
-        color = status or None
-        if growth != 1:
-            segs = min(int(8. * growth), 3)
-            R = int(max(20 * growth - 10, 0)) * 0.1
-        else:
-            segs, R = 3, 1
-        return graphics.brain(0.6*R, color, self.edge, zoom = zoom, segs = segs)
+        return graphics.brain.img(zoom = zoom, growth = growth, color = status, edge0 = self.edge)
 
 class EyeBrain(Brain):
     """Hey, you got eyeballs in my brain! Hey, you got brains in my eyeball!"""
     lightradius = 5
 
     def draw0(self, zoom, status, growth):
-        color = status or None
-        if growth != 1:
-            segs = min(int(8. * growth), 3)
-            R = int(max(20 * growth - 10, 0)) * 0.1
-        else:
-            segs, R = 3, 1
-        return graphics.eyebrain(0.6*R, color, self.edge, zoom = zoom, segs = segs)
+        return graphics.eyebrain.img(zoom = zoom, growth = growth, color = status, edge0 = self.edge)
 
 
 class Leaf(Organ):
