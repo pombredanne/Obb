@@ -75,7 +75,7 @@ def zoomout():
         zoom = max(zs)
 
 def think(dt, (mx, my)):
-    global gx0, gy0
+    global gx0, gy0, overlays
     xmin, xmax = vrect.width - wx1 * zoom, -wx0 * zoom
     ymin, ymax = vrect.height + wy0 * zoom, wy1 * zoom
     f = math.exp(-0.5 * dt)
@@ -107,7 +107,7 @@ def think(dt, (mx, my)):
         else:
             dy = (ymin + ymax) / 2 - gy0
             gy0 += dy * f
-
+    overlays = []
 
 def worldtogameplay((x, y)):
     return int(gx0 + x * zoom + 0.5), int(gy0 - y * zoom + 0.5)
@@ -141,11 +141,18 @@ def addmask(mask):
     gsx, gsy = worldtogameplay((wx1, wy0))
     screen.blit(mask.getmask((x0, y0, x1, y1), vrect.size), (0,0))
 
+def addoverlay(surf, rect):
+    """Something that needs to be drawn on very top, irrespective of
+    panel boundaries"""
+    overlays.append((surf, rect))
+
 def flip():
 #    screen.blit(gsurf)  # TODO
     _screen.blit(screen, vrect)
     _screen.blit(psurf, prect)
     _screen.blit(rsurf, rrect)
+    for surf, rect in overlays:
+        _screen.blit(surf, rect)
     pygame.display.flip()
 
 s3 = math.sqrt(3.)

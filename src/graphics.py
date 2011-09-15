@@ -377,6 +377,26 @@ def meter(img, level, color1 = (0.5, 0, 1), color0 = (0.2, 0.2, 0.2)):
     if z != 1: arr[...,:p,2] *= z
     return img2
 
+def icon(name):
+    s = settings.largeiconsize
+    img = vista.Surface(s)
+    if name in ("eye",):
+        r, g, b, a = colors["app0"]
+    color0 = int(r*255), int(g*255), int(b*255)
+    color1 = int(r*128), int(g*128), int(b*128)
+    img.fill(color0)
+    img.fill(color1, (3, 3, s-6, s-6))
+    return img
+
+def ghostify(img):
+    img2 = img.copy()
+    arr = pygame.surfarray.pixels3d(img2)
+    g = (arr[...,0] + arr[...,1] + arr[...,2]) / 6
+    arr[...,0] = arr[...,1] = arr[...,2] = g
+    return img2
+    
+
+
 if __name__ == "__main__":
     pygame.init()
     screen = pygame.display.set_mode((400, 400))

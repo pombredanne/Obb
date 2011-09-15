@@ -74,7 +74,7 @@ class Play(context.Context):
 
         self.body.think(dt)
         self.panel.think(dt)
-        self.status.think(dt)
+        self.status.think(dt, mousepos)
 
     def pointchildbyedge(self, screenpos):
         edge = vista.grid.nearestedge(vista.screentoworld(screenpos))
