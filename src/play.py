@@ -45,14 +45,7 @@ class Play(context.Context):
             if event.type == KEYUP and event.key == K_F2:
                 vista.zoomout()
             if event.type == MOUSEBUTTONDOWN and event.button == 1:
-                if vista.prect.collidepoint(mousepos):  # Click on panel
-                    jtile = self.panel.iconp(mousepos)
-                    if jtile in (None, 0, 1, 2):
-                        self.panel.selecttile(jtile)
-                elif vista.vrect.collidepoint(mousepos):
-                    if self.parttobuild is not None and self.canbuild and self.body.canaddpart(self.parttobuild):
-                        self.body.addpart(self.parttobuild)
-                        self.panel.claimtile()
+                self.handleleftclick(mousepos)
 
         if keys[K_F5]:
             self.body.addrandompart()
@@ -75,6 +68,20 @@ class Play(context.Context):
         self.body.think(dt)
         self.panel.think(dt)
         self.status.think(dt, mousepos)
+
+    def handleleftclick(self, mousepos):
+        icon = self.status.iconpoint(mousepos)  # Any icons pointed to
+        if vista.prect.collidepoint(mousepos):  # Click on panel
+            jtile = self.panel.iconp(mousepos)
+            if jtile in (None, 0, 1, 2):
+                self.panel.selecttile(jtile)
+        elif icon is not None:
+            print icon.name
+        elif vista.vrect.collidepoint(mousepos):
+            if self.parttobuild is not None and self.canbuild and self.body.canaddpart(self.parttobuild):
+                self.body.addpart(self.parttobuild)
+                self.panel.claimtile()
+
 
     def pointchildbyedge(self, screenpos):
         edge = vista.grid.nearestedge(vista.screentoworld(screenpos))

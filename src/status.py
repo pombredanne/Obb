@@ -99,9 +99,15 @@ class Status(object):
     
     def think(self, dt, mousepos):
         self.mutagenmeter.think(dt)
+        icon = self.iconpoint(mousepos)
+        if icon is not None:
+            icon.pointedto = True
+
+    def iconpoint(self, mousepos):
         for icon in self.mutagenmeter.icons:
             if icon.ispointedto(mousepos):
-                icon.pointedto = True
+                return icon
+        return None
 
     def draw(self):
         self.mutagenmeter.draw()
