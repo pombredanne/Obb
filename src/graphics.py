@@ -69,6 +69,9 @@ class Circles(object):
     def getkey(self, *args):
         return tuple(args)
 
+    def getimgkey(self, *args):
+        return tuple(args)
+
     def getcircles(self):
         """Be a generator, make things easier"""
         raise NotImplementedError
@@ -88,6 +91,9 @@ class Circles(object):
     def draw(self, surf, offset, *args, **kw):
         circs = self(*args, **kw)
         drawgraycircles(surf, circs, offset)
+
+    def issuedraw(self, img, size, *args):
+        self.draw(img, (size, size), *args)
 
     def grayimg(self, size, *args, **kw):
         size = int(size)
@@ -132,8 +138,44 @@ class SegmentCircles(Circles):
             y = (p * dy - q * dx) / d
             yield z, x, y, r, g
 
-
 segmentcircles = SegmentCircles()
+
+class StalkCircles(Circles):
+    def setdefaults(self, ps, width = 0.3 * settings.tzoom0):
+        return tuple(ps), width
+    
+    def getcircles(self, ps, width):
+        for j in range(len(ps)-1):
+            (x0, y0), (x1, y1) = ps[j], ps[j+1]
+            for z, x, y, r, g in segmentcircles((x1-x0, y1-y0), width, None, j):
+                yield z, x+x0, y+y0, r, g
+
+    def getimgkey(self, size, ps, width = 0.3 * settings.tzoom0):
+        return size, tuple(ps), width
+
+stalkcircles = StalkCircles()
+
+class AppCircles(Circles):
+    def setdefaults(self, dedges, edge0 = 3, width = 0.3 * settings.tzoom0, segs = 8):
+        return tuple(dedges), edge0, width, segs
+    
+    def getcircles(self, dedges, edge0, width, segs):
+        for dedge in dedges:
+            p0 = eps[edge0]
+            p1 = eips[edge0]
+            p2 = eips[(edge0+dedge)%6]
+            p3 = eps[(edge0+dedge)%6]
+            ps = cBezier(p0, p1, p2, p3, 8)
+            for circ in stalkcircles.getcircles(ps[:segs+1], width):
+                yield circ
+
+    def getimgkey(self, size, dedges, edge0 = 3, width = 0.3 * settings.tzoom0, segs = 8):
+        return size, tuple(dedges), edge0, width, segs
+
+
+appcircles = AppCircles()
+
+
 
 class SphereCircles(Circles):
     def setdefaults(self, R, r0 = None, lvector = (-1,-1,2)):
@@ -155,8 +197,9 @@ class SphereCircles(Circles):
     def getimgkey(self, size, r0 = None):
         return size, r0
 
-    def issuedraw(self, img, size, r0):
-        self.draw(img, (size, size), size, r0)
+    def issuedraw(self, img, size, *args):
+        self.draw(img, (size, size), size, *args)
+
 
 
 spherecircles = SphereCircles()
@@ -177,8 +220,9 @@ class LobeCircles(SphereCircles):
     def getimgkey(self, size, angle = 0, r0 = None):
         return size, angle, r0
 
-    def issuedraw(self, img, size, angle, r0):
-        self.draw(img, (size, size), size, angle, r0)
+    def issuedraw(self, img, size, *args):
+        self.draw(img, (size, size), size, *args)
+
 
 
 lobecircles = LobeCircles()
@@ -218,8 +262,6 @@ class HelixCircles(Circles):
                     yield z, x, y, r*.6, g
 
 helixcircles = HelixCircles()
-
-
 
 
 def sphere(Rfac, color=(1, 1, 1, 1), zoom = settings.tzoom0):
@@ -335,6 +377,7 @@ s3 = math.sqrt(3)
 spos = lambda x,y: (int(settings.tzoom0*(1+x)+.5), int(settings.tzoom0*(1-y)+.5))
 vps = [spos(x,s3*y) for x,y in vpos]  # Vertex positions
 vips = [spos(.92*x,.92*s3*y) for x,y in vpos]  # inner vertex positions
+spos = lambda x,y: (settings.tzoom0*x, -settings.tzoom0*y)
 eps = [spos(x,s3*y) for x,y in epos]
 if settings.twisty:
     angles = [math.radians(60*a+10) for a in range(6)]
@@ -342,58 +385,15 @@ if settings.twisty:
 else:
     eips = [spos(0,0) for a in range(6)]
 
-def graystalk(dedge, segs = 8, cache = {}):
-    """Image containing a single gray stalk"""
-    key = dedge, segs
-    if key in cache: return cache[key]
-    edge0 = 3
-    z = settings.tzoom0
-    img = vista.Surface(2*z)
-    p0 = eps[edge0]
-    p1 = eips[edge0]
-    p2 = eips[(edge0+dedge)%6]
-    p3 = eps[(edge0+dedge)%6]
-    ps = cBezier(p0, p1, p2, p3, 8)
-    ps = [(int(x+.5),int(y+.5)) for x,y in ps]
-    for j in range(segs):
-        (x0, y0), (x1, y1) = ps[j], ps[j+1]
-        segmentcircles.draw(img, (x0,y0), (x1-x0,y1-y0), z*0.3, None, j)
-    cache[key] = img
-    return img
-
-def grayapp(dedges, segs = 8, cache = {}):
-    """A gray appendage"""
-    dedges = tuple(sorted(dedges, key=lambda x:abs(x-3.1)))
-    key = dedges, segs
-    if key in cache: return cache[key]
-    img = graystalk(dedges[0], segs)
-    if len(dedges) > 1:
-        img = img.copy()
-        for dedge in dedges[1:]:
-            img.blit(graystalk(dedge, segs), (0,0))
-    cache[key] = img
-    return cache[key]
-
-def grayapprot(dedges, edge0 = 3, segs = 8, cache = {}):
-    """A gray appendange that may be coming in from a different angle"""
-    dedges = tuple(sorted(dedges, key=lambda x:abs(x-3.1)))
-    key = dedges, edge0, segs
-    if key in cache: return cache[key]
-    img = grayapp(dedges, segs)
-    if edge0 != 3:
-        img = pygame.transform.rotate(img, (edge0 - 3) * -60)
-    cache[key] = img
-    return cache[key]
-    
 def grayapprotozoom(dedges, edge0 = 3, zoom = None, segs = 8, cache = {}):
     """A gray appendange that may be coming in from a different angle"""
     dedges = tuple(sorted(dedges, key=lambda x:abs(x-3.1)))
     if zoom is None: zoom = settings.tzoom0
     key = dedges, edge0, zoom, segs
     if key in cache: return cache[key]
-    img = grayapp(dedges, segs)
-    if edge0 != 3 or zoom != settings.tzoom0:
-        img = pygame.transform.rotozoom(img, (edge0 - 3) * -60, float(zoom) / settings.tzoom0)
+    img = appcircles.grayimg(settings.tzoom0, dedges, edge0=edge0, segs=segs)
+    if zoom != settings.tzoom0:
+        img = pygame.transform.smoothscale(img, (2*zoom, 2*zoom))
     cache[key] = img
     return cache[key]
 
@@ -416,7 +416,9 @@ def graytile(dedges, cache={}):
         pygame.draw.polygon(heximg, (128, 128, 128), vps, 0)
         pygame.draw.polygon(heximg, (64, 64, 64), vips, 0)
     img = heximg.copy()
-    appimg = grayapp(dedges)
+
+
+    appimg = appcircles.grayimg(settings.tzoom0, dedges)
     img.blit(appimg, (0, 0))
     cache[dedges] = img
     return img
@@ -538,8 +540,9 @@ if __name__ == "__main__":
     if True:
 #        drawgraylobes(img, (100, 100), 60, 10)
 #        img = sphere(0.5, color = "ghost", zoom = 60)
-        img = brain()
-        img = brain(edge0=1)
+#        img = brain()
+#        img = brain(edge0=1)
+        img = grayapp((2,3))
     if False:
         img = vista.Surface(40, 400, (0, 0, 0))
         drawgrayhelix(img, (20,0), (20,400))
