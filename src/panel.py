@@ -48,6 +48,16 @@ class Panel(object):
                 return j
         return None
 
+    def trashp(self, (mx, my)):
+        mx -= settings.px0
+        my -= settings.py0
+        return self.trashrect.collidepoint((mx, my))
+
+    def cutp(self, (mx, my)):
+        mx -= settings.px0
+        my -= settings.py0
+        return self.cutrect.collidepoint((mx, my))
+
     def selecttile(self, jtile = None):
         self.selected = jtile if jtile != self.selected else None
 

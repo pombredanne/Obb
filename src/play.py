@@ -75,7 +75,13 @@ class Play(context.Context):
 
     def handleleftclick(self, mousepos):
         icon = self.status.iconpoint(mousepos)  # Any icons pointed to
-        if vista.prect.collidepoint(mousepos):  # Click on panel
+        if self.panel.trashp(mousepos):  # Click on trash icon
+            if self.panel.selected is not None:
+                self.panel.claimtile()
+                # TODO: trash sound effect
+            self.status.select()
+            self.parttobuild = None
+        elif vista.prect.collidepoint(mousepos):  # Click on panel
             jtile = self.panel.iconp(mousepos)
             if jtile in (None, 0, 1, 2):
                 self.panel.selecttile(jtile)
