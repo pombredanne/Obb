@@ -1,5 +1,5 @@
 import pygame
-import settings, body, vista, graphics
+import settings, vista, graphics, mechanics
 
 
 class Panel(object):
@@ -11,7 +11,7 @@ class Panel(object):
         self.selected = None
 
     def newspec(self, jtile):
-        return body.randomspec(2, "app%s" % jtile)
+        return mechanics.randomspec("app%s" % jtile)
 
     def think(self, dt):
         for j in (0,1,2):

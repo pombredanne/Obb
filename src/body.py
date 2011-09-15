@@ -1,6 +1,6 @@
 import pygame, random
 from pygame.locals import *
-import vista, mask, graphics
+import vista, mask, graphics, mechanics
 
 class Body(object):
     def __init__(self, (x, y) = (0, 0)):
@@ -21,7 +21,7 @@ class Body(object):
             pos, edge = bud
             r = random.random()
             if r < 0.7:
-                appspec = randomspec()
+                appspec = mechanics.randomspec()
                 part = Appendage(self, parent, pos, edge, appspec)
             elif r < 0.8:
                 part = Eye(self, parent, pos, edge)
@@ -228,20 +228,6 @@ class Core(BodyPart):
     def draw0(self, zoom, status, growth):
         color = "core"
         return graphics.core(color, growth, zoom)
-
-class AppendageSpec(object):
-    """Data to specify the path of an appendage, irrespective of starting position"""
-    def __init__(self, dedges, color):
-        self.dedges = sorted(set(dedges))
-        self.color = color
-    
-    def outbuds(self, pos, edge):
-        return [vista.grid.opposite(pos, edge + dedge) for dedge in self.dedges]
-
-def randomspec(n = 2, color = None):
-    dedges = [random.choice(range(5))+1 for _ in range(n)]
-    if color is None: color = "app%s" % random.choice((0,1,2))
-    return AppendageSpec(dedges, color)
 
 def qBezier((x0,y0), (x1,y1), (x2,y2), n = 6):
     """Quadratic bezier curve"""

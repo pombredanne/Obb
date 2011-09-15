@@ -2,7 +2,7 @@
 
 import pygame, math, random
 from pygame.locals import *
-import vista, settings
+import vista, settings, mechanics
 
 colors = {}
 colors["app0"] = 0, 0.8, 0.4, 1
@@ -349,16 +349,13 @@ def tile(dedges, color=(1, 1, 1, 1), zoom = settings.ptilesize, tilt = 0):
         filtersurface(img, color[0], color[1], color[2], color[3])
     return img
 
-dedgesets = [(1,), (2,), (3,), (4,), (5,), (1,2), (1,3), (1,4), (1,5),
-    (2,3), (2,4), (2,5), (3,4), (3,5), (4,5)]
-
 def loadallappimages(zooms = None):
     if zooms is None:
-        for dedges in dedgesets:
+        for dedges in mechanics.dedgesets:
             for segs in (1,2,3,4,5,6,7,8):
                 grayapp(dedges, segs)
     else:
-        for dedges in dedgesets:
+        for dedges in mechanics.dedgesets:
             for edge0 in range(6):
                 for segs in (1,2,3,4,5,6,7,8):
                     for zoom in zooms:
