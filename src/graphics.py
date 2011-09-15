@@ -14,6 +14,8 @@ colors["ghost"] = 1, 1, 1, 0.4
 colors["badghost"] = 1, 0, 0, 0.4
 colors["brain"] = 1, 0.85, 0.85, 1
 colors["eye"] = 1, 1, 1, 1
+colors["yellow"] = 1, 1, 0.4, 1
+colors["shield"] = 0.7, 0.7, 1, 1
 
 def qBezier((x0,y0), (x1,y1), (x2,y2), n = 8, ccache = {}):
     """Quadratic bezier curve"""
@@ -213,8 +215,45 @@ class AppCircles(Circles):
         filtersurface(gimg, *color)
         return gimg
 
-
 app = AppCircles()
+
+class CoilCircles(ColorCircles):
+    def getargs(self, growth = 1, edge0 = 3, width0 = 0.3):
+        segs = int(growth * 40) / 4 * 4
+        return edge0, width0, segs
+    
+    def getcircles(self, edge0, width0, segs):
+        qs = [(0,-.866), (.5,0), (0,.5), (-.5,0), (0,0), (0,.15)]
+        rs = [(-.2,.4), (.1,.5), (-.5,0), (.2,-.3), (.3,.3), (0,.3)]
+        ps = []
+        for j in range(5):
+            (x0,y0), (x1,y1) = qs[j], qs[j+1]
+            (dx0,dy0), (dx1,dy1) = rs[j], rs[j+1]
+            ps.extend(cBezier((x0,y0), (x0+dx0,y0+dy0), (x1-dx1,y1-dy1), (x1,y1), 8)[:-1])
+        angle = math.radians(edge0 * 60)
+        S, C = math.sin(angle), math.cos(angle)
+        for j in range(segs):
+            width = width0 * (1 - j / 60.)
+            for z, x, y, r, g in stalkcircles.getcircles(ps[j:j+2], width):
+                yield z, -x*C - y*S, -x*S + y*C, r, (g, 0, 0)
+        if segs == 40:
+            dx, dy = ps[-1]
+            dx, dy = -dx*C - dy*S, -dx*S + dy*C
+            for z, x, y, r, g in spherecircles.getcircles(0.2, 0.03, (-1,-1,2)):
+                yield z, x+dx, y + dy, r, (0, g, 0)
+
+    def img(self, color = None, growth = 1, edge0 = 3, zoom = settings.tzoom0):
+        gimg = self.graytile(zoom, growth, edge0).copy()
+        if color in colors:
+            color = colors[color]
+        if not color:
+            filtercolorsurface(gimg, colors[mechanics.colors["coil"]], colors["shield"])
+        else:
+            filtercolorsurface(gimg, color, color)
+        return gimg
+
+coil = CoilCircles()
+
 
 def heximg(scale, cache = {}):
     if scale in cache: return cache[scale]
@@ -352,7 +391,7 @@ class EyeCircles(ColorCircles):
         if color in colors:
             color = colors[color]
         if not color:
-            filtercolorsurface(gimg, colors["app0"], colors["eye"])
+            filtercolorsurface(gimg, colors[mechanics.colors["eye"]], colors["eye"])
         else:
             filtercolorsurface(gimg, color, color)
         return gimg
@@ -391,7 +430,7 @@ class TripleEyeCircles(ColorCircles):
         if color in colors:
             color = colors[color]
         if not color:
-            filtercolorsurface(gimg, colors["app0"], colors["eye"])
+            filtercolorsurface(gimg, colors[mechanics.colors["eye"]], colors["eye"])
         else:
             filtercolorsurface(gimg, color, color)
         return gimg
@@ -432,7 +471,7 @@ class BrainCircles(ColorCircles):
         if color in colors:
             color = colors[color]
         if not color:
-            filtercolorsurface(gimg, colors["brain"], colors["app0"])
+            filtercolorsurface(gimg, colors["brain"], colors[mechanics.colors["brain"]])
         else:
             filtercolorsurface(gimg, color, color)
         return gimg
@@ -467,7 +506,7 @@ class EyeBrainCircles(BrainCircles):
         if color in colors:
             color = colors[color]
         if not color:
-            filtercolorsurface(gimg, colors["brain"], colors["app0"], colors["eye"])
+            filtercolorsurface(gimg, colors["brain"], colors[mechanics.colors["brain"]], colors["eye"])
         else:
             filtercolorsurface(gimg, color, color, color)
         return gimg
@@ -504,7 +543,7 @@ class MutagenitorCircles(ColorCircles):
         if color in colors:
             color = colors[color]
         if not color:
-            filtercolorsurface(gimg, colors["eye"], colors["app2"])
+            filtercolorsurface(gimg, colors["eye"], colors[mechanics.colors["mutagenitor"]])
         else:
             filtercolorsurface(gimg, color, color)
         return gimg
@@ -623,10 +662,7 @@ def meter(img, level, color1 = (0.5, 0, 1), color0 = (0.2, 0.2, 0.2)):
 def icon(name):
     s = settings.largeiconsize
     img = vista.Surface(s)
-    if name in ("eye", "brain", "eyebrain", "tripleeye"):
-        r, g, b, a = colors["app0"]
-    elif name in ("mutagenitor",):
-        r, g, b, a = colors["app2"]
+    r, g, b, a = colors[mechanics.colors[name]]
     color0 = int(r*255), int(g*255), int(b*255)
     color1 = int(r*128), int(g*128), int(b*128)
     img.fill(color0)
@@ -696,7 +732,8 @@ if __name__ == "__main__":
 #        img = grayapp((2,3))
 #        img = brain.grayimg(160)
 #        filtercolorsurface(img, (1, 0.8, 0.8, 1), (0, 0.5, 1, 1))
-        img = tripleeye.img(zoom = 80)
+#        img = tripleeye.img(zoom = 80)
+        img = coil.img(zoom = 80)
 #        img = eyebrain.img(zoom = 80)
 #        helixcircles.draw(img, 1, (100, 200), (0, -160))
 #        img = helixmeter(200)

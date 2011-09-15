@@ -26,7 +26,17 @@ def randomspec(color = None):
     if color is None: color = "app%s" % random.choice((0,1,2))
     return AppendageSpec(dedges, color)
 
+# Colors determine where you can build organs
+colors = {}
+colors["eye"] = "app0"
+colors["brain"] = "app0"
+colors["eyebrain"] = "app0"
+colors["tripleeye"] = "app0"
+colors["mutagenitor"] = "app2"
+colors["coil"] = "app1"
 
-costs = {"eye":30, "brain":60, "eyebrain": 120, "mutagenitor":80, "tripleeye": 0}
+
+#costs = {"eye":30, "brain":60, "eyebrain": 120, "mutagenitor":80, "tripleeye": 0, "coil":20}
+costs = {"coil":20}
 
 

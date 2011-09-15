@@ -60,7 +60,7 @@ class Body(object):
         """If you can place the specified organ type on the specified edge,
         return the corresponding part. Otherwise return None"""
         otypes = {"eye":Eye, "brain":Brain, "eyebrain":EyeBrain, "tripleeye":TripleEye,
-                "mutagenitor":Mutagenitor}
+                "mutagenitor":Mutagenitor, "coil":Coil}
         if isinstance(otype, str): otype = otypes[otype]
         for bud in (edge, vista.HexGrid.opposite(*edge)):
             if bud not in self.takenbuds: continue
@@ -131,8 +131,13 @@ class Body(object):
             vista.setgrect(self.mask.bounds())
     
     def draw(self):
+        shields = []
         for part in sorted(self.parts, key = lambda p: p.draworder):
             part.draw()
+            if part.shield > 0:
+                shields.append((part.screenpos(), part.shield))
+        for (x, y), r in shields:
+            pygame.draw.circle(vista.screen, (128, 128, 255), (x, y), r * vista.zoom, 1)
 
     def tracehexes(self, color = (128, 128, 128)):
         tiles = set([(part.x, part.y) for part in self.parts])
@@ -147,6 +152,7 @@ class BodyPart(object):
     dietime = 0.1
     control = 0
     controlneed = 0
+    shield = 0
     def __init__(self, body, parent, (x,y), edge = 0):
         self.body = body
         self.parent = parent
@@ -355,6 +361,15 @@ class Mutagenitor(Organ):
 
     def draw0(self, zoom, status, growth):
         return graphics.mutagenitor.img(zoom = zoom, growth = growth, color = status, edge0 = self.edge)
+
+
+class Coil(Organ):
+    """Don't know what it does yet"""
+    shield = 2.5
+    color = "app1"
+
+    def draw0(self, zoom, status, growth):
+        return graphics.coil.img(zoom = zoom, growth = growth, color = status, edge0 = self.edge)
 
 
 
