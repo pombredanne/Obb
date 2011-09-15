@@ -213,7 +213,7 @@ class BodyPart(object):
 
 class Core(BodyPart):
     """The central core of the body, that has the funny mouth"""
-    lightradius = 6
+    lightradius = 5
     growtime = 1.8
     def __init__(self, body, (x,y) = (0,0)):
         BodyPart.__init__(self, body, None, (x,y), 0)
@@ -271,7 +271,7 @@ class Organ(BodyPart):
 
 class Eye(Organ):
     """Extends your visible region"""
-    lightradius = 6
+    lightradius = 5
     color = "app0"
 
     def __init__(self, *args, **kw):

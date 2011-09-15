@@ -1,6 +1,8 @@
 import random
 import vista
 
+vthreshold = 0.3  # Visibility threshold
+
 # Permissable dedges for tiles
 # Conspicuous in its absense is a straight piece
 dedgesets = [(1,), (2,), (4,), (5,),

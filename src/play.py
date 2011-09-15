@@ -20,8 +20,10 @@ class Play(context.Context):
                     appspec = self.panel.tiles[self.panel.selected]
                     self.parttobuild = self.body.canplaceapp(edge, appspec)
                     if self.parttobuild is not None:
-                        canbuild = self.body.canaddpart(self.parttobuild)
-                        self.parttobuild.status = "ghost" if canbuild else "badghost"
+                        worldpos = vista.HexGrid.edgeworld(*edge)
+                        visible = self.body.mask.isvisible(worldpos)
+                        self.canbuild = self.body.canaddpart(self.parttobuild) and visible
+                        self.parttobuild.status = "ghost" if self.canbuild else "badghost"
         else:
             edge = None
             self.parttobuild = None
@@ -48,7 +50,7 @@ class Play(context.Context):
                     if jtile in (None, 0, 1, 2):
                         self.panel.selecttile(jtile)
                 elif vista.vrect.collidepoint(mousepos):
-                    if self.parttobuild is not None and self.body.canaddpart(self.parttobuild):
+                    if self.parttobuild is not None and self.canbuild and self.body.canaddpart(self.parttobuild):
                         self.body.addpart(self.parttobuild)
                         self.panel.claimtile()
 

@@ -1,6 +1,6 @@
 import pygame, math
 from pygame.locals import *
-import vista
+import vista, mechanics
 
 class Mask(object):
     """A fog-of-war style mask (black with a variable alpha)"""
@@ -36,6 +36,10 @@ class Mask(object):
         if not 0 <= px < self.sx or not 0 <= py < self.sy: return 0
         alpha = self.blue.get_at((px, py))[2]
         return alpha / 255.
+
+    def isvisible(self, (x, y)):
+        """Return whether the given world coordinate is visible"""
+        return self.visibility((x, y)) > mechanics.vthreshold
 
     def redraw(self):
         """Draw entire surface from scratch"""
