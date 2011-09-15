@@ -13,20 +13,24 @@ class Panel(object):
         self.trashrect = self.trashimg.get_rect(bottomleft = (20, 440))
         self.cutimg = vista.Surface(80, 80, (128, 0, 0))
         self.cutrect = self.trashimg.get_rect(bottomleft = (100, 440))
+        self.loadrate = 1.
 
     def newspec(self, jtile):
         return mechanics.randomspec("app%s" % jtile)
 
     def think(self, dt):
         for j in (0,1,2):
-            self.ages[j] = min(self.ages[j] + dt, 0)
+            self.ages[j] = min(self.ages[j] + (1 if self.ages[j] > -1 else self.loadrate) * dt, 0)
         
     def draw(self):
         for j, (age, appspec, (cx, cy)) in enumerate(zip(self.ages, self.tiles, self.centers)):
             color = "app%s" % j
-            if age < -1: continue
-            img = graphics.drawpaneltile(appspec.dedges, color, tilt = age*450)
-            rect = img.get_rect(center = (cx, cy))
+            if age < -1:
+                img = graphics.loadbar(1 - ((-age-1) / 5), color)
+                rect = img.get_rect(center = (cx, cy))
+            else:
+                img = graphics.drawpaneltile(appspec.dedges, color, tilt = age*450)
+                rect = img.get_rect(center = (cx + age*300, cy))
             vista.psurf.blit(img, rect)
         if self.selected is not None:
             pygame.draw.circle(vista.psurf, (255, 255, 255), self.centers[self.selected], settings.ptilesize, 2)

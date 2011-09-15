@@ -415,18 +415,19 @@ class EyeBrainCircles(BrainCircles):
     def draw(self, surf, scale, offset, growth, edge0, blink):
         brain.draw(surf, scale, offset, growth, edge0)
         x0, y0 = surf.get_rect().center
-        for dedge,r in ((0,0.3),(1,0.4),(2,0.1),(2,0.45),(3,0.35),(4,0.4),(5,.25)):
-            angle = math.radians((edge0 + dedge) * 60 + 20)
-            dx = int(scale * r * math.sin(angle) / 1.2)
-            dy = -int(scale * r * math.cos(angle) / 1.2)
-            eyeimg = eyeball(int(0.3*scale), (dedge+edge0)%6, blink=1-r/2, color=(0,0,255))
-            surf.blit(eyeimg, eyeimg.get_rect(center = (x0+dx,y0+dy)))
+        if growth == 1:
+            for dedge,r in ((0,0.3),(1,0.4),(2,0.1),(2,0.45),(3,0.35),(4,0.4),(5,.25)):
+                angle = math.radians((edge0 + dedge) * 60 + 20)
+                dx = int(scale * r * math.sin(angle) / 1.2)
+                dy = -int(scale * r * math.cos(angle) / 1.2)
+                eyeimg = eyeball(int(0.3*scale), (dedge+edge0)%6, blink=1-r/2, color=(0,0,255))
+                surf.blit(eyeimg, eyeimg.get_rect(center = (x0+dx,y0+dy)))
 
     def img(self, growth = 1, color = None, edge0 = 3, blink = 1, zoom = settings.tzoom0):
         gimg = self.graytile(zoom, growth, edge0, blink).copy()
         if color in colors:
             color = colors[color]
-        if color is None:
+        if not color:
             filtercolorsurface(gimg, colors["brain"], colors["app0"], colors["eye"])
         else:
             filtercolorsurface(gimg, color, color, color)
@@ -472,7 +473,14 @@ def helixmeter(height, f=3):
         img = pygame.transform.smoothscale(img, (40, height))
     return img
 
-
+def loadbar(f, color = "eye", w = 60, h = 8):
+    if color in colors: color = colors[color]
+    r,g,b,_ = color
+    color = int(255*r), int(255*g), int(255*b)
+    img = vista.Surface(w+2,h+2,color)
+    if 0 < f < 1:
+        img.fill((0,0,0), (1+int(f*w),1,w-int(f*w),h))
+    return img
     
 
 
