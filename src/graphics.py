@@ -29,8 +29,13 @@ def cBezier((x0,y0), (x1,y1), (x2,y2), (x3,y3), n = 8, ccache = {}):
     return [(a*x0+b*x1+c*x2+d*x3, a*y0+b*y1+c*y2+d*y3) for a,b,c,d in ccache[n]]
 
 def drawgraycircles(surf, circs, (x0, y0) = (0, 0)):
-    for x, y, r, g in circs:
+    for _, x, y, r, g in circs:
         pygame.draw.circle(surf, (g,g,g), (x+x0, y+y0), r, 0)
+
+# This function is idempotent. Just in case anyone asks.
+def normcircles(circs):
+    circs[:] = [(z, int(x+.5), int(y+.5), int(r+.5), min(max(int(g+.5),0),255))
+                for z,x,y,r,g in sorted(circs)]
 
 def filtersurface(surf, x, y, z, a=1):
     arr = pygame.surfarray.pixels3d(surf)
@@ -42,121 +47,127 @@ def filtersurface(surf, x, y, z, a=1):
 def maketransparent(surf):
     filtersurface(surf, 1, 1, 1, 0.5)
 
-def segmentcircles((dx, dy), width = None, r0 = None, s0 = 0, cache = {}):
-    """Specs for a bunch of circles in a rectangular pattern between the
-    given points"""
-    seed = dx, dy, width, r0, s0
-    if seed in cache:
-        return cache[seed]
-    rstate = random.getstate()
-    random.seed(seed)
-    d = math.sqrt(dx ** 2 + dy ** 2)
-    if width is None: width = d
-    if r0 is None: r0 = width / 8
-    circs = []
-    ncirc = int(4 * width * d / r0 ** 2)
-    for j in range(ncirc):
-        r = int(random.uniform(r0, 2*r0))
-        z = random.uniform(-width/2, width/2)
-        q = random.uniform(-width/2, width/2)
-        if math.sqrt(z**2 + q**2) + r > width/2: continue
-        p = random.uniform(0, d)
-        g = int(255 * (1 - abs(q / width)))
-        x = int((p * dx + q * dy) / d + 0.5)
-        y = int((p * dy - q * dx) / d + 0.5)
-        circs.append((z, (x, y, r, g)))
-    random.setstate(rstate)
-    circs = [circ for z,circ in sorted(circs)]
-    cache[seed] = circs
-    return circs
+class Circles(object):
+    def __init__(self):
+        self.cache = {}
 
-def spherecircles(R, r0 = None, lvector = (-1,-1,2), cache = {}):
-    """Specs for a bunch of circles in a spherical cluster"""
-    seed = R, r0, tuple(lvector)
-    if seed in cache: return cache[seed]
-    lx, ly, lz = lvector
-    sl = math.sqrt(lx ** 2 + ly ** 2 + lz ** 2)
-    rstate = random.getstate()
-    random.seed(seed)
-    circs = []
-    if r0 is None: r0 = R / 10.
-    ncirc = int(40 * R ** 2 / r0 ** 2)
-    for j in range(ncirc):
-        r = int(random.uniform(r0, 2*r0))
-        x = int(random.uniform(-R, R)+0.5)
-        y = int(random.uniform(-R, R)+0.5)
-        z = int(random.uniform(-R, R)+0.5)
-        if math.sqrt(x ** 2 + y ** 2 + z ** 2) + r > R: continue
-        g = int(255 * (0.55 + 0.45 * (lx*x+ly*y+lz*z)/sl/R))
-        circs.append((z, (x, y, r, g)))
-    random.setstate(rstate)
-    circs = [circ for z,circ in sorted(circs)]
-    cache[seed] = circs
-    return circs
+    def setdefaults(self, *args):
+        """Return a list that's in the same order as the args to getkey
+        and getcircles"""
+        return args
 
-def lobecircles(R, angle = 0, r0 = None, lvector = (-1,-1,2), cache = {}):
-    """Specs for a bunch of circles in a spherical cluster"""
-    seed = R, angle, r0, tuple(lvector)
-    if seed in cache: return cache[seed]
-    lx, ly, lz = lvector
-    sl = math.sqrt(lx ** 2 + ly ** 2 + lz ** 2)
-    rstate = random.getstate()
-    random.seed(seed)
-    circs = []
-    if r0 is None: r0 = R / 10.
-    ncirc = int(40 * R ** 2 / r0 ** 2)
-    C, S = math.cos(math.radians(angle)), math.sin(math.radians(angle))
-    for j in range(ncirc):
-        r = int(random.uniform(r0, 2*r0))
-        x = int(random.uniform(r, R)+0.5)
-        y = int(random.uniform(-R, R)+0.5)
-        z = int(random.uniform(-R, R)+0.5)
-        if math.sqrt((1.2*x) ** 2 + y ** 2 + z ** 2) + r > R: continue
-        if random.random() < 0.5: x = -x
-        x, y = int(C * x - S * y), int(C * y + S * x)
-        g = int(255 * (0.55 + 0.45 * (lx*x+ly*y+lz*z)/sl/R))
-        circs.append((z, (x, y, r, g)))
-    random.setstate(rstate)
-    circs = [circ for z,circ in sorted(circs)]
-    cache[seed] = circs
-    return circs
+    def getkey(self, *args):
+        return tuple(args)
 
-    
-def helixcircles((dx, dy), offs = None, R = None, r = None, coil = None, cache = {}):
-    if offs is None: offs = (0, 0.4)
-    offs = tuple(sorted(offs))
-    key = dx, dy, offs, R, r, coil
-    if key in cache: return cache[key]
-    if R is None: R = 16
-    if r is None: r = int(R / 3)
-    if coil is None: coil = R*6
-    d = math.sqrt(dx ** 2 + dy ** 2)
-    circs = []
-    nextrung = r
-    for j in range(int(2. * d / r)):
-        h = j / (2. / r)
-        angles = [(h / coil + off) * 2 * math.pi for off in offs]
-        Ss = [math.sin(angle) for angle in angles]
-        Cs = [math.cos(angle) for angle in angles]
-        xs = [int(R * S * dy / d + h * dx / d + 0.5) for S in Ss]
-        ys = [int(-R * S * dx / d + h * dy / d + 0.5) for S in Ss]
-        gs = [int(255 * (0.8 + 0.2 * C)) for C in Cs]
-        zs = Cs
-        for z,x,y,g in zip(zs, xs, ys, gs):
-            circs.append((z, (x, y, r, g)))
-        if len(offs) == 2 and h > nextrung:
-            nextrung += 1.7 * r
-            (x0, x1), (y0, y1), (g0, g1), (z0, z1) = xs, ys, gs, zs
-            for k in range(20):
-                k *= 0.05
-                x = int(x0 + k * (x1 - x0))
-                y = int(y0 + k * (y1 - y0))
-                z = z0 + k * (z1 - z0)
-                g = int(g0 + k * (g1 - g0))
-                circs.append((z, (x, y, int(r*.6), g)))
-    circs = [circ for z,circ in sorted(circs)]
-    cache[key] = circs
-    return circs
+    def getcircles(self):
+        """Be a generator, make things easier"""
+        raise NotImplementedError
+
+
+    def __call__(self, *args, **kw):
+        args = self.setdefaults(*args, **kw)
+        key = self.getkey(*args)
+        if key in self.cache: return self.cache[key]
+        rstate = random.getstate()
+        random.seed(key)
+        circs = list(self.getcircles(*args))
+        normcircles(circs)
+        random.setstate(rstate)
+        self.cache[key] = circs
+        return circs
+
+class SegmentCircles(Circles):
+    def setdefaults(self, (dx, dy), width = None, r0 = None, s0 = 0):
+        d = math.sqrt(dx ** 2 + dy ** 2)
+        if width is None: width = d
+        if r0 is None: r0 = width / 8
+        return (dx, dy), d, width, r0, s0
+
+    def getcircles(self, (dx, dy), d, width, r0, s0):
+        ncirc = int(4 * width * d / r0 ** 2)
+        for j in range(ncirc):
+            r = random.uniform(r0, 2*r0)
+            z = random.uniform(-width/2, width/2)
+            q = random.uniform(-width/2, width/2)
+            if math.sqrt(z**2 + q**2) + r > width/2: continue
+            p = random.uniform(0, d)
+            g = 255 * (1 - abs(q / width))
+            x = (p * dx + q * dy) / d
+            y = (p * dy - q * dx) / d
+            yield z, x, y, r, g
+
+
+segmentcircles = SegmentCircles()
+
+class SphereCircles(Circles):
+    def setdefaults(self, R, r0 = None, lvector = (-1,-1,2)):
+        if r0 is None: r0 = R / 10.
+        return R, r0, tuple(lvector)
+
+    def getcircles(self, R, r0, (lx, ly, lz)):
+        sl = math.sqrt(lx ** 2 + ly ** 2 + lz ** 2)
+        ncirc = int(40 * R ** 2 / r0 ** 2)
+        for j in range(ncirc):
+            r = random.uniform(r0, 2*r0)
+            x = random.uniform(-R, R)
+            y = random.uniform(-R, R)
+            z = random.uniform(-R, R)
+            if math.sqrt(x ** 2 + y ** 2 + z ** 2) + r > R: continue
+            g = 255 * (0.55 + 0.45 * (lx*x+ly*y+lz*z)/sl/R)
+            yield z, x, y, r, g
+
+spherecircles = SphereCircles()
+
+class LobeCircles(SphereCircles):
+    def setdefaults(self, R, angle = 0, r0 = None, lvector = (-1,-1,2)):
+        if r0 is None: r0 = R / 10.
+        return R, angle, r0, tuple(lvector)
+
+    def getcircles(self, R, angle, r0, lvector):
+        C, S = math.cos(math.radians(angle)), math.sin(math.radians(angle))
+        for z, x, y, r, g in SphereCircles.getcircles(self, R, r0, lvector):
+            if abs(x) < 0.95*r: continue
+            if math.sqrt((1.2*x) ** 2 + y ** 2 + z ** 2) + r > R: continue
+            x, y = C * x - S * y, C * y + S * x
+            yield z, x, y, r, g
+
+lobecircles = LobeCircles()
+
+class HelixCircles(Circles):
+    def setdefaults(self, (dx, dy), offs = None, R = None, r = None, coil = None):
+        if offs is None: offs = (0, 0.4)
+        offs = tuple(sorted(offs))
+        if R is None: R = 16
+        if r is None: r = int(R / 3)
+        if coil is None: coil = R*6
+        return (dx, dy), offs, R, r, coil
+
+    def getcircles(self, (dx, dy), offs, R, r, coil):
+        d = math.sqrt(dx ** 2 + dy ** 2)
+        nextrung = r
+        for j in range(int(2. * d / r)):
+            h = j / (2. / r)
+            angles = [(h / coil + off) * 2 * math.pi for off in offs]
+            Ss = [math.sin(angle) for angle in angles]
+            Cs = [math.cos(angle) for angle in angles]
+            xs = [int(R * S * dy / d + h * dx / d + 0.5) for S in Ss]
+            ys = [int(-R * S * dx / d + h * dy / d + 0.5) for S in Ss]
+            gs = [int(255 * (0.8 + 0.2 * C)) for C in Cs]
+            zs = Cs
+            for z,x,y,g in zip(zs, xs, ys, gs):
+                yield z, x, y, r, g
+            if len(offs) == 2 and h > nextrung:
+                nextrung += 1.7 * r
+                (x0, x1), (y0, y1), (g0, g1), (z0, z1) = xs, ys, gs, zs
+                for k in range(20):
+                    k *= 0.05
+                    x = int(x0 + k * (x1 - x0))
+                    y = int(y0 + k * (y1 - y0))
+                    z = z0 + k * (z1 - z0)
+                    g = int(g0 + k * (g1 - g0))
+                    yield z, x, y, r*.6, g
+
+helixcircles = HelixCircles()
 
 def drawgraysegment(surf, (x0, y0), (x1, y1), width = None, r0 = None, s0 = None):
     circs = segmentcircles((x1-x0,y1-y0), width, r0, s0)
