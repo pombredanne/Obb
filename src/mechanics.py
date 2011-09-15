@@ -27,4 +27,6 @@ def randomspec(color = None):
     return AppendageSpec(dedges, color)
 
 
+costs = {"eye":30, "brain":120}
+
 

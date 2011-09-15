@@ -1,6 +1,6 @@
 import pygame, random
 from pygame.locals import *
-import vista, context, body, settings, panel, status
+import vista, context, body, settings, panel, status, noise
 
 class Play(context.Context):
     def __init__(self):
@@ -78,7 +78,7 @@ class Play(context.Context):
         if self.panel.trashp(mousepos):  # Click on trash icon
             if self.panel.selected is not None:
                 self.panel.claimtile()
-                # TODO: trash sound effect
+                noise.play("trash")
             self.status.select()
             self.parttobuild = None
         elif vista.prect.collidepoint(mousepos):  # Click on panel

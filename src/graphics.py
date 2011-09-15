@@ -93,6 +93,34 @@ def spherecircles(R, r0 = None, lvector = (-1,-1,2), cache = {}):
     circs = [circ for z,circ in sorted(circs)]
     cache[seed] = circs
     return circs
+
+def lobecircles(R, angle = 0, r0 = None, lvector = (-1,-1,2), cache = {}):
+    """Specs for a bunch of circles in a spherical cluster"""
+    seed = R, r0, tuple(lvector)
+    if seed in cache: return cache[seed]
+    lx, ly, lz = lvector
+    sl = math.sqrt(lx ** 2 + ly ** 2 + lz ** 2)
+    rstate = random.getstate()
+    random.seed(seed)
+    circs = []
+    if r0 is None: r0 = R / 10.
+    ncirc = int(40 * R ** 2 / r0 ** 2)
+    C, S = math.cos(math.radians(angle)), math.sin(math.radians(angle))
+    for j in range(ncirc):
+        r = int(random.uniform(r0, 2*r0))
+        x = int(random.uniform(r, R)+0.5)
+        y = int(random.uniform(-R, R)+0.5)
+        z = int(random.uniform(-R, R)+0.5)
+        if math.sqrt((1.2*x) ** 2 + y ** 2 + z ** 2) + r > R: continue
+        if random.random() < 0.5: x = -x
+        x, y = int(C * x - S * y), int(C * y + S * x)
+        g = int(255 * (0.55 + 0.45 * (lx*x+ly*y+lz*z)/sl/R))
+        circs.append((z, (x, y, r, g)))
+    random.setstate(rstate)
+    circs = [circ for z,circ in sorted(circs)]
+    cache[seed] = circs
+    return circs
+
     
 def helixcircles((dx, dy), offs = None, R = None, r = None, coil = None, cache = {}):
     if offs is None: offs = (0, 0.4)
@@ -138,6 +166,10 @@ def drawgraysphere(surf, (x0, y0), R, r0 = None):
     circs = spherecircles(R, r0)
     drawgraycircles(surf, circs, (x0,y0))
 
+def drawgraylobes(surf, (x0, y0), R, angle = 0, r0 = None):
+    circs = lobecircles(R, angle, r0)
+    drawgraycircles(surf, circs, (x0,y0))
+
 def drawgrayhelix(surf, (x0, y0), (x1, y1), offs = None, R = None, r = None, coil = None):
     circs = helixcircles((x1-x0, y1-y0), offs, R, r, coil)
     drawgraycircles(surf, circs, (x0, y0))
@@ -151,9 +183,18 @@ def graysphere(R, r0 = None, cache = {}):
     cache[key] = img
     return img
 
+def graylobes(R, angle = 0, r0 = None, cache = {}):
+    R = int(R)
+    key = R, angle, r0
+    if key in cache: return cache[key]
+    img = vista.Surface(2*R)
+    drawgraylobes(img, (R,R), R, angle, r0)
+    cache[key] = img
+    return img
+
 def grayspherezoom(Rfac, (x0,y0)=(0,0), zoom = settings.tzoom0, cache = {}):
     R = int(Rfac * settings.tzoom0)
-    key = R, zoom
+    key = R, x0, y0, zoom
     if key in cache: return cache[key]
     if zoom == settings.tzoom0:
         img = vista.Surface(2*zoom)
@@ -161,6 +202,20 @@ def grayspherezoom(Rfac, (x0,y0)=(0,0), zoom = settings.tzoom0, cache = {}):
         img.blit(sphereimg, sphereimg.get_rect(center = ((1+x0)*zoom, (1+y0)*zoom)))
     else:
         img0 = grayspherezoom(Rfac, (x0,y0))
+        img = pygame.transform.smoothscale(img0, (2*zoom, 2*zoom))
+    cache[key] = img
+    return cache[key]
+
+def graylobeszoom(Rfac, (x0,y0)=(0,0), angle=0, zoom = settings.tzoom0, cache = {}):
+    R = int(Rfac * settings.tzoom0)
+    key = R, angle, zoom
+    if key in cache: return cache[key]
+    if zoom == settings.tzoom0:
+        img = vista.Surface(2*zoom)
+        sphereimg = graylobes(R, angle)
+        img.blit(sphereimg, sphereimg.get_rect(center = ((1+x0)*zoom, (1+y0)*zoom)))
+    else:
+        img0 = graylobeszoom(Rfac, (x0,y0), angle)
         img = pygame.transform.smoothscale(img0, (2*zoom, 2*zoom))
     cache[key] = img
     return cache[key]
@@ -173,12 +228,27 @@ def sphere(Rfac, color=(1, 1, 1, 1), (x0,y0)=(0,0), zoom = settings.tzoom0):
         filtersurface(img, color[0], color[1], color[2], color[3])
     return img
 
+def lobes(Rfac, color=(1, 1, 1, 1), angle = 0, zoom = settings.tzoom0):
+    img = graylobeszoom(Rfac, (0, 0), angle, zoom)
+    if color in colors: color = colors[color]
+    if color not in ((1,1,1), (1,1,1,1)):
+        img = img.copy()
+        filtersurface(img, color[0], color[1], color[2], color[3])
+    return img
+
 def organ(Rfac, color=(1,1,1,1), edge0=3, zoom = settings.tzoom0, segs = 3):
     """A sphere on a stalk"""
     img = app((3,), color, edge0, zoom, segs=segs).copy()
     if Rfac:
         sphereimg = sphere(Rfac, color, (0,0), zoom)
         img.blit(sphereimg, sphereimg.get_rect(center = img.get_rect().center))
+    return img
+
+def brain(Rfac = 0.6, color=None, edge0=3, zoom = settings.tzoom0, segs = 3):
+    img = app((3,), color or colors["app0"], edge0, zoom, segs=segs).copy()
+    if Rfac:
+        lobeimg = lobes(Rfac, color or (1,.8,.8,1), (edge0%3)*60, zoom)
+        img.blit(lobeimg, lobeimg.get_rect(center = img.get_rect().center))
     return img
 
 def eyeball(blink = 1, edge0 = 3, zoom = settings.tzoom0, cache = {}):
@@ -380,7 +450,7 @@ def meter(img, level, color1 = (0.5, 0, 1), color0 = (0.2, 0.2, 0.2)):
 def icon(name):
     s = settings.largeiconsize
     img = vista.Surface(s)
-    if name in ("eye",):
+    if name in ("eye", "brain"):
         r, g, b, a = colors["app0"]
     color0 = int(r*255), int(g*255), int(b*255)
     color1 = int(r*128), int(g*128), int(b*128)
@@ -444,6 +514,10 @@ if __name__ == "__main__":
     if False:
         img = sphere(0.5, color = "ghost", zoom = 60)
     if True:
+#        drawgraylobes(img, (100, 100), 60, 10)
+#        img = sphere(0.5, color = "ghost", zoom = 60)
+        img = brain()
+    if False:
         img = vista.Surface(40, 400, (0, 0, 0))
         drawgrayhelix(img, (20,0), (20,400))
         img = meter(img, 100)

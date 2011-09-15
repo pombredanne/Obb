@@ -1,6 +1,6 @@
 import pygame, math
 from pygame.locals import *
-import vista, graphics
+import vista, graphics, mechanics
 
 
 class Meter(object):
@@ -10,7 +10,7 @@ class Meter(object):
         self.baseimg = self.getimg(self.height)
         self.bottom = 30, self.maxheight + 40
         self.amount = 0
-        self.rate = 1.
+        self.rate = 50.
 
     def getimg(self, height):
         img = vista.Surface(60, 2*height)
@@ -18,7 +18,7 @@ class Meter(object):
         return pygame.transform.smoothscale(img, (30, height))
 
     def think(self, dt):
-        self.amount += dt * self.rate
+        self.amount = min(self.amount + dt * self.rate, self.height)
 
     def meterpos(self, amount):
         """pixel coordinates corresponding to an amount on this meter"""
@@ -41,7 +41,7 @@ class BuildIcon(object):
         self.ghost0 = graphics.ghostify(self.img0)
         self.img = pygame.transform.rotozoom(self.img0, 0, 0.4)
         self.ghost = pygame.transform.rotozoom(self.ghost0, 0, 0.4)
-        self.amount = 3
+        self.amount = mechanics.costs[self.name]
         self.focustimer = 0
         self.active = None  # Enough mutagen to activate
         self.currentimg = self.img
@@ -79,7 +79,7 @@ class BuildIcon(object):
 class MutagenMeter(Meter):
     def __init__(self):
         Meter.__init__(self)
-        self.icons = [BuildIcon(self, "eye")]
+        self.icons = [BuildIcon(self, name) for name in mechanics.costs]
 
     def think(self, dt):
         Meter.think(self, dt)

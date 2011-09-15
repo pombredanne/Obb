@@ -51,7 +51,7 @@ class Body(object):
     def canplaceorgan(self, edge, otype):
         """If you can place the specified organ type on the specified edge,
         return the corresponding part. Otherwise return None"""
-        otypes = {"eye": Eye}
+        otypes = {"eye":Eye, "brain":Brain}
         if isinstance(otype, str): otype = otypes[otype]
         for bud in (edge, vista.HexGrid.opposite(*edge)):
             if bud not in self.takenbuds: continue
@@ -312,9 +312,21 @@ class Eye(Organ):
     def draw0(self, zoom, status, growth, blink):
         if growth != 1:
             return Organ.draw0(self, zoom, status, growth)
-        center = cx, cy = zoom, zoom
         color = status or self.color
         return graphics.eye(color, self.edge, blink, zoom = zoom)
+
+class Brain(Organ):
+    """Lets you control more organs"""
+    color = "app0"
+
+    def draw0(self, zoom, status, growth):
+        color = status or None
+        if growth != 1:
+            segs = min(int(8. * growth), 3)
+            R = int(max(20 * growth - 10, 0)) * 0.1
+        else:
+            segs, R = 3, 1
+        return graphics.brain(0.6*R, color, self.edge, zoom = zoom, segs = segs)
 
 class Leaf(Organ):
     """Collects light and generates energy"""
