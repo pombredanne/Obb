@@ -86,12 +86,11 @@ class Play(context.Context):
         elif vista.vrect.collidepoint(mousepos):
             if self.parttobuild is not None and self.canbuild and self.body.canaddpart(self.parttobuild):
                 self.body.addpart(self.parttobuild)
-                if self.panel.selected:
+                if self.panel.selected is not None:
                     self.panel.claimtile()
-                if self.status.selected:
+                if self.status.selected is not None:
                     self.status.select()
                 self.parttobuild = None
-
 
     def pointchildbyedge(self, screenpos):
         edge = vista.grid.nearestedge(vista.screentoworld(screenpos))

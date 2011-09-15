@@ -9,6 +9,10 @@ class Panel(object):
         self.ages = [-2, -2.5, -3]
         self.centers = [(settings.px/2, (j*2+1)*settings.ptilesize) for j in (0,1,2)]
         self.selected = None
+        self.trashimg = vista.Surface(80, 80, (64, 64, 64))
+        self.trashrect = self.trashimg.get_rect(bottomleft = (20, 440))
+        self.cutimg = vista.Surface(80, 80, (128, 0, 0))
+        self.cutrect = self.trashimg.get_rect(bottomleft = (100, 440))
 
     def newspec(self, jtile):
         return mechanics.randomspec("app%s" % jtile)
@@ -30,6 +34,10 @@ class Panel(object):
             vista.psurf.blit(img, rect)
         if self.selected is not None:
             pygame.draw.circle(vista.psurf, (255, 255, 255), self.centers[self.selected], settings.ptilesize, 2)
+
+        vista.psurf.blit(self.trashimg, self.trashrect)
+        vista.psurf.blit(self.cutimg, self.cutrect)
+
 
     def iconp(self, (mx, my)):
         """Any icons under this position?"""
