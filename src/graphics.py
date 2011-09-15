@@ -96,7 +96,7 @@ def spherecircles(R, r0 = None, lvector = (-1,-1,2), cache = {}):
 
 def lobecircles(R, angle = 0, r0 = None, lvector = (-1,-1,2), cache = {}):
     """Specs for a bunch of circles in a spherical cluster"""
-    seed = R, r0, tuple(lvector)
+    seed = R, angle, r0, tuple(lvector)
     if seed in cache: return cache[seed]
     lx, ly, lz = lvector
     sl = math.sqrt(lx ** 2 + ly ** 2 + lz ** 2)
@@ -251,6 +251,7 @@ def brain(Rfac = 0.6, color=None, edge0=3, zoom = settings.tzoom0, segs = 3):
         img.blit(lobeimg, lobeimg.get_rect(center = img.get_rect().center))
     return img
 
+# TODO: support transparency in eyeballs
 def eyeball(blink = 1, edge0 = 3, zoom = settings.tzoom0, cache = {}):
     blink = int(blink * 6) / 6.
     edge0 = 0 if blink == 1 else edge0 % 3
@@ -265,7 +266,7 @@ def eyeball(blink = 1, edge0 = 3, zoom = settings.tzoom0, cache = {}):
             rect.center = zoom, zoom
             pygame.draw.ellipse(img, (255, 255, 255), rect)
         if blink >= 0.5:
-            pygame.draw.circle(img, (0, 0, 0), (zoom, zoom), int(zoom * 0.2))
+            pygame.draw.circle(img, (0, 0, 0), (zoom, zoom), int(zoom * 0.16))
     else:
         img0 = eyeball(blink)
         img = pygame.transform.rotozoom(img0, -60 * edge0, float(zoom) / settings.tzoom0)
@@ -278,6 +279,22 @@ def eye(color=(1,1,1,1), edge0=3, blink = 1, zoom = settings.tzoom0):
     eyeimg = eyeball(blink, edge0, zoom)
     img.blit(eyeimg, eyeimg.get_rect(center = img.get_rect().center))
     return img
+
+# TODO: implement blinkage
+def eyebrain(Rfac = 0.6, color=None, edge0=3, blink = 1, zoom = settings.tzoom0, segs = 3):
+    img = app((3,), color or colors["app0"], edge0, zoom, segs=segs).copy()
+    if Rfac:
+        lobeimg = lobes(Rfac, color or (1,.8,.8,1), (edge0%3)*60, zoom)
+        img.blit(lobeimg, lobeimg.get_rect(center = img.get_rect().center))
+        x0, y0 = img.get_rect().center
+        for dedge,r in ((0,0.3),(1,0.4),(2,0.1),(2,0.45),(3,0.35),(4,0.4),(5,.25)):
+            angle = math.radians((edge0 + dedge) * 60 + 20)
+            dx = int(zoom * r * math.sin(angle) * Rfac / 0.6)
+            dy = -int(zoom * r * math.cos(angle) * Rfac / 0.6)
+            eyeimg = eyeball(1-r/2, (dedge+edge0)%6, int(zoom/2.5))
+            img.blit(eyeimg, eyeimg.get_rect(center = (x0+dx,y0+dy)))
+    return img
+
 
 stalkimages = []
 def core(_color, growth = 0, zoom = settings.tzoom0):
@@ -450,7 +467,7 @@ def meter(img, level, color1 = (0.5, 0, 1), color0 = (0.2, 0.2, 0.2)):
 def icon(name):
     s = settings.largeiconsize
     img = vista.Surface(s)
-    if name in ("eye", "brain"):
+    if name in ("eye", "brain", "eyebrain"):
         r, g, b, a = colors["app0"]
     color0 = int(r*255), int(g*255), int(b*255)
     color1 = int(r*128), int(g*128), int(b*128)
@@ -517,6 +534,7 @@ if __name__ == "__main__":
 #        drawgraylobes(img, (100, 100), 60, 10)
 #        img = sphere(0.5, color = "ghost", zoom = 60)
         img = brain()
+        img = brain(edge0=1)
     if False:
         img = vista.Surface(40, 400, (0, 0, 0))
         drawgrayhelix(img, (20,0), (20,400))
