@@ -14,7 +14,7 @@ class Meter(object):
 
     def getimg(self, height):
         img = vista.Surface(60, 2*height)
-        graphics.drawgrayhelix(img, (30, 2*height), (30, 0))
+        graphics.helixcircles.draw(img, (30, 0), (0, 2*height))
         return pygame.transform.smoothscale(img, (30, height))
 
     def think(self, dt):

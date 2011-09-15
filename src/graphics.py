@@ -32,6 +32,14 @@ def drawgraycircles(surf, circs, (x0, y0) = (0, 0)):
     for _, x, y, r, g in circs:
         pygame.draw.circle(surf, (g,g,g), (x+x0, y+y0), r, 0)
 
+def drawchannelcircles(surf, allcircs, (x0, y0) = (0, 0)):
+    assert len(allcircs) <= 3
+    circs = [(z,x,y,r,(g,0,0)) for z,x,y,r,g in allcircs[0]]
+    if len(allcircs) > 1: circs += [(z,x,y,r,(0,g,0)) for z,x,y,r,g in allcircs[1]]
+    if len(allcircs) > 2: circs += [(z,x,y,r,(0,0,g)) for z,x,y,r,g in allcircs[2]]
+    for _, x, y, r, color in sorted(circs):
+        pygame.draw.circle(surf, color, (x+x0, y+y0), r, 0)
+
 # This function is idempotent. Just in case anyone asks.
 def normcircles(circs):
     circs[:] = [(z, int(x+.5), int(y+.5), int(r+.5), min(max(int(g+.5),0),255))
@@ -48,8 +56,10 @@ def maketransparent(surf):
     filtersurface(surf, 1, 1, 1, 0.5)
 
 class Circles(object):
+    """A graphic that's made from repeated calls to pygame.draw.circles"""
     def __init__(self):
         self.cache = {}
+        self.imgcache = {}
 
     def setdefaults(self, *args):
         """Return a list that's in the same order as the args to getkey
@@ -63,7 +73,6 @@ class Circles(object):
         """Be a generator, make things easier"""
         raise NotImplementedError
 
-
     def __call__(self, *args, **kw):
         args = self.setdefaults(*args, **kw)
         key = self.getkey(*args)
@@ -75,6 +84,33 @@ class Circles(object):
         random.setstate(rstate)
         self.cache[key] = circs
         return circs
+
+    def draw(self, surf, offset, *args, **kw):
+        circs = self(*args, **kw)
+        drawgraycircles(surf, circs, offset)
+
+    def grayimg(self, size, *args, **kw):
+        size = int(size)
+        key = self.getimgkey(size, *args, **kw)
+        if key in self.imgcache: return self.imgcache[key]
+        img = vista.Surface(2*size)
+        self.issuedraw(img, *key)
+        self.imgcache[key] = img
+        return img
+
+    def graytile(self, zoom = settings.tzoom0, *args, **kw):
+        key = zoom, self.getimgkey(*args, **kw)
+        if key in self.imgcache: return self.imgcache[key]
+        if zoom == settings.tzoom0:
+            img0 = self.grayimg(*args, **kw)
+            img = vista.Surface(2*zoom)
+            img.blit(img0, img0.get_rect(center = (zoom,zoom)))
+        else:
+            img0 = self.graytile(settings.tzoom0, *args, **kw)
+            img = pygame.transform.smoothscale(img0, (2*zoom, 2*zoom))
+        self.imgcache[key] = img
+        return img
+
 
 class SegmentCircles(Circles):
     def setdefaults(self, (dx, dy), width = None, r0 = None, s0 = 0):
@@ -116,6 +152,13 @@ class SphereCircles(Circles):
             g = 255 * (0.55 + 0.45 * (lx*x+ly*y+lz*z)/sl/R)
             yield z, x, y, r, g
 
+    def getimgkey(self, size, r0 = None):
+        return size, r0
+
+    def issuedraw(self, img, size, r0):
+        self.draw(img, (size, size), size, r0)
+
+
 spherecircles = SphereCircles()
 
 class LobeCircles(SphereCircles):
@@ -130,6 +173,13 @@ class LobeCircles(SphereCircles):
             if math.sqrt((1.2*x) ** 2 + y ** 2 + z ** 2) + r > R: continue
             x, y = C * x - S * y, C * y + S * x
             yield z, x, y, r, g
+
+    def getimgkey(self, size, angle = 0, r0 = None):
+        return size, angle, r0
+
+    def issuedraw(self, img, size, angle, r0):
+        self.draw(img, (size, size), size, angle, r0)
+
 
 lobecircles = LobeCircles()
 
@@ -169,70 +219,12 @@ class HelixCircles(Circles):
 
 helixcircles = HelixCircles()
 
-def drawgraysegment(surf, (x0, y0), (x1, y1), width = None, r0 = None, s0 = None):
-    circs = segmentcircles((x1-x0,y1-y0), width, r0, s0)
-    drawgraycircles(surf, circs, (x0,y0))
 
-def drawgraysphere(surf, (x0, y0), R, r0 = None):
-    circs = spherecircles(R, r0)
-    drawgraycircles(surf, circs, (x0,y0))
 
-def drawgraylobes(surf, (x0, y0), R, angle = 0, r0 = None):
-    circs = lobecircles(R, angle, r0)
-    drawgraycircles(surf, circs, (x0,y0))
 
-def drawgrayhelix(surf, (x0, y0), (x1, y1), offs = None, R = None, r = None, coil = None):
-    circs = helixcircles((x1-x0, y1-y0), offs, R, r, coil)
-    drawgraycircles(surf, circs, (x0, y0))
-
-def graysphere(R, r0 = None, cache = {}):
-    R = int(R)
-    key = R, r0
-    if key in cache: return cache[key]
-    img = vista.Surface(2*R)
-    drawgraysphere(img, (R,R), R, r0)
-    cache[key] = img
-    return img
-
-def graylobes(R, angle = 0, r0 = None, cache = {}):
-    R = int(R)
-    key = R, angle, r0
-    if key in cache: return cache[key]
-    img = vista.Surface(2*R)
-    drawgraylobes(img, (R,R), R, angle, r0)
-    cache[key] = img
-    return img
-
-def grayspherezoom(Rfac, (x0,y0)=(0,0), zoom = settings.tzoom0, cache = {}):
+def sphere(Rfac, color=(1, 1, 1, 1), zoom = settings.tzoom0):
     R = int(Rfac * settings.tzoom0)
-    key = R, x0, y0, zoom
-    if key in cache: return cache[key]
-    if zoom == settings.tzoom0:
-        img = vista.Surface(2*zoom)
-        sphereimg = graysphere(R)
-        img.blit(sphereimg, sphereimg.get_rect(center = ((1+x0)*zoom, (1+y0)*zoom)))
-    else:
-        img0 = grayspherezoom(Rfac, (x0,y0))
-        img = pygame.transform.smoothscale(img0, (2*zoom, 2*zoom))
-    cache[key] = img
-    return cache[key]
-
-def graylobeszoom(Rfac, (x0,y0)=(0,0), angle=0, zoom = settings.tzoom0, cache = {}):
-    R = int(Rfac * settings.tzoom0)
-    key = R, angle, zoom
-    if key in cache: return cache[key]
-    if zoom == settings.tzoom0:
-        img = vista.Surface(2*zoom)
-        sphereimg = graylobes(R, angle)
-        img.blit(sphereimg, sphereimg.get_rect(center = ((1+x0)*zoom, (1+y0)*zoom)))
-    else:
-        img0 = graylobeszoom(Rfac, (x0,y0), angle)
-        img = pygame.transform.smoothscale(img0, (2*zoom, 2*zoom))
-    cache[key] = img
-    return cache[key]
-
-def sphere(Rfac, color=(1, 1, 1, 1), (x0,y0)=(0,0), zoom = settings.tzoom0):
-    img = grayspherezoom(Rfac, (x0,y0), zoom)
+    img = spherecircles.graytile(zoom, R)
     if color in colors: color = colors[color]
     if color not in ((1,1,1), (1,1,1,1)):
         img = img.copy()
@@ -240,7 +232,8 @@ def sphere(Rfac, color=(1, 1, 1, 1), (x0,y0)=(0,0), zoom = settings.tzoom0):
     return img
 
 def lobes(Rfac, color=(1, 1, 1, 1), angle = 0, zoom = settings.tzoom0):
-    img = graylobeszoom(Rfac, (0, 0), angle, zoom)
+    R = int(Rfac * settings.tzoom0)
+    img = lobecircles.graytile(zoom, R, angle)
     if color in colors: color = colors[color]
     if color not in ((1,1,1), (1,1,1,1)):
         img = img.copy()
@@ -319,7 +312,7 @@ def core(_color, growth = 0, zoom = settings.tzoom0):
             r, g, b, a = colors["app%s" % (edge % 3)]
             S, C = math.sin(math.radians(60 * edge)), -math.cos(math.radians(60 * edge))
             dx, dy = 0.3 * S * z, 0.3 * C * z
-            drawgraysegment(stalkimg, (x0,y0), (x0+dx, y0+dy), 0.3 * z)
+            segmentcircles.draw(stalkimg, (x0,y0), (dx, dy), 0.3 * z)
             filtersurface(stalkimg, r, g, b, a)
             stalkimages.append(stalkimg)
     for edge in range(6):
@@ -363,7 +356,8 @@ def graystalk(dedge, segs = 8, cache = {}):
     ps = cBezier(p0, p1, p2, p3, 8)
     ps = [(int(x+.5),int(y+.5)) for x,y in ps]
     for j in range(segs):
-        drawgraysegment(img, ps[j], ps[j+1], int(z*0.3), None, j)
+        (x0, y0), (x1, y1) = ps[j], ps[j+1]
+        segmentcircles.draw(img, (x0,y0), (x1-x0,y1-y0), z*0.3, None, j)
     cache[key] = img
     return img
 
