@@ -1,4 +1,4 @@
-import pygame, random
+import pygame, random, math
 import vista, mechanics
 
 
@@ -8,19 +8,33 @@ class Twinkler(object):
         self.x, self.y = x, y
         self.vx = self.vy = 0
         self.t = 0
-        self.tugger = None
+        self.sucker = None
+        self.claimed = False
     
     def think(self, dt):
-        self.ax = random.uniform(-8, 8)
-        self.ay = random.uniform(-8, 8)
-        self.vx += self.ax * dt
-        self.vy += self.ay * dt
+        if self.sucker:
+            sx, sy = self.sucker.worldpos
+            f = math.exp(-dt)
+            self.vx *= f
+            self.vy *= f
+            self.vx += (sx - self.x) * dt
+            self.vy += (sy - self.y) * dt
+        else:
+            self.ax = random.uniform(-4, 4)
+            self.ay = random.uniform(-4, 4)
+            self.vx += self.ax * dt
+            self.vy += self.ay * dt
         self.x += self.vx * dt
         self.y += self.vy * dt
         self.t += dt
+        if self.sucker:
+            if (self.x - sx) ** 2 + (self.y - sy) ** 2 < 0.3 ** 2:
+                self.claimed = True
+                self.sucker.energize()
+                self.sucker = None
 
     def alive(self):
-        return self.t < 5
+        return not self.claimed and (self.sucker or self.t < 5)
 
     def draw(self):
         r = int(vista.zoom * 0.3)

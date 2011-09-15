@@ -12,6 +12,8 @@ class Body(object):
         self.core = Core(self, (x, y))
         self.mask = None
         self.addpart(self.core)
+        self.suckers = []
+        self.mutagen = 0
 
     def addrandompart(self, n = 1, maxtries = 100):
         added = 0
@@ -41,6 +43,11 @@ class Body(object):
         for part in self.parts:
             self.control += part.controlneed
             self.maxcontrol += part.control
+
+    def checkmutagen(self):
+        x = self.mutagen
+        self.mutagen = 0
+        return x
 
     def canplaceapp(self, edge, appspec):
         """If you can place the specified app on the specified edge,
@@ -88,6 +95,8 @@ class Body(object):
             self.mask.addp(*part.lightcircle())
             vista.setgrect(self.mask.bounds())
         self.calccontrol()
+        if part.suction:
+            self.suckers.append(part)
 
     def remakemask(self):
         """Build the mask from scratch"""
@@ -111,6 +120,8 @@ class Body(object):
         if part.lightradius > 0:
             self.mask = None
         self.calccontrol()
+        if part in self.suckers:
+            self.suckers.remove(part)
 
     def removebranch(self, part):
         """Remove a part and all its children"""
@@ -125,6 +136,18 @@ class Body(object):
         if self.mask is None:
             self.remakemask()
             vista.setgrect(self.mask.bounds())
+
+    def claimtwinklers(self, ts):
+        random.shuffle(self.suckers)
+        for t in ts:
+            if t.claimed or t.sucker is not None: continue
+            for s in self.suckers:
+                sx, sy = s.worldpos
+                dx, dy = sx - t.x, sy - t.y
+                if dx ** 2 + dy ** 2 < 2.5 ** 2:
+                    t.sucker = s
+                    break
+        return None
     
     def draw(self):
         shields = []
@@ -149,6 +172,7 @@ class BodyPart(object):
     control = 0
     controlneed = 0
     shield = 0
+    suction = False
     def __init__(self, body, parent, (x,y), edge = 0):
         self.body = body
         self.parent = parent
@@ -262,12 +286,6 @@ class Core(BodyPart):
         color = "core"
         return graphics.core(color, growth, zoom)
 
-def qBezier((x0,y0), (x1,y1), (x2,y2), n = 6):
-    """Quadratic bezier curve"""
-    ts = [float(j) / n for j in range(n+1)]
-    cs = [((1-t)**2, 2*t*(1-t), t**2) for t in ts]
-    return [(a*x0+b*x1+c*x2, a*y0+b*y1+c*y2) for a,b,c in cs]    
-
 class Appendage(BodyPart):
     """A stalk that leads to one or more subsequent buds"""
     draworder = 1
@@ -348,11 +366,14 @@ class Leaf(Organ):
     """Collects light and generates energy"""
 
 class Mutagenitor(Organ):
-    """Collects light and generates mutagen"""
+    """Collects twinklers and generates mutagen"""
+    suction = True
 
     def draw0(self, zoom, status, growth):
         return graphics.mutagenitor.img(zoom = zoom, growth = growth, color = status, edge0 = self.edge)
 
+    def energize(self):
+        self.body.mutagen += mechanics.mutagenhit
 
 class Coil(Organ):
     """Don't know what it does yet"""

@@ -77,6 +77,8 @@ class Play(context.Context):
         for t in self.twinklers:
             t.think(dt)
         self.twinklers = [t for t in self.twinklers if t.alive()]
+        self.body.claimtwinklers(self.twinklers)
+        self.status.mutagenmeter.amount += self.body.checkmutagen()
 
     def handleleftclick(self, mousepos):
         icon = self.status.iconpoint(mousepos)  # Any icons pointed to
@@ -104,7 +106,7 @@ class Play(context.Context):
                 if self.panel.selected is not None:
                     self.panel.claimtile()
                 if self.status.selected is not None:
-                    self.status.select()
+                    self.status.build()
                 self.parttobuild = None
 
     def pointchildbyedge(self, screenpos):

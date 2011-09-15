@@ -10,7 +10,7 @@ class Meter(object):
         self.baseimg = self.getimg(self.height)
         self.bottom = 30, self.maxheight + 40
         self.amount = 0
-        self.rate = 50.
+        self.rate = mechanics.basemutagenrate
 
     def getimg(self, height):
         return graphics.helixmeter(height)
@@ -24,7 +24,7 @@ class Meter(object):
     
     def getlevel(self, amount = None):
         if amount is None: amount = self.amount
-        return int(min(amount, self.maxheight))
+        return int(max(min(amount, self.height), 0))
     
     def draw(self):
         level = self.getlevel()
@@ -103,6 +103,11 @@ class Status(object):
 
     def select(self, name = None):
         self.selected = name if name != self.selected else None
+
+    def build(self):
+        assert self.selected
+        self.mutagenmeter.amount -= mechanics.costs[self.selected]
+        self.select()
 
     def think(self, dt, mousepos):
         self.mutagenmeter.think(dt)
