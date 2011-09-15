@@ -1,6 +1,6 @@
 import pygame, random
 from pygame.locals import *
-import vista, context, body, settings, panel, status, noise
+import vista, context, body, settings, panel, status, noise, twinkler
 
 class Play(context.Context):
     def __init__(self):
@@ -11,6 +11,7 @@ class Play(context.Context):
         self.parttobuild = None
         self.edgepoint = None
         self.iconclicked = None
+        self.twinklers = []
 
     def think(self, dt, events, keys, mousepos, buttons):
 
@@ -72,6 +73,10 @@ class Play(context.Context):
         self.body.think(dt)
         self.panel.think(dt)
         self.status.think(dt, mousepos)
+        self.twinklers += twinkler.newtwinklers(self.body.mask, dt)
+        for t in self.twinklers:
+            t.think(dt)
+        self.twinklers = [t for t in self.twinklers if t.alive()]
 
     def handleleftclick(self, mousepos):
         icon = self.status.iconpoint(mousepos)  # Any icons pointed to
@@ -120,7 +125,10 @@ class Play(context.Context):
         self.body.draw()
         if self.parttobuild is not None:
             self.parttobuild.draw()
+        for t in self.twinklers:
+            t.draw()
         vista.addmask(self.body.mask)
         self.panel.draw()
         self.status.draw()
+
 

@@ -2,6 +2,7 @@ import random
 import vista
 
 vthreshold = 0.3  # Visibility threshold
+twinklerrate = 0.001  # Twinklers per unit area per second
 
 # Permissable dedges for tiles
 # Conspicuous in its absense is a straight piece
