@@ -56,17 +56,17 @@ class Body(object):
             return part
         return None
 
-    def canplaceorgan(self, edge, otype):
+    def canplaceorgan(self, edge, ostr):
         """If you can place the specified organ type on the specified edge,
         return the corresponding part. Otherwise return None"""
         otypes = {"eye":Eye, "brain":Brain, "eyebrain":EyeBrain, "tripleeye":TripleEye,
                 "mutagenitor":Mutagenitor, "coil":Coil}
-        if isinstance(otype, str): otype = otypes[otype]
+        otype = otypes[ostr]
         for bud in (edge, vista.HexGrid.opposite(*edge)):
             if bud not in self.takenbuds: continue
             parent = self.takenbuds[bud]
             if parent.buds[bud] is not None: continue
-            if otype.color != parent.budcolors[bud]: continue
+            if mechanics.colors[ostr] != parent.budcolors[bud]: continue
             part = otype(self, parent, bud[0], bud[1])
             return part
         return None
@@ -301,7 +301,6 @@ class Organ(BodyPart):
 class Eye(Organ):
     """Extends your visible region"""
     lightradius = 5
-    color = "app0"
 
     def __init__(self, *args, **kw):
         Organ.__init__(self, *args, **kw)
@@ -327,7 +326,6 @@ class Eye(Organ):
 
 class TripleEye(Eye):
     lightradius = 8
-    color = "app0"
 
     def draw0(self, zoom, status, growth, blink):
         return graphics.tripleeye.img(zoom = zoom, growth = growth, color = status, edge0 = self.edge, blink = blink)
@@ -336,7 +334,6 @@ class TripleEye(Eye):
 
 class Brain(Organ):
     """Lets you control more organs"""
-    color = "app0"
     control = 5
     controlneed = 0
 
@@ -345,7 +342,6 @@ class Brain(Organ):
 
 class EyeBrain(Brain):
     """Hey, you got eyeballs in my brain! Hey, you got brains in my eyeball!"""
-    lightradius = 5
 
     def draw0(self, zoom, status, growth):
         return graphics.eyebrain.img(zoom = zoom, growth = growth, color = status, edge0 = self.edge)
@@ -353,11 +349,9 @@ class EyeBrain(Brain):
 
 class Leaf(Organ):
     """Collects light and generates energy"""
-    color = "app1"
 
 class Mutagenitor(Organ):
     """Collects light and generates mutagen"""
-    color = "app2"
 
     def draw0(self, zoom, status, growth):
         return graphics.mutagenitor.img(zoom = zoom, growth = growth, color = status, edge0 = self.edge)
@@ -366,7 +360,6 @@ class Mutagenitor(Organ):
 class Coil(Organ):
     """Don't know what it does yet"""
     shield = 2.5
-    color = "app1"
 
     def draw0(self, zoom, status, growth):
         return graphics.coil.img(zoom = zoom, growth = growth, color = status, edge0 = self.edge)

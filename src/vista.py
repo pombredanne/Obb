@@ -45,6 +45,7 @@ def Surface(x, y = None, color = None, alpha = True):
 
 def init():
     global screen, _screen, vrect, prect, zoom, psurf, rsurf, rrect
+    global zoominimg, zoominrect, zoomoutimg, zoomoutrect
     flags = FULLSCREEN | HWSURFACE if settings.fullscreen else 0
     _screen = pygame.display.set_mode(settings.size, flags)
     screen = Surface(settings.size, alpha = False)
@@ -54,9 +55,14 @@ def init():
     vrect = pygame.Rect(settings.vx0, settings.vy0, settings.vx, settings.vy)
     prect = pygame.Rect(settings.px0, settings.py0, settings.px, settings.py)
     rrect = pygame.Rect(settings.rx0, settings.ry0, settings.rx, settings.ry)
+    zoominimg = Surface(40, 40, (128, 128, 128))
+    zoomoutimg = Surface(40, 40, (128, 128, 128))
+    zoominrect = zoominimg.get_rect(bottomright = (settings.vx0 + settings.vx - 4, settings.vy0 + settings.vy - 4))
+    zoomoutrect = zoominimg.get_rect(bottomleft = (settings.vx0 + 4, settings.vy0 + settings.vy - 4))
+
 
 wx0, wy0, wx1, wy1 = -6, -6, 6, 6  # Maximum extent of gameplay window
-zoom = max(settings.zooms)
+zoom = settings.zoom0
 gx0, gy0 = 0, 0  # Gameplay location of world coordinate (0,0)
 
 def setgrect((x0, y0, x1, y1)):
@@ -108,6 +114,11 @@ def think(dt, (mx, my)):
             dy = (ymin + ymax) / 2 - gy0
             gy0 += dy * f
     overlays = []
+    if zoom != min(settings.zooms):
+        overlays.append((zoomoutimg, zoomoutrect))
+    if zoom != max(settings.zooms):
+        overlays.append((zoominimg, zoominrect))
+        
 
 def worldtogameplay((x, y)):
     return int(gx0 + x * zoom + 0.5), int(gy0 - y * zoom + 0.5)

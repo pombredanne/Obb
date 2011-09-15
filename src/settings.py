@@ -13,7 +13,8 @@ rsize = rx, ry = 187, 480
 rx0, ry0 = 667, 0
 
 tzoom0 = 120  # Default tile size (should be rather large)
-zooms = 16, 24, 32, 40, 48, 60
+zooms = 16, 24, 32, 40, 48, 60, 72
+zoom0 = 48
 ptilesize = 60 # Size of selectable tiles in the panel
 largeiconsize = 60
 

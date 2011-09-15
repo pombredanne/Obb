@@ -86,6 +86,10 @@ class Play(context.Context):
             if jtile in (None, 0, 1, 2):
                 self.panel.selecttile(jtile)
             self.status.select()
+        elif vista.zoominrect.collidepoint(mousepos):
+            vista.zoomin()
+        elif vista.zoomoutrect.collidepoint(mousepos):
+            vista.zoomout()
         elif icon is not None:
             self.status.select(icon.name)
             self.panel.selecttile()
