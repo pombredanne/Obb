@@ -48,6 +48,20 @@ class Body(object):
             return part
         return None
 
+    def canplaceorgan(self, edge, otype):
+        """If you can place the specified organ type on the specified edge,
+        return the corresponding part. Otherwise return None"""
+        otypes = {"eye": Eye}
+        if isinstance(otype, str): otype = otypes[otype]
+        for bud in (edge, vista.HexGrid.opposite(*edge)):
+            if bud not in self.takenbuds: continue
+            parent = self.takenbuds[bud]
+            if parent.buds[bud] is not None: continue
+            if otype.color != parent.budcolors[bud]: continue
+            part = otype(self, parent, bud[0], bud[1])
+            return part
+        return None
+
     def canaddpart(self, part):
         tiles, edges = part.claimedsets()
         if any(tile in self.takentiles for tile in tiles): return False
@@ -193,6 +207,8 @@ class BodyPart(object):
         zoom = int(vista.zoom + 0.5)
         if self.dietimer is not None:
             growth = self.dietimer / self.dietime
+        elif "ghost" in self.status:
+            growth = 1
         elif self.growtimer:
             growth = 1 - self.growtimer / self.growtime
         else:
@@ -290,6 +306,7 @@ class Eye(Organ):
     def getkey(self):
         blink = abs(self.tblink - 0.15) / 0.15 if self.tblink else 1
         while blink > 1.0001: blink = abs(blink - 2)
+        if "ghost" in self.status: blink = 1
         return Organ.getkey(self) + (blink,)
 
     def draw0(self, zoom, status, growth, blink):

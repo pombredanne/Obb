@@ -16,15 +16,18 @@ class Play(context.Context):
 
         if vista.vrect.collidepoint(mousepos):
             edge = vista.grid.nearestedge(vista.screentoworld(mousepos))
-            if self.panel.selected is not None:
-                if edge != self.edgepoint:
+            if edge != self.edgepoint:
+                if self.panel.selected is not None:
                     appspec = self.panel.tiles[self.panel.selected]
                     self.parttobuild = self.body.canplaceapp(edge, appspec)
-                    if self.parttobuild is not None:
-                        worldpos = vista.HexGrid.edgeworld(*edge)
-                        visible = self.body.mask.isvisible(worldpos)
-                        self.canbuild = self.body.canaddpart(self.parttobuild) and visible
-                        self.parttobuild.status = "ghost" if self.canbuild else "badghost"
+                elif self.status.selected is not None:
+                    otype = self.status.selected
+                    self.parttobuild = self.body.canplaceorgan(edge, otype)
+                if self.parttobuild is not None:
+                    worldpos = vista.HexGrid.edgeworld(*edge)
+                    visible = self.body.mask.isvisible(worldpos)
+                    self.canbuild = self.body.canaddpart(self.parttobuild) and visible
+                    self.parttobuild.status = "ghost" if self.canbuild else "badghost"
         else:
             edge = None
             self.parttobuild = None
@@ -83,7 +86,11 @@ class Play(context.Context):
         elif vista.vrect.collidepoint(mousepos):
             if self.parttobuild is not None and self.canbuild and self.body.canaddpart(self.parttobuild):
                 self.body.addpart(self.parttobuild)
-                self.panel.claimtile()
+                if self.panel.selected:
+                    self.panel.claimtile()
+                if self.status.selected:
+                    self.status.select()
+                self.parttobuild = None
 
 
     def pointchildbyedge(self, screenpos):
