@@ -100,11 +100,11 @@ def helixcircles((dx, dy), offs = None, R = None, r = None, coil = None, cache =
     key = dx, dy, offs, R, r, coil
     if key in cache: return cache[key]
     if R is None: R = 16
-    if r is None: r = int(R / 2)
+    if r is None: r = int(R / 3)
     if coil is None: coil = R*6
     d = math.sqrt(dx ** 2 + dy ** 2)
     circs = []
-    nextrung = 0
+    nextrung = r
     for j in range(int(2. * d / r)):
         h = j / (2. / r)
         angles = [(h / coil + off) * 2 * math.pi for off in offs]
@@ -117,7 +117,7 @@ def helixcircles((dx, dy), offs = None, R = None, r = None, coil = None, cache =
         for z,x,y,g in zip(zs, xs, ys, gs):
             circs.append((z, (x, y, r, g)))
         if len(offs) == 2 and h > nextrung:
-            nextrung += 2 * r
+            nextrung += 1.7 * r
             (x0, x1), (y0, y1), (g0, g1), (z0, z1) = xs, ys, gs, zs
             for k in range(20):
                 k *= 0.05
