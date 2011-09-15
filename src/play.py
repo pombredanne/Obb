@@ -6,7 +6,7 @@ class Play(context.Context):
     def __init__(self):
         self.body = body.Body()
         self.panel = panel.Panel()
-        self.status = status.Status()
+        self.status = status.Status(self.body)
         self.target = None
         self.parttobuild = None
         self.edgepoint = None

@@ -8,6 +8,7 @@ class Body(object):
         self.takentiles = {}
         self.takenedges = {}
         self.takenbuds = {}
+        self.calccontrol()
         self.core = Core(self, (x, y))
         self.mask = None
         self.addpart(self.core)
@@ -35,6 +36,13 @@ class Body(object):
             added += 1
             if added == n: return n
         return added
+
+    def calccontrol(self):
+        self.control = 0
+        self.maxcontrol = 0
+        for part in self.parts:
+            self.control += part.controlneed
+            self.maxcontrol += part.control
 
     def canplaceapp(self, edge, appspec):
         """If you can place the specified app on the specified edge,
@@ -64,6 +72,7 @@ class Body(object):
 
     def canaddpart(self, part):
         tiles, edges = part.claimedsets()
+        if part.controlneed + self.control > self.maxcontrol: return False
         if any(tile in self.takentiles for tile in tiles): return False
         if any(edge in self.takenedges for edge in edges): return False
         return True
@@ -81,6 +90,7 @@ class Body(object):
         if part.lightradius > 0 and self.mask is not None:
             self.mask.addp(*part.lightcircle())
             vista.setgrect(self.mask.bounds())
+        self.calccontrol()
 
     def remakemask(self):
         """Build the mask from scratch"""
@@ -103,6 +113,7 @@ class Body(object):
         assert part not in self.takenedges.values()
         if part.lightradius > 0:
             self.mask = None
+        self.calccontrol()
 
     def removebranch(self, part):
         """Remove a part and all its children"""
@@ -134,6 +145,7 @@ class BodyPart(object):
     growtime = 0
     dietime = 0.1
     control = 0
+    controlneed = 0
     def __init__(self, body, parent, (x,y), edge = 0):
         self.body = body
         self.parent = parent
@@ -275,6 +287,7 @@ class Organ(BodyPart):
     """A functional body part that terminates a stalk"""
     draworder = 2
     growtime = 0.3
+    controlneed = 1
     def draw0(self, zoom, status, growth):
         color = status or self.color
         if growth != 1:
@@ -321,6 +334,7 @@ class Brain(Organ):
     """Lets you control more organs"""
     color = "app0"
     control = 5
+    controlneed = 0
 
     def draw0(self, zoom, status, growth):
         color = status or None

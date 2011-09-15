@@ -94,8 +94,9 @@ class MutagenMeter(Meter):
 
 class Status(object):
     """Handles logic for the right-hand status panel"""
-    def __init__(self):
+    def __init__(self, body):
         self.mutagenmeter = MutagenMeter()
+        self.body = body
         self.selected = None
         self.control = 5
         self.maxcontrol = 10
@@ -123,7 +124,12 @@ class Status(object):
 
     def draw(self):
         self.mutagenmeter.draw()
-        controlimg = font.img("%s/%s" % (self.control, self.maxcontrol), color=(0,0,0))
+        
+        if self.body.control >= self.body.maxcontrol:
+            color, size = (128, 0, 0), 48
+        else:
+            color, size = (0,0,0), 32
+        controlimg = font.img("%s/%s" % (self.body.control, self.body.maxcontrol), size=size, color=color)
         vista.rsurf.blit(self.brainimg, self.brainrect)
         vista.rsurf.blit(controlimg, controlimg.get_rect(midleft = self.brainrect.midright))
 
