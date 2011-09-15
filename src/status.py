@@ -1,11 +1,11 @@
 import pygame, math
 from pygame.locals import *
-import vista, graphics, mechanics
+import vista, graphics, mechanics, font
 
 
 class Meter(object):
     def __init__(self):
-        self.maxheight = 400
+        self.maxheight = 300
         self.height = 200
         self.baseimg = self.getimg(self.height)
         self.bottom = 30, self.maxheight + 40
@@ -97,6 +97,10 @@ class Status(object):
     def __init__(self):
         self.mutagenmeter = MutagenMeter()
         self.selected = None
+        self.control = 5
+        self.maxcontrol = 10
+        self.brainimg = graphics.brain(zoom = 40)
+        self.brainrect = self.brainimg.get_rect(bottomleft = (0, 480+6))
 
     def select(self, name = None):
         self.selected = name if name != self.selected else None
@@ -119,6 +123,9 @@ class Status(object):
 
     def draw(self):
         self.mutagenmeter.draw()
+        controlimg = font.img("%s/%s" % (self.control, self.maxcontrol), color=(0,0,0))
+        vista.rsurf.blit(self.brainimg, self.brainrect)
+        vista.rsurf.blit(controlimg, controlimg.get_rect(midleft = self.brainrect.midright))
 
 
 

@@ -133,6 +133,7 @@ class BodyPart(object):
     draworder = 0
     growtime = 0
     dietime = 0.1
+    control = 0
     def __init__(self, body, parent, (x,y), edge = 0):
         self.body = body
         self.parent = parent
@@ -231,6 +232,7 @@ class Core(BodyPart):
     """The central core of the body, that has the funny mouth"""
     lightradius = 5
     growtime = 1.8
+    control = 5
     def __init__(self, body, (x,y) = (0,0)):
         BodyPart.__init__(self, body, None, (x,y), 0)
         for edge in range(6):  # One bud in each of six directions
@@ -318,6 +320,7 @@ class Eye(Organ):
 class Brain(Organ):
     """Lets you control more organs"""
     color = "app0"
+    control = 5
 
     def draw0(self, zoom, status, growth):
         color = status or None
