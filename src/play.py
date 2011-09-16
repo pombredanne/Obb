@@ -1,6 +1,6 @@
 import pygame, random
 from pygame.locals import *
-import vista, context, body, settings, panel, status, noise, twinkler
+import vista, context, body, settings, panel, status, noise, twinkler, enemy
 
 class Play(context.Context):
     def __init__(self):
@@ -12,6 +12,7 @@ class Play(context.Context):
         self.edgepoint = None
         self.iconclicked = None
         self.twinklers = []
+        self.shots = []
 
     def think(self, dt, events, keys, mousepos, buttons):
 
@@ -78,6 +79,10 @@ class Play(context.Context):
             t.think(dt)
         self.twinklers = [t for t in self.twinklers if t.alive()]
         self.body.claimtwinklers(self.twinklers)
+        if random.random() < dt:
+            self.shots += enemy.newshots(self.body)
+        for s in self.shots: s.think(dt)
+        self.shots = [s for s in self.shots if s.alive()]
         self.status.mutagenmeter.amount += self.body.checkmutagen()
 
     def handleleftclick(self, mousepos):
@@ -127,8 +132,8 @@ class Play(context.Context):
         self.body.draw()
         if self.parttobuild is not None:
             self.parttobuild.draw()
-        for t in self.twinklers:
-            t.draw()
+        for t in self.twinklers: t.draw()
+        for s in self.shots: s.draw()
         vista.addmask(self.body.mask)
         self.panel.draw()
         self.status.draw()

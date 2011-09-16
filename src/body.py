@@ -1,6 +1,6 @@
 import pygame, random
 from pygame.locals import *
-import vista, mask, graphics, mechanics
+import vista, mask, graphics, mechanics, noise
 
 class Body(object):
     def __init__(self, (x, y) = (0, 0)):
@@ -97,6 +97,7 @@ class Body(object):
         self.calccontrol()
         if part.suction:
             self.suckers.append(part)
+        noise.play("addpart")
 
     def remakemask(self):
         """Build the mask from scratch"""
@@ -122,6 +123,7 @@ class Body(object):
         self.calccontrol()
         if part in self.suckers:
             self.suckers.remove(part)
+        noise.play("removepart")
 
     def removebranch(self, part):
         """Remove a part and all its children"""
@@ -173,6 +175,7 @@ class BodyPart(object):
     controlneed = 0
     shield = 0
     suction = False
+    targetable = False
     def __init__(self, body, parent, (x,y), edge = 0):
         self.body = body
         self.parent = parent
@@ -204,7 +207,9 @@ class BodyPart(object):
             if part is not None:
                 part.die()
         self.dietimer = self.dietime
-        
+
+    def attached(self):
+        return self in self.body.parts
 
     def setbranchstatus(self, status = ""):
         self.status = status
@@ -306,6 +311,7 @@ class Organ(BodyPart):
     draworder = 2
     growtime = 0.3
     controlneed = 1
+    targetable = True
     def draw0(self, zoom, status, growth):
         return graphics.organ.img(zoom = zoom, color = status or self.color, edge0 = self.edge)
 
@@ -373,7 +379,8 @@ class Mutagenitor(Organ):
         return graphics.mutagenitor.img(zoom = zoom, growth = growth, color = status, edge0 = self.edge)
 
     def energize(self):
-        self.body.mutagen += mechanics.mutagenhit
+        if self.attached():
+            self.body.mutagen += mechanics.mutagenhit
 
 class Coil(Organ):
     """Don't know what it does yet"""

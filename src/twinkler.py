@@ -1,5 +1,5 @@
 import pygame, random, math
-import vista, mechanics
+import vista, mechanics, noise
 
 
 class Twinkler(object):
@@ -32,6 +32,7 @@ class Twinkler(object):
                 self.claimed = True
                 self.sucker.energize()
                 self.sucker = None
+                noise.play("energize")
 
     def alive(self):
         return not self.claimed and (self.sucker or self.t < 5)
