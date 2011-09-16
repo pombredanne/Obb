@@ -4,6 +4,7 @@ import vista
 vthreshold = 0.3  # Visibility threshold
 twinklerrate = 0.01  # Twinklers per unit area per second
 mutagenhit = 20  # How much you get when a twinkler hit a mutagenitor
+plasterhit = 20
 basemutagenrate = 4  # How fast it rises on its own
 basehealrate = 4
 mutagen0 = 40  # Base amount
@@ -51,12 +52,11 @@ colors["star"] = "app1"
 # Build/heal
 colors["mutagenitor"] = "app2"
 colors["mutagenpod"] = "app2"
+colors["plasteritor"] = "app2"
 colors["plasterpod"] = "app2"
-#colors["ball"] = "app2"
-#colors["cube"] = "app2"
 
 
 #costs = {"eye":30, "brain":60, "eyebrain": 120, "mutagenitor":80, "tripleeye": 0, "coil":20, "ball":50, "cube": 10}
-costs = {"mutagenpod":10, "plasterpod":20}
+costs = {"mutagenitor":10, "plasteritor":20}
 
 

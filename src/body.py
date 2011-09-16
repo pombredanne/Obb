@@ -477,20 +477,36 @@ class PlasterPod(Organ):
     def draw0(self, zoom, status, growth):
         return graphics.pod.imgplaster(zoom = zoom, growth = growth, color = status, edge0 = self.edge)
 
-'''
 class Mutagenitor(Organ):
     """Collects twinklers and generates mutagen"""
     suction = True
+    amount = mechanics.mutagenhit
 
     def draw0(self, zoom, status, growth):
         # TODO: redraw
-        return graphics.mutagenitor.img(zoom = zoom, growth = growth, color = status, edge0 = self.edge)
+        return graphics.generator.imgmutagen(zoom = zoom, growth = growth, color = status, edge0 = self.edge)
 
     def energize(self):
         if self.attached():
-            self.body.mutagen += mechanics.mutagenhit
+            self.body.mutagen += self.amount
         self.glowtime = 0.5
 
+class Plasteritor(Organ):
+    """Collects twinklers and generates mutagen"""
+    suction = True
+    amount = mechanics.plasterhit
+
+    def draw0(self, zoom, status, growth):
+        # TODO: redraw
+        return graphics.generator.imgplaster(zoom = zoom, growth = growth, color = status, edge0 = self.edge)
+
+    def energize(self):
+        if self.attached():
+            self.body.plaster += self.amount
+        self.glowtime = 0.5
+
+'''
+    """
 class Ball(Organ):
     """Collects twinklers and generates heal power"""
     suction = True
@@ -626,7 +642,8 @@ class Star(Organ):
 otypes = {"eye":Eye, "brain":Brain, "eyebrain":EyeBrain, "tripleeye":TripleEye,
         "coil":Coil, "cube":Cube,
         "bulb":Bulb, "star":Star,
-        "mutagenpod":MutagenPod, "plasterpod":PlasterPod}
+        "mutagenpod":MutagenPod, "plasterpod":PlasterPod,
+        "mutagenitor":Mutagenitor, "plasteritor":Plasteritor}
 
 
 

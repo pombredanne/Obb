@@ -343,15 +343,26 @@ class GeneratorCircles(ColorCircles):
             for z, x, y, r, g in app.getcircles((3,), edge0, 0.3, segs):
                 yield z, x, y, r, (g, 0, 0)
 
-    def img(self, color = None, growth = 1, edge0 = 3, zoom = settings.tzoom0):
+    def img(self, color0, color1, growth = 1, edge0 = 3, zoom = settings.tzoom0):
         gimg = self.graytile(zoom, growth, edge0).copy()
-        if color in colors:
-            color = colors[color]
-        if not color:
-            filtercolorsurface(gimg, colors[mechanics.colors["star"]], colors["star"])
-        else:
-            filtercolorsurface(gimg, color, color)
+        filtercolorsurface(gimg, color0, color1)
         return gimg
+
+    def imgmutagen(self, color = None, growth = 1, edge0 = 3, zoom = settings.tzoom0):
+        if color:
+            if color in colors: color = colors[color]
+            return self.img(color, color, growth, edge0, zoom)
+        color0 = colors[mechanics.colors["mutagenitor"]]
+        color1 = colors["mutagen"]
+        return self.img(color0, color1, growth, edge0, zoom)
+
+    def imgplaster(self, color = None, growth = 1, edge0 = 3, zoom = settings.tzoom0):
+        if color:
+            if color in colors: color = colors[color]
+            return self.img(color, color, growth, edge0, zoom)
+        color0 = colors[mechanics.colors["plasteritor"]]
+        color1 = colors["plaster"]
+        return self.img(color0, color1, growth, edge0, zoom)
 
 generator = GeneratorCircles()
 
