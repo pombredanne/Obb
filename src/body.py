@@ -513,13 +513,58 @@ class Bulb(Organ):
             pygame.draw.aaline(vista.screen, (255, 0, 0), p0, p1, 1)
         Organ.draw(self, *args)
 
+class Star(Organ):
+    """Unleashes a wave of destruction!"""
+    attacker = True
+    attackrange = 0
+    suction = True
+    def __init__(self, *args):
+        Organ.__init__(self, *args)
+        self.wavetime = 0
+
+    def cansee(self, (x, y)):
+        x0, y0 = self.worldpos
+        dx, dy = x - x0, y - y0
+        d = math.sqrt(dx ** 2 + dy ** 2)
+        if d > self.attackrange: return False
+        return True
+
+    def canattack(self, enemy):
+        if not self.wavetime: return False
+        return self.cansee((enemy.x, enemy.y))
+
+    def attack(self, enemy):
+        dhp = int(6 - self.attackrange)
+        enemy.hit(dhp)
+        noise.play("wavehit")
+
+    def think(self, dt):
+        Organ.think(self, dt)
+        self.wavetime = max(self.wavetime - dt, 0)
+        self.attackrange = 5 * (1 - self.wavetime / 0.5) if self.wavetime else 0
+
+    def energize(self):
+        self.wavetime = 0.5
+        noise.play("wavego")
+
+    def draw0(self, zoom, status, growth):
+        return graphics.star.img(zoom = zoom, growth = growth, color = status, edge0 = self.edge)
+    
+    def draw(self, *args):
+        if self.attackrange:
+            p0 = vista.worldtoview(self.worldpos)
+            for dr, g in ((0, 255), (0.2, 192), (0.4, 128), (0.6, 64)):
+                r = int(vista.zoom * (self.attackrange - dr))
+                if r < 0.1: continue
+                pygame.draw.circle(vista.screen, (g, 0, 0), p0, r, 1)
+        Organ.draw(self, *args)
 
 
 
 
 otypes = {"eye":Eye, "brain":Brain, "eyebrain":EyeBrain, "tripleeye":TripleEye,
         "mutagenitor":Mutagenitor, "coil":Coil, "ball":Ball, "cube":Cube,
-        "bulb":Bulb}
+        "bulb":Bulb, "star":Star}
 
 
 

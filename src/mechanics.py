@@ -2,7 +2,7 @@ import random
 import vista
 
 vthreshold = 0.3  # Visibility threshold
-twinklerrate = 0.001  # Twinklers per unit area per second
+twinklerrate = 0.01  # Twinklers per unit area per second
 mutagenhit = 20  # How much you get when a twinkler hit a mutagenitor
 basemutagenrate = 4  # How fast it rises on its own
 basehealrate = 4
@@ -51,6 +51,6 @@ colors["cube"] = "app2"
 
 
 #costs = {"eye":30, "brain":60, "eyebrain": 120, "mutagenitor":80, "tripleeye": 0, "coil":20, "ball":50, "cube": 10}
-costs = {"bulb":10}
+costs = {"star":10}
 
 
