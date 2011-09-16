@@ -394,9 +394,17 @@ class Ball(Organ):
 #        if self.attached():
 #            self.body.mutagen += mechanics.mutagenhit
 
+class Cube(Organ):
+    """Faster tile generation"""
+
+    def draw0(self, zoom, status, growth):
+        return graphics.cube.img(zoom = zoom, growth = growth, color = status, edge0 = self.edge)
+
+
+
 
 class Coil(Organ):
-    """Don't know what it does yet"""
+    """Shield"""
     shield = 2.5
 
     def draw0(self, zoom, status, growth):
@@ -404,8 +412,9 @@ class Coil(Organ):
 
 
 
+
 otypes = {"eye":Eye, "brain":Brain, "eyebrain":EyeBrain, "tripleeye":TripleEye,
-        "mutagenitor":Mutagenitor, "coil":Coil, "ball":Ball}
+        "mutagenitor":Mutagenitor, "coil":Coil, "ball":Ball, "cube":Cube}
 
 
 
