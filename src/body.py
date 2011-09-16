@@ -471,6 +471,11 @@ class MutagenPod(Organ):
     def draw0(self, zoom, status, growth):
         return graphics.pod.imgmutagen(zoom = zoom, growth = growth, color = status, edge0 = self.edge)
 
+class PlasterPod(Organ):
+    plaster = 20
+    def draw0(self, zoom, status, growth):
+        return graphics.pod.imgplaster(zoom = zoom, growth = growth, color = status, edge0 = self.edge)
+
 '''
 class Mutagenitor(Organ):
     """Collects twinklers and generates mutagen"""
@@ -619,7 +624,8 @@ class Star(Organ):
 
 otypes = {"eye":Eye, "brain":Brain, "eyebrain":EyeBrain, "tripleeye":TripleEye,
         "coil":Coil, "cube":Cube,
-        "bulb":Bulb, "star":Star, "mutagenpod":MutagenPod}
+        "bulb":Bulb, "star":Star,
+        "mutagenpod":MutagenPod, "plasterpod":PlasterPod}
 
 
 
