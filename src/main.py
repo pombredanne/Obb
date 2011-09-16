@@ -32,7 +32,6 @@ def main():
             pygame.display.set_caption("Ubb - %.1ffps" % clock.get_fps())
             if settings.fullscreen:
                 print clock.get_fps()
-        vista.flip()
         
         
 

@@ -829,7 +829,7 @@ def icon(name):
 def ghostify(img):
     img2 = img.copy()
     arr = pygame.surfarray.pixels3d(img2)
-    g = (arr[...,0] + arr[...,1] + arr[...,2]) / 6
+    g = arr[...,0]/6 + arr[...,1]/6 + arr[...,2]/6
     arr[...,0] = arr[...,1] = arr[...,2] = g
     return img2
     

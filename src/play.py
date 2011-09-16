@@ -1,6 +1,6 @@
 import pygame, random
 from pygame.locals import *
-import vista, context, body, settings, panel, status, noise, twinkler, enemy
+import vista, context, body, settings, panel, status, noise, twinkler, enemy, graphics
 
 class Play(context.Context):
     def __init__(self):
@@ -13,8 +13,15 @@ class Play(context.Context):
         self.iconclicked = None
         self.twinklers = []
         self.shots = []
+        self.paused = False
 
     def think(self, dt, events, keys, mousepos, buttons):
+
+        if self.paused:
+            if any(e.type == KEYDOWN or e.type == MOUSEBUTTONDOWN for e in events):
+                self.resume()
+            return
+
 
         if vista.vrect.collidepoint(mousepos):
             edge = vista.grid.nearestedge(vista.screentoworld(mousepos))
@@ -85,8 +92,19 @@ class Play(context.Context):
         self.shots = [s for s in self.shots if s.alive()]
         self.status.mutagenmeter.amount += self.body.checkmutagen()
 
+    def pause(self):
+        self.paused = True
+        self.pscreen = graphics.ghostify(vista._screen)
+        noise.pause()
+
+    def resume(self):
+        self.paused = False
+        self.pscreen = None
+        noise.resume()
+
     def handleleftclick(self, mousepos):
-        icon = self.status.iconpoint(mousepos)  # Any icons pointed to
+        bicon = self.status.iconpoint(mousepos)  # Any build icons pointed to
+        vicon = vista.iconhit(mousepos)  # Any vista icons pointed to
         if self.panel.trashp(mousepos):  # Click on trash icon
             if self.panel.selected is not None:
                 self.panel.claimtile()
@@ -98,12 +116,16 @@ class Play(context.Context):
             if jtile in (None, 0, 1, 2):
                 self.panel.selecttile(jtile)
             self.status.select()
-        elif vista.zoominrect.collidepoint(mousepos):
+        elif vicon == "zoomin":
             vista.zoomin()
-        elif vista.zoomoutrect.collidepoint(mousepos):
+        elif vicon == "zoomout":
             vista.zoomout()
-        elif icon is not None:
-            self.status.select(icon.name)
+        elif vicon == "pause":
+            self.pause()
+        elif vicon == "music":
+            noise.nexttrack()
+        elif bicon is not None:
+            self.status.select(bicon.name)
             self.panel.selecttile()
         elif vista.vrect.collidepoint(mousepos):
             if self.parttobuild is not None and self.canbuild and self.body.canaddpart(self.parttobuild):
@@ -126,6 +148,10 @@ class Play(context.Context):
         
 
     def draw(self):
+        if self.paused:
+            vista._screen.blit(self.pscreen, (0,0))
+            pygame.display.flip()
+            return
         vista.clear()
         if self.panel.selected is not None or self.status.selected is not None:
             self.body.tracehexes()
@@ -137,5 +163,6 @@ class Play(context.Context):
         vista.addmask(self.body.mask)
         self.panel.draw()
         self.status.draw()
+        vista.flip()
 
 

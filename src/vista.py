@@ -43,9 +43,30 @@ def Surface(x, y = None, color = None, alpha = True):
         surf.fill(color)
     return surf
 
+icons = {}
+class Icon(object):
+    def __init__(self, color = (255, 255, 255)):  # TODO: replace with a real icon
+        import graphics
+        self.img = Surface(40, 40, color)
+        self.rect = self.img.get_rect()
+        self.ghost = graphics.ghostify(self.img)
+        self.active = True
+        
+    def draw(self):
+        img = self.img if self.active else self.ghost
+        _screen.blit(img, self.rect)
+    
+    def hit(self, pos):
+        return self.rect.collidepoint(pos)
+
+def iconhit(pos):
+    for name, icon in icons.items():
+        if icon.hit(pos):
+            return name
+    return None
+
 def init():
     global screen, _screen, vrect, prect, zoom, psurf, rsurf, rrect
-    global zoominimg, zoominrect, zoomoutimg, zoomoutrect
     global stars
     flags = FULLSCREEN | HWSURFACE if settings.fullscreen else 0
     _screen = pygame.display.set_mode(settings.size, flags)
@@ -56,12 +77,20 @@ def init():
     vrect = pygame.Rect(settings.vx0, settings.vy0, settings.vx, settings.vy)
     prect = pygame.Rect(settings.px0, settings.py0, settings.px, settings.py)
     rrect = pygame.Rect(settings.rx0, settings.ry0, settings.rx, settings.ry)
-    zoominimg = Surface(40, 40, (128, 128, 128))
-    zoomoutimg = Surface(40, 40, (128, 128, 128))
-    zoominrect = zoominimg.get_rect(bottomright = (settings.vx0 + settings.vx - 4, settings.vy0 + settings.vy - 4))
-    zoomoutrect = zoominimg.get_rect(bottomleft = (settings.vx0 + 4, settings.vy0 + settings.vy - 4))
+
+    icons["zoomin"] = Icon()
+    icons["zoomin"].rect.bottomright = (settings.vx0 + settings.vx - 4, settings.vy0 + settings.vy - 4)
+    icons["zoomout"] = Icon()
+    icons["zoomout"].rect.bottomleft = (settings.vx0 + 4, settings.vy0 + settings.vy - 4)
+    icons["pause"] = Icon()
+    icons["pause"].rect.topleft = (settings.vx0 + 4, settings.vy0 + 4)
+    icons["music"] = Icon()
+    icons["music"].rect.topright = (settings.vx0 + settings.vx - 4, settings.vy0 + 4)
+    
     stars = [(random.randint(64, 255), random.randint(-10000, 10000), random.randint(-10000, 10000)) for _ in range(settings.vx * settings.vy / 2000)]
     stars.sort()
+
+
 
 
 wx0, wy0, wx1, wy1 = -6, -6, 6, 6  # Maximum extent of gameplay window
@@ -112,10 +141,8 @@ def think(dt, (mx, my), keys):
     gy0 = max(min(gy0, ymax), ymin) if ymin < ymax else (ymin + ymax) / 2
 
     overlays = []
-    if zoom != min(settings.zooms):
-        overlays.append((zoomoutimg, zoomoutrect))
-    if zoom != max(settings.zooms):
-        overlays.append((zoominimg, zoominrect))
+    icons["zoomout"].active = zoom != min(settings.zooms)
+    icons["zoomin"].active = zoom != max(settings.zooms)
 
 def worldtogameplay((x, y)):
     return int(gx0 + x * zoom + 0.5), int(gy0 - y * zoom + 0.5)
@@ -168,6 +195,7 @@ def flip():
     _screen.blit(rsurf, rrect)
     for surf, rect in overlays:
         _screen.blit(surf, rect)
+    for icon in icons.values(): icon.draw()
     pygame.display.flip()
 
 s3 = math.sqrt(3.)
