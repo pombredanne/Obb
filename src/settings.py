@@ -19,8 +19,10 @@ ptilesize = 60 # Size of selectable tiles in the panel
 largeiconsize = 60
 
 showstars = True
-
 twisty = True  # Twisty paths
+
+panonpoint = False
+panonarrows = True
 
 fullscreen = "--fullscreen" in sys.argv
 showfps = True

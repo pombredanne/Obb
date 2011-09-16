@@ -56,7 +56,6 @@ class Play(context.Context):
         if keys[K_F5]:
             self.body.addrandompart()
 
-
         if keys[K_x]:
             newtarget = self.pointchildbyedge(mousepos)
             if newtarget != self.target:
@@ -69,7 +68,7 @@ class Play(context.Context):
             self.target.setbranchstatus()
             self.target = None
 
-        vista.think(dt, mousepos)
+        vista.think(dt, mousepos, keys)
 
         self.body.think(dt)
         self.panel.think(dt)

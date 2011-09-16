@@ -83,45 +83,37 @@ def zoomout():
     if zs:
         zoom = max(zs)
 
-def think(dt, (mx, my)):
+def think(dt, (mx, my), keys):
     global gx0, gy0, overlays
     xmin, xmax = vrect.width - wx1 * zoom, -wx0 * zoom
     ymin, ymax = vrect.height + wy0 * zoom, wy1 * zoom
-    f = math.exp(-0.5 * dt)
+    f = math.exp(-0.1 * dt)
 #    if vrect.collidepoint(mx,my) and pygame.mouse.get_focused():
-    if pygame.mouse.get_focused():
-        mx, my = mx - vrect.left, my - vrect.top
-        # Potentially set the window based on mouse position
-        if xmin < xmax:
+    if settings.panonpoint:
+        if pygame.mouse.get_focused():
+            mx, my = mx - vrect.left, my - vrect.top
+            # Potentially set the window based on mouse position
             gx0 = xmax + (xmin - xmax) * mx / vrect.width
-            gx0 = max(min(gx0, xmax), xmin)
-        else:
-            dx = (xmin + xmax) / 2 - gx0
-            gx0 += dx * f
-        if ymin < ymax:
             gy0 = ymax + (ymin - ymax) * my / vrect.height
         else:
-            dy = (ymin + ymax) / 2 - gy0
-            gy0 += dy * f
-    else:
-        if xmin < xmax:
-            dx = min(max(vrect.width/2, xmin), xmax) - gx0  # TODO: integer math
-            gx0 += dx * f
-        else:
-            dx = (xmin + xmax) / 2 - gx0
-            gx0 += dx * f
-        if ymin < ymax:
-            dy = min(max(vrect.height/2, ymin), ymax) - gy0
-            gy0 += dy * f
-        else:
-            dy = (ymin + ymax) / 2 - gy0
-            gy0 += dy * f
+            gx0 += (min(max(vrect.width/2, xmin), xmax) - gx0) * f
+            gy0 += (min(max(vrect.height/2, ymin), ymax) - gy0) * f
+
+    if settings.panonarrows:
+        dx = (keys[K_RIGHT] or keys[K_e] or keys[K_d]) - (keys[K_LEFT] or keys[K_a])
+        dy = (keys[K_DOWN] or keys[K_o] or keys[K_s]) - (keys[K_UP] or keys[K_COMMA] or keys[K_w])
+        gx0 -= 10 * dt * dx * zoom
+        gy0 -= 10 * dt * dy * zoom
+
+
+    gx0 = max(min(gx0, xmax), xmin) if xmin < xmax else (xmin + xmax) / 2
+    gy0 = max(min(gy0, ymax), ymin) if ymin < ymax else (ymin + ymax) / 2
+
     overlays = []
     if zoom != min(settings.zooms):
         overlays.append((zoomoutimg, zoomoutrect))
     if zoom != max(settings.zooms):
         overlays.append((zoominimg, zoominrect))
-        
 
 def worldtogameplay((x, y)):
     return int(gx0 + x * zoom + 0.5), int(gy0 - y * zoom + 0.5)
