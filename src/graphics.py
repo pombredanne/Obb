@@ -19,6 +19,7 @@ colors["shield"] = 0.7, 0.7, 1, 1
 colors["ball"] = 1, 1, 1, 1
 colors["cube"] = 0, 1, 1, 1
 colors["bulb"] = 1, 0.5, 0.5, 1
+colors["star"] = 1, 1, 0, 1
 
 def qBezier((x0,y0), (x1,y1), (x2,y2), n = 8, ccache = {}):
     """Quadratic bezier curve"""
@@ -303,6 +304,55 @@ class BallCircles(ColorCircles):
         return gimg
 
 ball = BallCircles()
+
+
+class StarCircles(ColorCircles):
+    def getargs(self, growth = 1, edge0 = 3, R = 0.3, r0 = 0.03):
+        growth = int(growth * 8) / 8.
+        return edge0, growth, R, r0
+    
+    def getcircles(self, edge0, growth, R, r0):
+        angle = math.radians(edge0 * 60)
+        S, C = math.sin(angle), math.cos(angle)
+        length = growth - 0.2
+        if length > 0.1:
+            betas = [0.3, 0.3, 1.3, 3.3, 3.3]
+            thetas = [0.8, 2.2, -0.8, 0.8, 2.2]
+#            betas = betas + [beta + math.pi for beta in betas]
+#            thetas = thetas + thetas
+            for point, (beta, theta) in enumerate(zip(betas, thetas)):
+                bS, bC = math.sin(beta), math.cos(beta)
+                tS, tC = math.sin(theta), math.cos(theta)
+                for z, x, y, r, g in segmentcircles.getcircles((0, length), 0.3, r0, point):
+                    x *= 1 - y / length
+                    z *= 1 - y / length
+                    y, z = y * bS + z * bC, y * bC - z * bS
+                    x, z = x * tS - z * tC, x * tC + z * tS
+                    z = -z
+                    g = 0.7 + 0.2 * z / length + random.uniform(-.1, .1)
+                    yield z, -x*C-y*S, y*C-x*S, r, (g, 0, 0)
+
+        if growth > 0.2:
+            for z, x, y, r, g in spherecircles.getcircles(R*growth, r0, (-1,-1,2)):
+                yield z, x, y, r, (0, g, 0)
+
+        segs = min(int(growth * 8 + 0.5), 4)
+        if segs:
+            for z, x, y, r, g in app.getcircles((3,), edge0, 0.3, segs):
+                yield z, x, y, r, (g, 0, 0)
+
+    def img(self, color = None, growth = 1, edge0 = 3, zoom = settings.tzoom0):
+        gimg = self.graytile(zoom, growth, edge0).copy()
+        if color in colors:
+            color = colors[color]
+        if not color:
+            filtercolorsurface(gimg, colors[mechanics.colors["star"]], colors["star"])
+        else:
+            filtercolorsurface(gimg, color, color)
+        return gimg
+
+star = StarCircles()
+
 
 
 class CubeCircles(ColorCircles):
@@ -890,7 +940,7 @@ if __name__ == "__main__":
 #        img = brain.grayimg(160)
 #        filtercolorsurface(img, (1, 0.8, 0.8, 1), (0, 0.5, 1, 1))
 #        img = tripleeye.img(zoom = 80, edge0 = 2)
-        img = bulb.img(zoom = 80, edge0 = 2)
+        img = star.img(zoom = 80, edge0 = 2)
 #        img = coil.img(zoom = 80)
 #        img = eyebrain.img(zoom = 80)
 #        helixcircles.draw(img, 1, (100, 200), (0, -160))

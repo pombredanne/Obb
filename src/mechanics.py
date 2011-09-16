@@ -42,6 +42,7 @@ colors["tripleeye"] = "app0"
 # Attack/defend
 colors["coil"] = "app1"
 colors["bulb"] = "app1"
+colors["star"] = "app1"
 
 # Build/heal
 colors["mutagenitor"] = "app2"
