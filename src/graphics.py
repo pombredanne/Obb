@@ -317,6 +317,47 @@ class PodCircles(ColorCircles):
 
 pod = PodCircles()
 
+class GeneratorCircles(ColorCircles):
+    def getargs(self, growth = 1, edge0 = 3, R = 0.25, r0 = 0.03):
+        growth = int(growth * 8) / 8.
+        return edge0, growth, R, r0
+    
+    def getcircles(self, edge0, growth, R, r0):
+        angle = math.radians(edge0 * 60)
+        S, C = math.sin(angle), math.cos(angle)
+
+        if growth > 0.5:
+            s2 = math.sqrt(2)
+            for z, x, y, r, g in spherecircles.getcircles(R*(.5+.5*growth), r0, (-1,1,2)):
+                y *= 4
+                y, z = (y + z) / s2, (y - z) / s2
+                for s, c in ((0, 1), (.86,-.5), (-.86,-.5)):
+                    ax, ay = (x*c+y*s), (y*c-x*s)
+                    yield z, -ax*C-ay*S, ay*C-ax*S, r, (0, g*.5+.5, 0)
+        if growth > 0.2:
+            for z, x, y, r, g in spherecircles.getcircles(1.5*R*growth, r0, (-1,-1,2)):
+                yield z, x, y, r, (g, 0, 0)
+
+        segs = min(int(growth * 8 + 0.5), 3)
+        if segs:
+            for z, x, y, r, g in app.getcircles((3,), edge0, 0.3, segs):
+                yield z, x, y, r, (g, 0, 0)
+
+    def img(self, color = None, growth = 1, edge0 = 3, zoom = settings.tzoom0):
+        gimg = self.graytile(zoom, growth, edge0).copy()
+        if color in colors:
+            color = colors[color]
+        if not color:
+            filtercolorsurface(gimg, colors[mechanics.colors["star"]], colors["star"])
+        else:
+            filtercolorsurface(gimg, color, color)
+        return gimg
+
+generator = GeneratorCircles()
+
+
+
+
 
 class StarCircles(ColorCircles):
     def getargs(self, growth = 1, edge0 = 3, R = 0.3, r0 = 0.03):
@@ -958,8 +999,8 @@ if __name__ == "__main__":
 #        helixcircles.draw(img, 1, (100, 200), (0, -160))
 #        img = helixmeter(200)
 #        img = meter(img, 120)
-#        img = mutagenitor.img(zoom = 80)
-        img = spherecircles.img(zoom = 200, R = 0.3, color = (0.8, 0.3, 0.3, 1))
+        img = generator.img(zoom = 80, edge0 = 1)
+#        img = spherecircles.img(zoom = 200, R = 0.3, color = (0.8, 0.3, 0.3, 1))
 
         pass
     if False:
