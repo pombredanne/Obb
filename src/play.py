@@ -7,13 +7,11 @@ class Play(context.Context):
         self.body = body.Body()
         self.panel = panel.Panel()
         self.status = status.Status(self.body)
-        self.target = None
-        self.parttobuild = None
         self.edgepoint = None
-        self.iconclicked = None
         self.twinklers = []
         self.shots = []
         self.paused = False
+        self.clearselections()
 
     def think(self, dt, events, keys, mousepos, buttons):
 
@@ -63,7 +61,7 @@ class Play(context.Context):
         if keys[K_F5]:
             self.body.addrandompart()
 
-        if keys[K_x]:
+        if keys[K_x] or self.cutmode:
             newtarget = self.pointchildbyedge(mousepos)
             if newtarget != self.target:
                 if self.target is not None:
@@ -102,20 +100,27 @@ class Play(context.Context):
         self.pscreen = None
         noise.resume()
 
+    def clearselections(self, clearpanel = True, clearstatus = True, clearheal = True, clearcut = True):
+        self.target = None
+        self.parttobuild = None
+        self.iconclicked = None
+        if clearpanel:
+            self.panel.selecttile()
+        if clearstatus:
+            self.status.select()
+        if clearheal:
+            self.healmode = False
+        if clearcut:
+            self.cutmode = False
+
     def handleleftclick(self, mousepos):
         bicon = self.status.iconpoint(mousepos)  # Any build icons pointed to
         vicon = vista.iconhit(mousepos)  # Any vista icons pointed to
-        if self.panel.trashp(mousepos):  # Click on trash icon
+        if vicon == "trash":
             if self.panel.selected is not None:
                 self.panel.claimtile()
                 noise.play("trash")
-            self.status.select()
-            self.parttobuild = None
-        elif vista.prect.collidepoint(mousepos):  # Click on panel
-            jtile = self.panel.iconp(mousepos)
-            if jtile in (None, 0, 1, 2):
-                self.panel.selecttile(jtile)
-            self.status.select()
+            self.clearselections()
         elif vicon == "zoomin":
             vista.zoomin()
         elif vicon == "zoomout":
@@ -124,17 +129,39 @@ class Play(context.Context):
             self.pause()
         elif vicon == "music":
             noise.nexttrack()
+        elif vicon == "heal":
+            if self.healmode:
+                self.clearselections()
+            else:
+                self.clearselections()
+                if vista.icons["heal"].active:
+                    self.healmode = True
+        elif vicon == "cut":
+            if self.cutmode:
+                self.clearselections()
+            else:
+                self.clearselections()
+                if vista.icons["cut"].active:
+                    self.cutmode = True
+        elif vista.prect.collidepoint(mousepos):  # Click on panel
+            self.clearselections(clearpanel = False)
+            jtile = self.panel.iconp(mousepos)
+            if jtile in (None, 0, 1, 2):
+                self.panel.selecttile(jtile)
         elif bicon is not None:
+            self.clearselections(clearstatus = False)
             self.status.select(bicon.name)
-            self.panel.selecttile()
         elif vista.vrect.collidepoint(mousepos):
-            if self.parttobuild is not None and self.canbuild and self.body.canaddpart(self.parttobuild):
-                self.body.addpart(self.parttobuild)
+            if self.cutmode and self.target is not None:
+                self.target.die()
+
+            elif self.parttobuild is not None and self.canbuild and self.body.canaddpart(self.parttobuild):
                 if self.panel.selected is not None:
                     self.panel.claimtile()
                 if self.status.selected is not None:
                     self.status.build()
-                self.parttobuild = None
+                self.body.addpart(self.parttobuild)
+                self.clearselections()
 
     def pointchildbyedge(self, screenpos):
         edge = vista.grid.nearestedge(vista.screentoworld(screenpos))

@@ -105,6 +105,7 @@ class Body(object):
         if part.shield > 0:
             self.shields.append(part)
         noise.play("addpart")
+        vista.icons["cut"].active = len(self.parts) > 1
 
     def remakemask(self):
         """Build the mask from scratch"""
@@ -135,6 +136,7 @@ class Body(object):
         if part in self.shields:
             self.shields.remove(part)
         noise.play("removepart")
+        vista.icons["cut"].active = len(self.parts) > 1
 
     def removebranch(self, part):
         """Remove a part and all its children"""

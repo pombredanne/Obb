@@ -86,6 +86,12 @@ def init():
     icons["pause"].rect.topleft = (settings.vx0 + 4, settings.vy0 + 4)
     icons["music"] = Icon()
     icons["music"].rect.topright = (settings.vx0 + settings.vx - 4, settings.vy0 + 4)
+    icons["trash"] = Icon()
+    icons["trash"].rect.center = (30, 400)
+    icons["cut"] = Icon()
+    icons["cut"].rect.center = (120, 400)
+    icons["heal"] = Icon()
+    icons["heal"].rect.center = (800, 400)
     
     stars = [(random.randint(64, 255), random.randint(-10000, 10000), random.randint(-10000, 10000)) for _ in range(settings.vx * settings.vy / 2000)]
     stars.sort()
