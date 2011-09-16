@@ -11,6 +11,7 @@ class Play(context.Context):
         self.twinklers = []
         self.shots = []
         self.paused = False
+        self.target = None
         self.clearselections()
 
     def think(self, dt, events, keys, mousepos, buttons):
@@ -69,6 +70,15 @@ class Play(context.Context):
                 self.target = newtarget
                 if self.target is not None:
                     self.target.setbranchstatus("target")
+        elif self.healmode:
+            newtarget = self.body.nearestorgan(vista.screentoworld(mousepos))
+            self.target = newtarget
+            #if newtarget != self.target:
+            #    if self.target is not None:
+            #        self.target.setbranchstatus()
+            #    self.target = newtarget
+            #    if self.target is not None:
+            #        self.target.setstatus("toheal")
         elif self.target is not None:
             self.target.setbranchstatus()
             self.target = None
@@ -101,6 +111,8 @@ class Play(context.Context):
         noise.resume()
 
     def clearselections(self, clearpanel = True, clearstatus = True, clearheal = True, clearcut = True):
+        if self.target is not None:
+            self.target.setbranchstatus()
         self.target = None
         self.parttobuild = None
         self.iconclicked = None
@@ -154,7 +166,9 @@ class Play(context.Context):
         elif vista.vrect.collidepoint(mousepos):
             if self.cutmode and self.target is not None:
                 self.target.die()
-
+            elif self.healmode and self.target is not None:
+                dhp = self.target.heal()
+                self.status.usehp(dhp)
             elif self.parttobuild is not None and self.canbuild and self.body.canaddpart(self.parttobuild):
                 if self.panel.selected is not None:
                     self.panel.claimtile()

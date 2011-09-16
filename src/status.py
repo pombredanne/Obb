@@ -129,6 +129,9 @@ class Status(object):
         self.mutagenmeter.amount -= mechanics.costs[self.selected]
         self.select()
 
+    def usehp(self, dhp):
+        self.healmeter.amount -= dhp
+
     def think(self, dt, mousepos):
         self.mutagenmeter.think(dt)
         self.healmeter.think(dt)

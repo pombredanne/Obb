@@ -17,6 +17,7 @@ class Body(object):
         self.shields = []
         self.attackers = []
         self.tick = 0   # Generic timekeeping
+        self.organs = {}  # Reverse lookup
 
     def addrandompart(self, n = 1, maxtries = 100):
         added = 0
@@ -51,6 +52,11 @@ class Body(object):
         x = self.mutagen
         self.mutagen = 0
         return x
+
+    def nearestorgan(self, pos):
+        """Nearest organ to the given world position"""
+        hexpos = vista.HexGrid.nearesttile(pos)
+        return self.organs[hexpos] if hexpos in self.organs else None
 
     def canplaceapp(self, edge, appspec):
         """If you can place the specified app on the specified edge,
@@ -106,6 +112,8 @@ class Body(object):
             self.shields.append(part)
         noise.play("addpart")
         vista.icons["cut"].active = len(self.parts) > 1
+        if isinstance(part, Organ):
+            self.organs[(part.x, part.y)] = part
 
     def remakemask(self):
         """Build the mask from scratch"""
@@ -137,6 +145,8 @@ class Body(object):
             self.shields.remove(part)
         noise.play("removepart")
         vista.icons["cut"].active = len(self.parts) > 1
+        if isinstance(part, Organ):
+            del self.organs[(part.x, part.y)]
 
     def removebranch(self, part):
         """Remove a part and all its children"""
@@ -201,6 +211,7 @@ class BodyPart(object):
     pulsefreq = 0
     hp0 = 0
     attacker = False
+    glowtime = 0
     def __init__(self, body, parent, (x,y), edge = 0):
         self.body = body
         self.parent = parent
@@ -230,6 +241,7 @@ class BodyPart(object):
         else:
             if self.hp0 and self.hp < self.hp0:
                 self.pulsefreq = 1. - float(self.hp) / self.hp0
+        self.glowtime = max(self.glowtime - dt, 0)
 
     def hit(self, dhp = 1):
         self.hp -= dhp
@@ -238,6 +250,14 @@ class BodyPart(object):
             noise.play("die")
         else:
             noise.play("ouch")
+
+    def heal(self):
+        dhp = self.hp0 - self.hp
+        self.hp = self.hp0
+        noise.play("heal")
+        self.glowtime = 0.5
+        self.pulsefreq = 0
+        return dhp
 
     def die(self):
         for part in self.buds.values():
@@ -297,6 +317,12 @@ class BodyPart(object):
             growth = 1
         return zoom, self.status, growth
 
+    def drawglow(self, (px, py)):
+        # TODO: this better
+        r = int(vista.zoom)
+        pygame.draw.circle(vista.screen, (255, 255, 128), (px, py), r, 0)
+        
+
     def draw(self):
         key = self.getkey()
         if key != self.lastkey:
@@ -306,6 +332,8 @@ class BodyPart(object):
         if self.pulsefreq:
             img = self.pulseredimg(self.img, self.pulsefreq)
         px, py = vista.worldtoview(vista.grid.hextoworld((self.x, self.y)))
+        if self.glowtime:
+            self.drawglow((px, py))
         vista.screen.blit(img, self.img.get_rect(center = (px, py)))
 
     def pulse(self, freq = 0):
@@ -433,6 +461,7 @@ class Mutagenitor(Organ):
     def energize(self):
         if self.attached():
             self.body.mutagen += mechanics.mutagenhit
+        self.glowtime = 0.5
 
 class Ball(Organ):
     """Collects twinklers and generates heal power"""
@@ -445,6 +474,7 @@ class Ball(Organ):
         pass  # TODO
 #        if self.attached():
 #            self.body.mutagen += mechanics.mutagenhit
+        self.glowtime = 0.5
 
 
 # TODO
@@ -548,6 +578,7 @@ class Star(Organ):
     def energize(self):
         self.wavetime = 0.5
         noise.play("wavego")
+        self.glowtime = 0.5
 
     def draw0(self, zoom, status, growth):
         return graphics.star.img(zoom = zoom, growth = growth, color = status, edge0 = self.edge)
