@@ -58,7 +58,7 @@ class BuildIcon(object):
         else:
             self.currentimg = self.img if self.active else self.ghost
         self.linepos = x,y = self.meter.meterpos(self.amount)
-        self.currentrect = self.currentimg.get_rect(midright = (x-20,y))
+        self.currentrect = self.currentimg.get_rect(midright = (x-self.amount % 50,y))
         self.currentrect.move_ip(*vista.rrect.topleft)
         self.pointedto = False
 

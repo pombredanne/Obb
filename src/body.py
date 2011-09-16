@@ -1,4 +1,4 @@
-import pygame, random
+import pygame, random, math
 from pygame.locals import *
 import vista, mask, graphics, mechanics, noise
 
@@ -14,6 +14,8 @@ class Body(object):
         self.addpart(self.core)
         self.suckers = []
         self.mutagen = 0
+        self.shields = []
+        self.tick = 0   # Generic timekeeping
 
     def addrandompart(self, n = 1, maxtries = 100):
         added = 0
@@ -97,6 +99,8 @@ class Body(object):
         self.calccontrol()
         if part.suction:
             self.suckers.append(part)
+        if part.shield > 0:
+            self.shields.append(part)
         noise.play("addpart")
 
     def remakemask(self):
@@ -123,6 +127,8 @@ class Body(object):
         self.calccontrol()
         if part in self.suckers:
             self.suckers.remove(part)
+        if part in self.shields:
+            self.shields.remove(part)
         noise.play("removepart")
 
     def removebranch(self, part):
@@ -133,6 +139,7 @@ class Body(object):
         self.removepart(part)
 
     def think(self, dt):
+        self.tick += dt
         for part in self.parts:
             part.think(dt)
         if self.mask is None:
@@ -152,12 +159,10 @@ class Body(object):
         return None
     
     def draw(self):
-        shields = []
         for part in sorted(self.parts, key = lambda p: p.draworder):
             part.draw()
-            if part.shield > 0:
-                shields.append((part.screenpos(), part.shield))
-        for (x, y), r in shields:
+        for shield in self.shields:
+            (x, y), r = shield.screenpos(), shield.shield
             pygame.draw.circle(vista.screen, (128, 128, 255), (x, y), r * vista.zoom, 1)
 
     def tracehexes(self, color = (128, 128, 128)):
@@ -176,6 +181,7 @@ class BodyPart(object):
     shield = 0
     suction = False
     targetable = False
+    pulsefreq = 0
     def __init__(self, body, parent, (x,y), edge = 0):
         self.body = body
         self.parent = parent
@@ -265,8 +271,22 @@ class BodyPart(object):
         if key != self.lastkey:
             self.lastkey = key
             self.img = self.draw0(*key)
+        img = self.img
+        if self.pulsefreq:
+            img = self.pulseredimg(self.img, self.pulsefreq)
         px, py = vista.worldtoview(vista.grid.hextoworld((self.x, self.y)))
-        vista.screen.blit(self.img, self.img.get_rect(center = (px, py)))
+        vista.screen.blit(img, self.img.get_rect(center = (px, py)))
+
+    def pulse(self, freq = 0):
+        """A value that's usable as a pulsation amount. The frequency
+        should be between 0 and 1"""
+        return 0.5 + 0.5 * math.cos(self.body.tick * (1 + 20 * freq ** 2))
+
+    def pulseredimg(self, img, freq = 0):
+        img = img.copy()
+        f = 1 - self.pulse(freq)
+        graphics.filtersurface(img, 1, f, f, 1)
+        return img
 
     @staticmethod
     def colorbycode(colorcode):
@@ -394,6 +414,8 @@ class Ball(Organ):
 #        if self.attached():
 #            self.body.mutagen += mechanics.mutagenhit
 
+
+# TODO
 class Cube(Organ):
     """Faster tile generation"""
 
@@ -410,6 +432,8 @@ class Coil(Organ):
     def draw0(self, zoom, status, growth):
         return graphics.coil.img(zoom = zoom, growth = growth, color = status, edge0 = self.edge)
 
+    def wobble(self):
+        """Something penetrated the shield"""
 
 
 

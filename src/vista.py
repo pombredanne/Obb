@@ -83,6 +83,8 @@ def zoomout():
     if zs:
         zoom = max(zs)
 
+# TODO: scroll icons
+
 def think(dt, (mx, my), keys):
     global gx0, gy0, overlays
     xmin, xmax = vrect.width - wx1 * zoom, -wx0 * zoom

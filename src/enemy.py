@@ -14,14 +14,28 @@ class Shot(object):
         self.t = d / self.v0
         self.dx /= self.t
         self.dy /= self.t
+        self.passedshields = []
+        self.active = True
 
     def think(self, dt):
         self.t -= dt
         self.x = self.tx + self.t * self.dx
         self.y = self.ty + self.t * self.dy
+        for shield in self.target.body.shields:
+            if shield in self.passedshields:
+                continue
+            sx, sy = shield.worldpos
+            if (sx - self.x) ** 2 + (sy - self.y) ** 2 < shield.shield ** 2:
+                if random.random() < 0.5:
+                    self.passedshields.append(shield)
+                    shield.wobble()
+                else:
+                    self.active = False
+                    noise.play("dink")
+            
 
     def alive(self):
-        return self.t > 0
+        return self.active and self.t > 0
 
     def draw(self):
         r = int(vista.zoom * 0.2)
@@ -35,7 +49,8 @@ def newshots(body):
     for part in body.parts:
         if not part.targetable: continue
         wx, wy = part.worldpos
-        p = 1 - math.exp(-(wx ** 2 + wy ** 2) / 2000)
+#        p = 1 - math.exp(-(wx ** 2 + wy ** 2) / 2000)
+        p = 0.5
         if random.random() > p: continue
 
         x = wx * random.uniform(0.5, 1.5)
