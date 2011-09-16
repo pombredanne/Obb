@@ -16,6 +16,7 @@ colors["brain"] = 1, 0.85, 0.85, 1
 colors["eye"] = 1, 1, 1, 1
 colors["yellow"] = 1, 1, 0.4, 1
 colors["shield"] = 0.7, 0.7, 1, 1
+colors["ball"] = 1, 1, 1, 1
 
 def qBezier((x0,y0), (x1,y1), (x2,y2), n = 8, ccache = {}):
     """Quadratic bezier curve"""
@@ -253,6 +254,55 @@ class CoilCircles(ColorCircles):
         return gimg
 
 coil = CoilCircles()
+
+class BallCircles(ColorCircles):
+    def getargs(self, growth = 1, edge0 = 3, R = 0.6, r0 = 0.03):
+        growth = int(growth * 8) / 8.
+        return edge0, growth, R, r0
+    
+    def getcircles(self, edge0, growth, R, r0):
+        angle = math.radians(edge0 * 60)
+        S, C = math.sin(angle), math.cos(angle)
+        N = int(30 * R / r0)
+        for j in range(int(N*growth)):
+            beta = math.radians(180 * j / N)
+            bS, bC = math.sin(beta), math.cos(beta)
+            theta = 3 * beta + 1
+            tS, tC = math.sin(theta), math.cos(theta)
+            y = R * bC + random.uniform(-2*r0, 2*r0)
+            x = R * tS * bS + random.uniform(-2*r0, 2*r0)
+            z = R * tC * bS + random.uniform(-2*r0, 2*r0)
+            g = random.uniform(0, 0.2) + 0.3 * z / R + 0.6
+            r = random.uniform(r0, 2*r0)
+            yield z, -x*C-y*S, y*C-x*S, r, (g, 0, 0)
+            g = random.uniform(0, 0.2) - 0.3 * z / R + 0.6
+            yield -z, x*C-y*S, y*C+x*S, r, (g, 0, 0)
+
+        if growth > 0.2:
+            for z, x, y, r, g in spherecircles.getcircles(R*growth, 0.03, (-1,-1,2)):
+                yield z, x, y, r, (0, g, 0)
+
+        dx, dy = eps[edge0]
+        for z, x, y, r, g in spherecircles.getcircles(R*.7, 0.03, (-1,-1,2)):
+            yield z, x+dx*.45, y+dy*.45, r, (g, 0, 0)
+        segs = min(int(growth * 8 + 0.5), 3)
+        if segs:
+            for z, x, y, r, g in app.getcircles((3,), edge0, 0.3, segs):
+                yield z, x, y, r, (g, 0, 0)
+
+    def img(self, color = None, growth = 1, edge0 = 3, zoom = settings.tzoom0):
+        gimg = self.graytile(zoom, growth, edge0).copy()
+        if color in colors:
+            color = colors[color]
+        if not color:
+            filtercolorsurface(gimg, colors[mechanics.colors["ball"]], colors["ball"])
+        else:
+            filtercolorsurface(gimg, color, color)
+        return gimg
+
+ball = BallCircles()
+
+
 
 
 def heximg(scale, cache = {}):
@@ -593,6 +643,22 @@ def helixmeter(height, f=3):
         img = pygame.transform.smoothscale(img, (40, height))
     return img
 
+def stalkmeter(height, f=3):
+    img = vista.Surface(40*f, f*height)
+    h = height / 60.
+    ps = []
+    for y in range(int(h)+1):
+        p0 = 0, -y
+        p1 = 0.15 * math.sin(y**2), -y-0.3
+        p2 = 0.15 * -math.sin((y+1)**2), -y-0.7
+        p3 = 0, -y-1
+        ps += cBezier(p0, p1, p2, p3)[:-1]
+    stalkcircles.draw(img, 60*f, (1/3., h), ps, width=0.3)
+    if f != 1:
+        img = pygame.transform.smoothscale(img, (40, height))
+    return img
+
+
 def loadbar(f, color = "eye", w = 60, h = 8):
     if color in colors: color = colors[color]
     r,g,b,_ = color
@@ -734,7 +800,8 @@ if __name__ == "__main__":
 #        img = grayapp((2,3))
 #        img = brain.grayimg(160)
 #        filtercolorsurface(img, (1, 0.8, 0.8, 1), (0, 0.5, 1, 1))
-        img = tripleeye.img(zoom = 80, edge0 = 2)
+#        img = tripleeye.img(zoom = 80, edge0 = 2)
+        img = ball.img(zoom = 80, edge0 = 2)
 #        img = coil.img(zoom = 80)
 #        img = eyebrain.img(zoom = 80)
 #        helixcircles.draw(img, 1, (100, 200), (0, -160))

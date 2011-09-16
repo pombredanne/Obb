@@ -4,13 +4,13 @@ import vista, graphics, mechanics, font
 
 
 class Meter(object):
+    left = 30
     def __init__(self):
         self.maxheight = 300
         self.height = 200
         self.baseimg = self.getimg(self.height)
-        self.bottom = 30, self.maxheight + 40
+        self.bottom = self.left, self.maxheight + 40
         self.amount = 0
-        self.rate = mechanics.basemutagenrate
 
     def getimg(self, height):
         return graphics.helixmeter(height)
@@ -75,6 +75,7 @@ class BuildIcon(object):
         
 
 class MutagenMeter(Meter):
+    rate = mechanics.basemutagenrate
     def __init__(self):
         Meter.__init__(self)
         self.icons = [BuildIcon(self, name) for name in mechanics.costs]
@@ -89,11 +90,20 @@ class MutagenMeter(Meter):
             icon.draw()
         Meter.draw(self)
 
+class HealMeter(Meter):
+    rate = mechanics.basehealrate
+    left = 90
+
+    def getimg(self, height):
+        return graphics.stalkmeter(height)
+
+
 
 class Status(object):
     """Handles logic for the right-hand status panel"""
     def __init__(self, body):
         self.mutagenmeter = MutagenMeter()
+        self.healmeter = HealMeter()
         self.body = body
         self.selected = None
         self.control = 5
@@ -111,6 +121,7 @@ class Status(object):
 
     def think(self, dt, mousepos):
         self.mutagenmeter.think(dt)
+        self.healmeter.think(dt)
         icon = self.iconpoint(mousepos)
         if icon is not None:
             icon.pointedto = True
@@ -127,7 +138,9 @@ class Status(object):
 
     def draw(self):
         self.mutagenmeter.draw()
+        self.healmeter.draw()
         
+        # Draw control tally
         if self.body.control >= self.body.maxcontrol:
             color, size = (128, 0, 0), 48
         else:

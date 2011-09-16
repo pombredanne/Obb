@@ -382,6 +382,19 @@ class Mutagenitor(Organ):
         if self.attached():
             self.body.mutagen += mechanics.mutagenhit
 
+class Ball(Organ):
+    """Collects twinklers and generates heal power"""
+    suction = True
+
+    def draw0(self, zoom, status, growth):
+        return graphics.ball.img(zoom = zoom, growth = growth, color = status, edge0 = self.edge)
+
+    def energize(self):
+        pass  # TODO
+#        if self.attached():
+#            self.body.mutagen += mechanics.mutagenhit
+
+
 class Coil(Organ):
     """Don't know what it does yet"""
     shield = 2.5
@@ -392,7 +405,7 @@ class Coil(Organ):
 
 
 otypes = {"eye":Eye, "brain":Brain, "eyebrain":EyeBrain, "tripleeye":TripleEye,
-        "mutagenitor":Mutagenitor, "coil":Coil}
+        "mutagenitor":Mutagenitor, "coil":Coil, "ball":Ball}
 
 
 
