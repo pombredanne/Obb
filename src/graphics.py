@@ -383,8 +383,9 @@ class EyeCircles(ColorCircles):
 
     def draw(self, surf, scale, offset, growth, edge0, blink):
         ColorCircles.draw(self, surf, scale, offset, growth, edge0, blink)
-        eimg = eyeball(scale, edge0, blink)
-        surf.blit(eimg, eimg.get_rect(center=surf.get_rect().center))
+        if growth == 1:
+            eimg = eyeball(scale, edge0, blink)
+            surf.blit(eimg, eimg.get_rect(center=surf.get_rect().center))
 
     def img(self, growth = 1, color = None, edge0 = 2, blink = 1, zoom = settings.tzoom0):
         gimg = self.graytile(zoom, growth, edge0, blink).copy()

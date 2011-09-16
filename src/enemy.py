@@ -35,9 +35,11 @@ def newshots(body):
     for part in body.parts:
         if not part.targetable: continue
         wx, wy = part.worldpos
+        p = 1 - math.exp(-(wx ** 2 + wy ** 2) / 2000)
+        if random.random() > p: continue
+
         x = wx * random.uniform(0.5, 1.5)
         y = wy * random.uniform(0.5, 1.5)
-        
         while mx0 < x < mx1 and my0 < y < my1:
             x *= 1.3
             y *= 1.3
