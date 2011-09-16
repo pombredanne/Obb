@@ -18,6 +18,7 @@ colors["yellow"] = 1, 1, 0.4, 1
 colors["shield"] = 0.7, 0.7, 1, 1
 colors["ball"] = 1, 1, 1, 1
 colors["cube"] = 0, 1, 1, 1
+colors["bulb"] = 1, 0.5, 0.5, 1
 
 def qBezier((x0,y0), (x1,y1), (x2,y2), n = 8, ccache = {}):
     """Quadratic bezier curve"""
@@ -352,6 +353,43 @@ class CubeCircles(ColorCircles):
         return gimg
 
 cube = CubeCircles()
+
+class BulbCircles(ColorCircles):
+    def getargs(self, growth = 1, edge0 = 3, R = 0.6, r0 = 0.03):
+        growth = int(growth * 8) / 8.
+        return edge0, growth, R, r0
+    
+    def getcircles(self, edge0, growth, R, r0):
+        angle = math.radians(edge0 * 60)
+        S, C = math.sin(angle), math.cos(angle)
+        R *= growth
+        for z, x, y, r, g in spherecircles.getcircles(R, r0, (1,1,2)):
+            f = 0.6 - 0.55 * y / R
+            x *= f
+            z *= f
+            y += 0.1
+            yield z, -x*C-y*S, y*C-x*S, r, (0,g,0)
+        if growth > 0.2:
+            dx, dy = eps[edge0]
+            for z, x, y, r, g in spherecircles.getcircles(0.3, 0.03, (-1,-1,2)):
+                yield z, x+dx*.45, y+dy*.45, r, (g, 0, 0)
+        segs = min(int(growth * 8 + 0.5), 3)
+        if segs:
+            for z, x, y, r, g in app.getcircles((3,), edge0, 0.3, segs):
+                yield z, x, y, r, (g, 0, 0)
+
+    def img(self, color = None, growth = 1, edge0 = 3, zoom = settings.tzoom0):
+        gimg = self.graytile(zoom, growth, edge0).copy()
+        if color in colors:
+            color = colors[color]
+        if not color:
+            filtercolorsurface(gimg, colors[mechanics.colors["bulb"]], colors["bulb"])
+        else:
+            filtercolorsurface(gimg, color, color)
+        return gimg
+
+bulb = BulbCircles()
+
 
 
 
@@ -852,7 +890,7 @@ if __name__ == "__main__":
 #        img = brain.grayimg(160)
 #        filtercolorsurface(img, (1, 0.8, 0.8, 1), (0, 0.5, 1, 1))
 #        img = tripleeye.img(zoom = 80, edge0 = 2)
-        img = cube.img(zoom = 80, edge0 = 1)
+        img = bulb.img(zoom = 80, edge0 = 2)
 #        img = coil.img(zoom = 80)
 #        img = eyebrain.img(zoom = 80)
 #        helixcircles.draw(img, 1, (100, 200), (0, -160))

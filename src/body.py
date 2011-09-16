@@ -15,6 +15,7 @@ class Body(object):
         self.suckers = []
         self.mutagen = 0
         self.shields = []
+        self.attackers = []
         self.tick = 0   # Generic timekeeping
 
     def addrandompart(self, n = 1, maxtries = 100):
@@ -99,6 +100,8 @@ class Body(object):
         self.calccontrol()
         if part.suction:
             self.suckers.append(part)
+        if part.attacker:
+            self.attackers.append(part)
         if part.shield > 0:
             self.shields.append(part)
         noise.play("addpart")
@@ -127,6 +130,8 @@ class Body(object):
         self.calccontrol()
         if part in self.suckers:
             self.suckers.remove(part)
+        if part in self.attackers:
+            self.attackers.remove(part)
         if part in self.shields:
             self.shields.remove(part)
         noise.play("removepart")
@@ -157,6 +162,16 @@ class Body(object):
                     t.sucker = s
                     break
         return None
+
+    def attackenemies(self, es):
+        random.shuffle(self.attackers)
+        for e in es:
+            if not e.alive(): continue
+            for a in self.attackers:
+                if a.canattack(e):
+                    a.attack(e)
+        return None
+
     
     def draw(self):
         for part in sorted(self.parts, key = lambda p: p.draworder):
@@ -182,6 +197,8 @@ class BodyPart(object):
     suction = False
     targetable = False
     pulsefreq = 0
+    hp0 = 0
+    attacker = False
     def __init__(self, body, parent, (x,y), edge = 0):
         self.body = body
         self.parent = parent
@@ -196,6 +213,7 @@ class BodyPart(object):
         self.status = ""
         self.growtimer = self.growtime
         self.dietimer = None
+        self.hp = self.hp0
 
     def think(self, dt):
         if self.growtimer > 0:
@@ -207,6 +225,17 @@ class BodyPart(object):
                 self.dietimer -= dt
                 if self.dietimer < 0:
                     self.body.removepart(self)
+        else:
+            if self.hp0 and self.hp < self.hp0:
+                self.pulsefreq = 1. - float(self.hp) / self.hp0
+
+    def hit(self, dhp = 1):
+        self.hp -= dhp
+        if self.hp < 0:
+            self.die()
+            noise.play("die")
+        else:
+            noise.play("ouch")
 
     def die(self):
         for part in self.buds.values():
@@ -284,8 +313,8 @@ class BodyPart(object):
 
     def pulseredimg(self, img, freq = 0):
         img = img.copy()
-        f = 1 - self.pulse(freq)
-        graphics.filtersurface(img, 1, f, f, 1)
+        f = self.pulse(freq)
+        graphics.filtercolorsurface(img, (1-f,0,0,1), (f/2,1-f,0,1), (f/2,0,1-f,1))
         return img
 
     @staticmethod
@@ -332,6 +361,7 @@ class Organ(BodyPart):
     growtime = 0.3
     controlneed = 1
     targetable = True
+    hp0 = 8
     def draw0(self, zoom, status, growth):
         return graphics.organ.img(zoom = zoom, color = status or self.color, edge0 = self.edge)
 
@@ -423,8 +453,6 @@ class Cube(Organ):
         return graphics.cube.img(zoom = zoom, growth = growth, color = status, edge0 = self.edge)
 
 
-
-
 class Coil(Organ):
     """Shield"""
     shield = 2.5
@@ -435,10 +463,63 @@ class Coil(Organ):
     def wobble(self):
         """Something penetrated the shield"""
 
+class Bulb(Organ):
+    """Silent but deadly. Actually not so silent."""
+    attacker = True
+    attackrange = 3
+    def __init__(self, *args):
+        Organ.__init__(self, *args)
+        self.target = None
+        self.shoottime = 0
+        self.recovertime = 0
+
+    def cansee(self, (x, y)):
+        x0, y0 = self.worldpos
+        dx, dy = x - x0, y - y0
+        d = math.sqrt(dx ** 2 + dy ** 2)
+        if d > self.attackrange: return False
+        angle = math.radians(self.edge * 60)
+        S, C = math.sin(angle), math.cos(angle)
+        return -S * dx - C * dy > 0.8 * d
+
+    def canattack(self, enemy):
+        if self.target is not None: return False
+        if self.recovertime: return False
+        return self.cansee((enemy.x, enemy.y))
+
+    def attack(self, enemy):
+        self.target = enemy.x, enemy.y
+        self.shoottime = 0.25
+        self.recovertime = 2
+        enemy.hit(1)
+        noise.play("zot")
+
+    def think(self, dt):
+        Organ.think(self, dt)
+        self.shoottime = max(self.shoottime - dt, 0)
+        self.recovertime = max(self.recovertime - dt, 0)
+        if not self.shoottime:
+            self.target = None
+
+    def draw0(self, zoom, status, growth):
+        return graphics.bulb.img(zoom = zoom, growth = growth, color = status, edge0 = self.edge)
+    
+    def draw(self, *args):
+        if self.target:
+            p0 = vista.worldtoview(self.worldpos)
+            p1 = vista.worldtoview(self.target)
+            r = int(2 + vista.zoom * 3 * (0.25 - self.shoottime))
+            pygame.draw.circle(vista.screen, (255, 0, 0), p1, r, 1)
+            pygame.draw.aaline(vista.screen, (255, 0, 0), p0, p1, 1)
+        Organ.draw(self, *args)
+
+
+
 
 
 otypes = {"eye":Eye, "brain":Brain, "eyebrain":EyeBrain, "tripleeye":TripleEye,
-        "mutagenitor":Mutagenitor, "coil":Coil, "ball":Ball, "cube":Cube}
+        "mutagenitor":Mutagenitor, "coil":Coil, "ball":Ball, "cube":Cube,
+        "bulb":Bulb}
 
 
 

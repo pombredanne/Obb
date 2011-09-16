@@ -1,6 +1,6 @@
 import pygame, math
 from pygame.locals import *
-import vista, graphics, mechanics, font
+import vista, graphics, mechanics, font, settings
 
 
 class Meter(object):
@@ -97,6 +97,12 @@ class HealMeter(Meter):
     def getimg(self, height):
         return graphics.stalkmeter(height)
 
+def toscreen(rect):
+    return rect.move(settings.rx0, settings.ry0)
+
+def haspoint(rect, point):
+    return toscreen(rect).collidepoint(point)
+
 
 
 class Status(object):
@@ -110,6 +116,8 @@ class Status(object):
         self.maxcontrol = 10
         self.brainimg = graphics.brain.img(zoom = 40)
         self.brainrect = self.brainimg.get_rect(bottomleft = (0, 480+6))
+        self.healicon = vista.Surface(40, 40, (0, 255, 255))
+        self.healrect = self.brainimg.get_rect(bottomright = (120, 480+6))
 
     def select(self, name = None):
         self.selected = name if name != self.selected else None
@@ -136,6 +144,12 @@ class Status(object):
                 return icon
         return None
 
+# TODO:
+#        if haspoint(self.healrect, mousepos):
+#            print "heal"
+#            return "heal"
+
+
     def draw(self):
         self.mutagenmeter.draw()
         self.healmeter.draw()
@@ -148,6 +162,7 @@ class Status(object):
         controlimg = font.img("%s/%s" % (self.body.control, self.body.maxcontrol), size=size, color=color)
         vista.rsurf.blit(self.brainimg, self.brainrect)
         vista.rsurf.blit(controlimg, controlimg.get_rect(midleft = self.brainrect.midright))
+        vista.rsurf.blit(self.healicon, self.healrect)
 
 
 

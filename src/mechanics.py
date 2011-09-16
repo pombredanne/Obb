@@ -32,17 +32,24 @@ def randomspec(color = None):
 
 # Colors determine where you can build organs
 colors = {}
+
+# Monitor/oversee
 colors["eye"] = "app0"
 colors["brain"] = "app0"
 colors["eyebrain"] = "app0"
 colors["tripleeye"] = "app0"
-colors["mutagenitor"] = "app2"
+
+# Attack/defend
 colors["coil"] = "app1"
+colors["bulb"] = "app1"
+
+# Build/heal
+colors["mutagenitor"] = "app2"
 colors["ball"] = "app2"
 colors["cube"] = "app2"
 
 
-costs = {"eye":30, "brain":60, "eyebrain": 120, "mutagenitor":80, "tripleeye": 0, "coil":20, "ball":50, "cube": 10}
-#costs = {"coil":20}
+#costs = {"eye":30, "brain":60, "eyebrain": 120, "mutagenitor":80, "tripleeye": 0, "coil":20, "ball":50, "cube": 10}
+costs = {"bulb":10}
 
 

@@ -78,6 +78,7 @@ class Play(context.Context):
             t.think(dt)
         self.twinklers = [t for t in self.twinklers if t.alive()]
         self.body.claimtwinklers(self.twinklers)
+        self.body.attackenemies(self.shots)
         if random.random() < dt:
             self.shots += enemy.newshots(self.body)
         for s in self.shots: s.think(dt)

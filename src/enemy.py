@@ -5,6 +5,8 @@ import vista, mechanics, noise
 class Shot(object):
     """A projectile. No not that kind. Wait, actually, yes, that kind."""
     v0 = 3
+    dhp = 1
+    hp0 = 1
     def __init__(self, (x, y), target):
         self.x, self.y = x, y
         self.target = target
@@ -16,6 +18,7 @@ class Shot(object):
         self.dy /= self.t
         self.passedshields = []
         self.active = True
+        self.hp = self.hp0
 
     def think(self, dt):
         self.t -= dt
@@ -32,7 +35,14 @@ class Shot(object):
                 else:
                     self.active = False
                     noise.play("dink")
-            
+        if self.t <= 0 and self.active:
+            self.active = False
+            self.target.hit(self.dhp)
+
+    def hit(self, dhp = 1):
+        self.hp -= dhp
+        if self.hp <= 0:
+            self.active = False
 
     def alive(self):
         return self.active and self.t > 0
