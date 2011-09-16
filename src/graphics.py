@@ -952,13 +952,14 @@ if __name__ == "__main__":
 #        img = brain.grayimg(160)
 #        filtercolorsurface(img, (1, 0.8, 0.8, 1), (0, 0.5, 1, 1))
 #        img = tripleeye.img(zoom = 80, edge0 = 2)
-        img = star.img(zoom = 80, edge0 = 2)
+#        img = star.img(zoom = 80, edge0 = 2)
 #        img = coil.img(zoom = 80)
 #        img = eyebrain.img(zoom = 80)
 #        helixcircles.draw(img, 1, (100, 200), (0, -160))
 #        img = helixmeter(200)
 #        img = meter(img, 120)
 #        img = mutagenitor.img(zoom = 80)
+        img = spherecircles.img(zoom = 200, R = 0.3, color = (0.8, 0.3, 0.3, 1))
 
         pass
     if False:

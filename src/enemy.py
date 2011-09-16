@@ -1,5 +1,20 @@
 import pygame, random, math
-import vista, mechanics, noise
+import vista, mechanics, noise, data
+
+
+baseshotimg = None
+def getshotimg(zoom, angle = 0, cache = {}):
+    global baseshotimg
+    angle = int(angle % 90) / 5 * 5
+    zoom  = int(zoom)
+    key = zoom, angle
+    if key in cache: return cache[key]
+    if baseshotimg is None:
+        baseshotimg = pygame.image.load(data.filepath("shot.png")).convert_alpha()
+    img = pygame.transform.rotozoom(baseshotimg, angle, float(zoom) / 240.)
+    
+    cache[key] = img
+    return cache[key]
 
 
 class Shot(object):
@@ -19,9 +34,12 @@ class Shot(object):
         self.passedshields = []
         self.active = True
         self.hp = self.hp0
+        self.angle = 0
+        self.omega = random.uniform(30, 120) * (1 if random.random() < 0.5 else -1)
 
     def think(self, dt):
         self.t -= dt
+        self.angle += self.omega * dt
         self.x = self.tx + self.t * self.dx
         self.y = self.ty + self.t * self.dy
         for shield in self.target.body.shields:
@@ -48,10 +66,9 @@ class Shot(object):
         return self.active and self.t > 0
 
     def draw(self):
-        r = int(vista.zoom * 0.2)
-        self.img = vista.Surface(r, r, (255, 0, 0))
         pos = vista.worldtoview((self.x, self.y))
-        vista.screen.blit(self.img, self.img.get_rect(center = pos))
+        img = getshotimg(vista.zoom, self.angle)
+        vista.screen.blit(img, img.get_rect(center = pos))
 
 def newshots(body):
     shots = []
