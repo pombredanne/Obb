@@ -1,5 +1,19 @@
 import pygame, random, math
-import vista, mechanics, noise
+import vista, mechanics, noise, data
+
+baseimg = None
+def getimg(zoom, angle, cache = {}):
+    global baseimg
+    angle = int(angle % 90) / 5 * 5
+    zoom  = int(zoom)
+    key = zoom, angle
+    if key in cache: return cache[key]
+    if baseimg is None:
+        baseimg = pygame.image.load(data.filepath("twinkler.png")).convert_alpha()
+    img = pygame.transform.rotozoom(baseimg, angle, float(zoom) / 240.)
+    
+    cache[key] = img
+    return cache[key]
 
 
 class Twinkler(object):
@@ -38,10 +52,10 @@ class Twinkler(object):
         return not self.claimed and (self.sucker or self.t < 5)
 
     def draw(self):
-        r = int(vista.zoom * 0.3)
-        self.img = vista.Surface(r, r, (255, 255, 255))
-        pos = vista.worldtoview((self.x, self.y))
-        vista.screen.blit(self.img, self.img.get_rect(center = pos))
+        for r, angle in [(1, self.t * 40), (0.8, self.t * 100), (0.8, self.t * -100)]:
+            img = getimg(vista.zoom*r, angle)
+            pos = vista.worldtoview((self.x, self.y))
+            vista.screen.blit(img, img.get_rect(center = pos))
 
 
 def newtwinklers(mask, dt):
