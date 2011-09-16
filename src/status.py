@@ -7,16 +7,32 @@ class Meter(object):
     left = 30
     def __init__(self):
         self.maxheight = 300
-        self.height = 200
+        self.height = 5
+        self.goalheight = 5
         self.baseimg = self.getimg(self.height)
         self.bottom = self.left, self.maxheight + 40
         self.amount = 0
+
+    def setheight(self, height):
+        if height == self.goalheight: return
+        self.goalheight = min(height, self.maxheight)
+        if self.amount > self.goalheight:
+            self.amount = self.goalheight
 
     def getimg(self, height):
         return graphics.helixmeter(height)
 
     def think(self, dt):
-        self.amount = min(self.amount + dt * self.rate, self.height)
+        self.amount = min(self.amount + dt * self.rate, self.goalheight)
+        dh = self.goalheight - self.height
+        if not dh: return
+        if abs(dh) < 50 * dt:
+            self.height = self.goalheight
+        elif dh > 0:
+            self.height += 50 * dt
+        elif dh < 0:
+            self.height -= 50 * dt
+        self.baseimg = self.getimg(self.height)
 
     def meterpos(self, amount):
         """pixel coordinates corresponding to an amount on this meter"""
@@ -28,7 +44,7 @@ class Meter(object):
     
     def draw(self):
         level = self.getlevel()
-        img = graphics.meter(self.baseimg, level, (0.7, 0, 1))
+        img = graphics.meter(self.baseimg, level, self.color)
         vista.rsurf.blit(img, img.get_rect(midbottom = self.bottom))
 
 class BuildIcon(object):
@@ -76,6 +92,7 @@ class BuildIcon(object):
 
 class MutagenMeter(Meter):
     rate = mechanics.basemutagenrate
+    color = graphics.colors["mutagen"]
     def __init__(self):
         Meter.__init__(self)
         self.icons = [BuildIcon(self, name) for name in mechanics.costs]
@@ -92,6 +109,8 @@ class MutagenMeter(Meter):
 
 class HealMeter(Meter):
     rate = mechanics.basehealrate
+    color = graphics.colors["plaster"]
+
     left = 90
 
     def getimg(self, height):
@@ -120,6 +139,10 @@ class Status(object):
         self.maxcontrol = 10
         self.brainimg = graphics.brain.img(zoom = 40)
         self.brainrect = self.brainimg.get_rect(bottomleft = (0, 480+6))
+
+    def setheights(self, mutagenheight, healheight):
+        self.mutagenmeter.setheight(mutagenheight)
+        self.healmeter.setheight(healheight)
 
     def select(self, name = None):
         self.selected = name if name != self.selected else None

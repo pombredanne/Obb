@@ -16,10 +16,11 @@ colors["brain"] = 1, 0.85, 0.85, 1
 colors["eye"] = 1, 1, 1, 1
 colors["yellow"] = 1, 1, 0.4, 1
 colors["shield"] = 0.7, 0.7, 1, 1
-colors["ball"] = 1, 1, 1, 1
 colors["cube"] = 0, 1, 1, 1
 colors["bulb"] = 1, 0.5, 0.5, 1
 colors["star"] = 1, 1, 0, 1
+colors["mutagen"] = 0, 1, 1, 0
+colors["plaster"] = 1, 1, 0, 1
 
 def qBezier((x0,y0), (x1,y1), (x2,y2), n = 8, ccache = {}):
     """Quadratic bezier curve"""
@@ -258,8 +259,8 @@ class CoilCircles(ColorCircles):
 
 coil = CoilCircles()
 
-class BallCircles(ColorCircles):
-    def getargs(self, growth = 1, edge0 = 3, R = 0.6, r0 = 0.03):
+class PodCircles(ColorCircles):
+    def getargs(self, growth = 1, edge0 = 3, R = 0.55, r0 = 0.03):
         growth = int(growth * 8) / 8.
         return edge0, growth, R, r0
     
@@ -293,17 +294,28 @@ class BallCircles(ColorCircles):
             for z, x, y, r, g in app.getcircles((3,), edge0, 0.3, segs):
                 yield z, x, y, r, (g, 0, 0)
 
-    def img(self, color = None, growth = 1, edge0 = 3, zoom = settings.tzoom0):
+    def img(self, color0, color1, growth = 1, edge0 = 3, zoom = settings.tzoom0):
         gimg = self.graytile(zoom, growth, edge0).copy()
-        if color in colors:
-            color = colors[color]
-        if not color:
-            filtercolorsurface(gimg, colors[mechanics.colors["ball"]], colors["ball"])
-        else:
-            filtercolorsurface(gimg, color, color)
+        filtercolorsurface(gimg, color0, color1)
         return gimg
 
-ball = BallCircles()
+    def imgmutagen(self, color = None, growth = 1, edge0 = 3, zoom = settings.tzoom0):
+        if color:
+            if color in colors: color = colors[color]
+            return self.img(color, color, growth, edge0, zoom)
+        color0 = colors[mechanics.colors["mutagenpod"]]
+        color1 = colors["mutagen"]
+        return self.img(color0, color1, growth, edge0, zoom)
+
+    def imgplaster(self, color = None, growth = 1, edge0 = 3, zoom = settings.tzoom0):
+        if color:
+            if color in colors: color = colors[color]
+            return self.img(color, color, growth, edge0, zoom)
+        color0 = colors[mechanics.colors["plasterpod"]]
+        color1 = colors["plaster"]
+        return self.img(color0, color1, growth, edge0, zoom)
+
+pod = PodCircles()
 
 
 class StarCircles(ColorCircles):
@@ -856,11 +868,11 @@ def meter(img, level, color1 = (0.5, 0, 1), color0 = (0.2, 0.2, 0.2)):
     h = img2.get_height()
     p = h - level
     arr = pygame.surfarray.pixels3d(img2)
-    x, y, z = color1
+    x, y, z = color1[:3]
     if x != 1: arr[...,p:,0] *= x
     if y != 1: arr[...,p:,1] *= y
     if z != 1: arr[...,p:,2] *= z
-    x, y, z = color0
+    x, y, z = color0[:3]
     if x != 1: arr[...,:p,0] *= x
     if y != 1: arr[...,:p,1] *= y
     if z != 1: arr[...,:p,2] *= z

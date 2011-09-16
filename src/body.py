@@ -9,15 +9,19 @@ class Body(object):
         self.takenedges = {}
         self.takenbuds = {}
         self.calccontrol()
-        self.core = Core(self, (x, y))
         self.mask = None
-        self.addpart(self.core)
         self.suckers = []
         self.mutagen = 0
+        self.maxmutagen = mechanics.mutagen0
+        self.plaster = 0
+        self.maxplaster = mechanics.plaster0
         self.shields = []
         self.attackers = []
         self.tick = 0   # Generic timekeeping
         self.organs = {}  # Reverse lookup
+
+        self.core = Core(self, (x, y))
+        self.addpart(self.core)
 
     def addrandompart(self, n = 1, maxtries = 100):
         added = 0
@@ -51,6 +55,11 @@ class Body(object):
     def checkmutagen(self):
         x = self.mutagen
         self.mutagen = 0
+        return x
+
+    def checkplaster(self):
+        x = self.plaster
+        self.plaster = 0
         return x
 
     def nearestorgan(self, pos):
@@ -114,6 +123,8 @@ class Body(object):
         vista.icons["cut"].active = len(self.parts) > 1
         if isinstance(part, Organ):
             self.organs[(part.x, part.y)] = part
+        self.maxmutagen += part.mutagen
+        self.maxplaster += part.plaster
 
     def remakemask(self):
         """Build the mask from scratch"""
@@ -147,6 +158,8 @@ class Body(object):
         vista.icons["cut"].active = len(self.parts) > 1
         if isinstance(part, Organ):
             del self.organs[(part.x, part.y)]
+        self.maxmutagen -= part.mutagen
+        self.maxplaster -= part.plaster
 
     def removebranch(self, part):
         """Remove a part and all its children"""
@@ -212,6 +225,8 @@ class BodyPart(object):
     hp0 = 0
     attacker = False
     glowtime = 0
+    mutagen = 0
+    plaster = 0
     def __init__(self, body, parent, (x,y), edge = 0):
         self.body = body
         self.parent = parent
@@ -451,11 +466,18 @@ class EyeBrain(Brain):
 class Leaf(Organ):
     """Collects light and generates energy"""
 
+class MutagenPod(Organ):
+    mutagen = 20
+    def draw0(self, zoom, status, growth):
+        return graphics.pod.imgmutagen(zoom = zoom, growth = growth, color = status, edge0 = self.edge)
+
+'''
 class Mutagenitor(Organ):
     """Collects twinklers and generates mutagen"""
     suction = True
 
     def draw0(self, zoom, status, growth):
+        # TODO: redraw
         return graphics.mutagenitor.img(zoom = zoom, growth = growth, color = status, edge0 = self.edge)
 
     def energize(self):
@@ -475,7 +497,7 @@ class Ball(Organ):
 #        if self.attached():
 #            self.body.mutagen += mechanics.mutagenhit
         self.glowtime = 0.5
-
+'''
 
 # TODO
 class Cube(Organ):
@@ -596,8 +618,8 @@ class Star(Organ):
 
 
 otypes = {"eye":Eye, "brain":Brain, "eyebrain":EyeBrain, "tripleeye":TripleEye,
-        "mutagenitor":Mutagenitor, "coil":Coil, "ball":Ball, "cube":Cube,
-        "bulb":Bulb, "star":Star}
+        "coil":Coil, "cube":Cube,
+        "bulb":Bulb, "star":Star, "mutagenpod":MutagenPod}
 
 
 

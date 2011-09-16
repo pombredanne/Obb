@@ -98,7 +98,9 @@ class Play(context.Context):
             self.shots += enemy.newshots(self.body)
         for s in self.shots: s.think(dt)
         self.shots = [s for s in self.shots if s.alive()]
+        self.status.setheights(self.body.maxmutagen, self.body.maxplaster)
         self.status.mutagenmeter.amount += self.body.checkmutagen()
+        self.status.healmeter.amount += self.body.checkplaster()
 
     def pause(self):
         self.paused = True
