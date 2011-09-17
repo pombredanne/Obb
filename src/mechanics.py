@@ -43,6 +43,7 @@ colors = {}
 # Monitor/oversee
 colors["eye"] = "app0"
 colors["brain"] = "app0"
+colors["giantbrain"] = "app0"  # Should be same as brain
 colors["eyebrain"] = "app0"
 colors["tripleeye"] = "app0"
 
@@ -62,5 +63,5 @@ colors["cube"] = "app2"
 
 #costs = {"eye":30, "brain":60, "eyebrain": 120, "mutagenitor":80, "tripleeye": 0, "coil":20, "ball":50, "cube": 10}
 costs = {"mutagenitor":10, "zotter":20, "cube":30}
-
+costs = {"brain":10, "giantbrain": 20}
 

@@ -463,6 +463,14 @@ class Brain(Organ):
     def draw0(self, zoom, status, growth):
         return graphics.brain.img(zoom = zoom, growth = growth, color = status, edge0 = self.edge)
 
+class GiantBrain(Organ):
+    """Lets you control even more organs"""
+    control = 10
+    controlneed = 0
+
+    def draw0(self, zoom, status, growth):
+        return graphics.brain.giantimg(zoom = zoom, growth = growth, color = status, edge0 = self.edge)
+
 class EyeBrain(Brain):
     """Hey, you got eyeballs in my brain! Hey, you got brains in my eyeball!"""
     lightradius = 5
@@ -688,7 +696,7 @@ class Star(Organ):
 
 
 
-otypes = {"eye":Eye, "brain":Brain, "eyebrain":EyeBrain, "tripleeye":TripleEye,
+otypes = {"eye":Eye, "brain":Brain, "giantbrain":GiantBrain, "eyebrain":EyeBrain, "tripleeye":TripleEye,
         "cube":Cube, "zotter":Zotter,
         "bulb":Bulb, "star":Star,
         "mutagenpod":MutagenPod, "plasterpod":PlasterPod,

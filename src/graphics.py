@@ -708,9 +708,9 @@ class LobeCircles(SphereCircles):
 lobecircles = LobeCircles()
 
 class BrainCircles(ColorCircles):
-    def getargs(self, growth = 1, edge0 = 3, lvector = (-1,-1,2)):
+    def getargs(self, growth = 1, edge0 = 3, Rfac = 1, lvector = (-1,-1,2)):
         segs = min(int(growth * 6), 3)
-        R = growth - 0.5
+        R = (growth - 0.5) * Rfac
         r0 = 0.05
         width = 0.3
         return R, edge0, segs, r0, width, tuple(lvector)
@@ -722,8 +722,8 @@ class BrainCircles(ColorCircles):
         for z, x, y, r, g in app.getcircles((3,), edge0, width, segs):
             yield z, x, y, r, (0, g, 0)
 
-    def img(self, growth = 1, color = None, edge0 = 3, zoom = settings.tzoom0):
-        gimg = self.graytile(zoom, growth, edge0).copy()
+    def img(self, growth = 1, color = None, edge0 = 3, Rfac = 1, zoom = settings.tzoom0):
+        gimg = self.graytile(zoom, growth, edge0, Rfac).copy()
         if color in colors:
             color = colors[color]
         if not color:
@@ -731,6 +731,9 @@ class BrainCircles(ColorCircles):
         else:
             filtercolorsurface(gimg, color, color)
         return gimg
+
+    def giantimg(self, growth = 1, color = None, edge0 = 3, zoom = settings.tzoom0):
+        return self.img(growth, color, edge0, 1.6, zoom)
 
 brain = BrainCircles()
 

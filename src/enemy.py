@@ -2,18 +2,17 @@ import pygame, random, math
 import vista, mechanics, noise, data
 
 
-baseshotimg = None
+def getimg(name, cache = {}):
+    if name in cache: return cache[name]
+    cache[name] = pygame.image.load(data.filepath(name + ".png")).convert_alpha()
+    return cache[name]
+
 def getshotimg(zoom, angle = 0, cache = {}):
-    global baseshotimg
     angle = int(angle % 90) / 5 * 5
     zoom  = int(zoom)
     key = zoom, angle
     if key in cache: return cache[key]
-    if baseshotimg is None:
-        baseshotimg = pygame.image.load(data.filepath("shot.png")).convert_alpha()
-    img = pygame.transform.rotozoom(baseshotimg, angle, float(zoom) / 240.)
-    
-    cache[key] = img
+    cache[key] = pygame.transform.rotozoom(getimg("shot"), angle, float(zoom) / 240.)
     return cache[key]
 
 
@@ -55,7 +54,11 @@ class Shot(object):
                     noise.play("dink")
         if self.t <= 0 and self.active:
             self.active = False
-            self.target.hit(self.dhp)
+            self.complete()
+
+
+    def complete(self):
+        self.target.hit(self.dhp)
 
     def hit(self, dhp = 1):
         self.hp -= dhp
@@ -69,6 +72,10 @@ class Shot(object):
         pos = vista.worldtoview((self.x, self.y))
         img = getshotimg(vista.zoom, self.angle)
         vista.screen.blit(img, img.get_rect(center = pos))
+
+class Ship(Shot):
+    """A shot that spawns more shots. Yikes!"""
+
 
 def newshots(body):
     shots = []
