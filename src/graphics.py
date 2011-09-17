@@ -962,6 +962,24 @@ def ghostify(img):
     g = (arr[...,0]/8 + arr[...,1]/8 + arr[...,2]/8) + 64
     arr[...,0] = arr[...,1] = arr[...,2] = g
     return img2
+
+def thoughtbubble(h, w = settings.maxblockwidth, cache = {}):
+    key = w, h
+    if key in cache:
+        return cache[key]
+    circs = []
+    for j in range(int(w*h*0.05)):
+        x = random.uniform(0, w)
+        y = random.uniform(0, h)
+        z = random.uniform(0.5, 1)
+        r = random.uniform(10, 20)
+        g = z
+        circs.append((z, x, y, r, g))
+    circs = normcircles(circs, 1, (60, 60))
+    img = vista.Surface(w+120, h+120)
+    drawgraycircles(img, circs)
+    cache[key] = img
+    return img
     
 
 
@@ -1026,9 +1044,9 @@ if __name__ == "__main__":
 #        helixcircles.draw(img, 1, (100, 200), (0, -160))
 #        img = helixmeter(200)
 #        img = meter(img, 120)
-        img = pod.giantimgmutagen(zoom = 80)
+#        img = pod.giantimgmutagen(zoom = 80)
 #        img = spherecircles.img(zoom = 200, R = 0.3, color = (0.8, 0.3, 0.3, 1))
-
+        img = thoughtbubble(100)
         pass
     if False:
         img = vista.Surface(40, 400, (0, 0, 0))

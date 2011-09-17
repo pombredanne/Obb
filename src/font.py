@@ -57,7 +57,7 @@ def img(text = "", size = 32, color = (255, 255, 255), cache = {}):
     return cache[key]
 
 
-def blocktext(text = "", size = 32, color = (255, 255, 255), cache = {}):
+def blocktext(text = "", size = 32, color = (0, 0, 0), cache = {}):
     key = text, size, color
     if key in cache: return cache[key]
     if size not in fonts:

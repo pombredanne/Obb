@@ -15,7 +15,6 @@ def think(dt):
         surf = None
     else:
         surf = font.blocktext(currenttip)
-        rect = surf.get_rect(midtop = vista.vrect.midtop)
         
     
 def draw():
@@ -25,5 +24,9 @@ def draw():
     if not settings.showtips:
         return
     if surf:
+        bubble = graphics.thoughtbubble(surf.get_height())
+        bubblerect = bubble.get_rect(midtop = vista.vrect.midtop)
+        rect = surf.get_rect(center = bubblerect.center)
+        vista._screen.blit(bubble, bubblerect)
         vista._screen.blit(surf, rect)
 
