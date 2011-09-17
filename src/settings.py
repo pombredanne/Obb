@@ -48,6 +48,7 @@ iconpos["cut"] = 136, 429
 iconpos["heal"] = 803, 370
 
 maxtextwidth = 140
+maxblockwidth = 400
 
 tzoom0 = 100  # Default tile size
 zooms = 16, 24, 32, 40, 48, 60, 72
