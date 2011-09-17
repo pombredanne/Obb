@@ -15,7 +15,6 @@ class Play(context.Context):
         self.healmode = False
         self.clearselections()
         self.clickat = None
-        noise.nexttrack()
 
     def think(self, dt, events, keys, mousepos, buttons):
 

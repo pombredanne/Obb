@@ -27,6 +27,11 @@ class Body(object):
         self.core = Core(self, (x, y))
         self.addpart(self.core)
 
+    def __getstate__(self):
+        d = dict(self.__dict__)
+        d["mask"] = None
+        return d
+
     def addrandompart(self, n = 1, maxtries = 100):
         added = 0
         for tries in range(maxtries):
@@ -269,6 +274,12 @@ class BodyPart(object):
         self.growtimer = self.growtime
         self.dietimer = None
         self.hp = self.hp0
+
+    def __getstate__(self):
+        d = dict(self.__dict__)
+        d["lastkey"] = None
+        d["img"] = None
+        return d
 
     def think(self, dt):
         if self.growtimer > 0:

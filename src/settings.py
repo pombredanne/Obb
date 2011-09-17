@@ -1,5 +1,13 @@
 import sys
 
+# Attention players: I can't guarantee that the game will run properly
+# if you mess with these settings. I haven't tested every possible
+# combination. These settings are here for my benefit.
+
+# Having said that, feel free to mess with these settings. :)
+
+
+
 
 # Controls
 panonpoint = False # Viewport follows mouse cursor
@@ -63,12 +71,16 @@ audiobuffer = False  # Works better for me with buffer off
 
 showtips = True
 
+restart = "--restart" in sys.argv
 fullscreen = "--fullscreen" in sys.argv
 if "--slow" in sys.argv:
     showstars = False
     tzoom0 = 72
 
 showfps = True
+saveonquit = True
+autosave = True
+savetimer = 15  # seconds between autosaves
 
 minfps, maxfps = 10, 60
 

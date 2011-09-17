@@ -8,10 +8,13 @@ class Meter(object):
         self.maxheight = 300
         self.height = 60
         self.goalheight = 60
-        self.baseimg = self.getimg(self.getlevel(self.height, False))
-        self.bottom = self.left, settings.layout.meterbottom
-        self.rect = self.baseimg.get_rect(midbottom = self.bottom)
+        self.baseimg = None
         self.amount = 60
+    
+    def __getstate__(self):
+        d = dict(self.__dict__)
+        d["baseimg"] = None
+        return d
 
     def setheight(self, height):
         if height == self.goalheight: return
@@ -32,11 +35,14 @@ class Meter(object):
             self.height += 50 * dt
         elif dh < 0:
             self.height -= 50 * dt
-        self.baseimg = self.getimg(self.getlevel(self.height, False))
-        self.rect = self.baseimg.get_rect(midbottom = self.bottom)
+        self.baseimg = None
 
     def meterpos(self, amount, bounded = True):
         """pixel coordinates corresponding to an amount on this meter"""
+        if not self.baseimg:
+            self.baseimg = self.getimg(self.getlevel(self.height, False))
+            self.bottom = self.left, settings.layout.meterbottom
+            self.rect = self.baseimg.get_rect(midbottom = self.bottom)
         return self.bottom[0], self.bottom[1] - self.getlevel(amount, bounded)
     
     def getlevel(self, amount = None, bounded = True):
@@ -46,6 +52,10 @@ class Meter(object):
 #        return int(self.maxheight * (1 - math.exp(-2. * amount / self.maxheight)))
     
     def draw(self):
+        if not self.baseimg:
+            self.baseimg = self.getimg(self.getlevel(self.height, False))
+            self.bottom = self.left, settings.layout.meterbottom
+            self.rect = self.baseimg.get_rect(midbottom = self.bottom)
         level = self.getlevel()
         img = graphics.meter(self.baseimg, level, self.color)
         vista.rsurf.blit(img, self.rect)
@@ -58,16 +68,26 @@ class BuildIcon(object):
         self.active = None  # Enough mutagen to activate
         self.visible = False
         self.pointedto = False
-        number %= len(settings.layout.buildiconxs)
-        self.x = settings.layout.buildiconxs[number]
-        _, self.y = self.meter.meterpos(self.amount, bounded = False)
-        self.img = None
+        self.number = number
+        self.x = None
+
+    def __getstate__(self):
+        d = dict(self.__dict__)
+        d["x"] = None
+        d["img"] = None
+        if "ghost" in d: del d["ghost"]
+        if "currentimg" in d: del d["currentimg"]
+        return d
 
     def think(self, dt):
         active = self.meter.amount >= self.amount
         self.visible = self.meter.height >= self.amount
         if not self.visible: return
         self.active = active
+        if self.x is None:
+            self.x = settings.layout.buildiconxs[self.number % len(settings.layout.buildiconxs)]
+            _, self.y = self.meter.meterpos(self.amount, bounded = False)
+            self.img = None
         if not self.img:
             self.img = graphics.icon(self.name)
             self.ghost = graphics.ghostify(self.img)
@@ -81,8 +101,6 @@ class BuildIcon(object):
         return self.visible and self.rect.collidepoint(pos)
 
     def draw(self):
-#        x,y = self.linepos
-#        pygame.draw.line(vista.rsurf, (255, 255, 255), (x-20,y), (x,y))
         if self.visible:
             vista.addoverlay(self.currentimg, self.rect)
         
@@ -136,9 +154,12 @@ class Status(object):
         self.selected = None
         self.control = 5
         self.maxcontrol = 10
-        self.brainimg = graphics.brain.img(zoom = settings.layout.organcountsize)
-        self.brainrect = self.brainimg.get_rect(bottomleft = settings.layout.brainiconpos)
-        self.controlrect = self.brainrect
+        self.brainimg = None
+
+    def __getstate__(self):
+        d = dict(self.__dict__)
+        d["brainimg"] = None
+        return d
 
     def setheights(self, mutagenheight, healheight):
         self.mutagenmeter.setheight(mutagenheight)
@@ -181,6 +202,10 @@ class Status(object):
         if self.body.control >= self.body.maxcontrol:
             color, size = (128, 0, 0), int(size * 1.5)
         controlimg = font.img("%s/%s" % (self.body.control, self.body.maxcontrol), size=size, color=color)
+        if not self.brainimg:
+            self.brainimg = graphics.brain.img(zoom = settings.layout.organcountsize)
+            self.brainrect = self.brainimg.get_rect(bottomleft = settings.layout.brainiconpos)
+            self.controlrect = self.brainrect
         vista.rsurf.blit(self.brainimg, self.brainrect)
         self.controlrect = controlimg.get_rect(midleft = settings.layout.controlpos)
         vista.rsurf.blit(controlimg, self.controlrect)
