@@ -57,10 +57,12 @@ class Icon(object):
         self.rect = self.img.get_rect()
         self.rect.center = settings.iconpos[self.name]
         self.ghost = graphics.ghostify(self.img)
+        self.select = graphics.brighten(self.img)
         self.active = True
+        self.selected = False
         
     def draw(self):
-        img = self.img if self.active else self.ghost
+        img = (self.select if self.selected else self.img) if self.active else self.ghost
         _screen.blit(img, self.rect)
     
     def hit(self, pos):

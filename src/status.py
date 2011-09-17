@@ -77,6 +77,7 @@ class BuildIcon(object):
         d["img"] = None
         if "ghost" in d: del d["ghost"]
         if "currentimg" in d: del d["currentimg"]
+        if "select" in d: del d["select"]
         return d
 
     def think(self, dt):
@@ -91,9 +92,10 @@ class BuildIcon(object):
         if not self.img:
             self.img = graphics.icon(self.name)
             self.ghost = graphics.ghostify(self.img)
+            self.select = graphics.brighten(self.img)
             self.currentimg = self.img
             self.rect = self.currentimg.get_rect(center = (self.x, self.y))
-        self.currentimg = self.img if self.active else self.ghost
+        self.currentimg = (self.select if self.selected else self.img) if self.active else self.ghost
         self.linepos = x,y = self.meter.meterpos(self.amount)
         self.pointedto = False
 
@@ -167,6 +169,8 @@ class Status(object):
 
     def select(self, name = None):
         self.selected = name if name != self.selected else None
+        for icon in self.mutagenmeter.icons:
+            icon.selected = icon.name == name
 
     def build(self):
         assert self.selected

@@ -970,8 +970,14 @@ def icon(name, size = settings.layout.buildiconsize, cache = {}):
 def ghostify(img):
     img2 = img.copy()
     arr = pygame.surfarray.pixels3d(img2)
-    g = (arr[...,0]/8 + arr[...,1]/8 + arr[...,2]/8) + 64
+    g = (arr[...,0]/8 + arr[...,1]/8 + arr[...,2]/8) + 32
     arr[...,0] = arr[...,1] = arr[...,2] = g
+    return img2
+
+def brighten(img):
+    img2 = img.copy()
+    arr = pygame.surfarray.pixels3d(img2)
+    arr[...] = arr[...] / 2 + 127
     return img2
 
 def thoughtbubble(h, w = settings.maxblockwidth, cache = {}):
@@ -1035,7 +1041,7 @@ def mouthimg(n = 0, cache = {}):
         return cache[key]
     if (n, "base") not in cache:
         cache[(n, "base")] = pygame.image.load(data.filepath("mouth-%s.png" % n)).convert_alpha()
-    img = pygame.transform.rotozoom(cache[(n, "base")], 1, float(z) / settings.tzoom0)
+    img = pygame.transform.smoothscale(cache[(n, "base")], (3*z,3*z))
     cache[key] = img
     return cache[key]
 

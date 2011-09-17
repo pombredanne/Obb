@@ -93,6 +93,8 @@ class Play(context.Context):
             self.target = None
 
         vista.think(dt, mousepos, keys)
+        vista.icons["cut"].selected = self.cutmode
+        vista.icons["heal"].selected = self.healmode
 
         self.body.think(dt, self.status.healmeter)
         self.panel.think(dt)
