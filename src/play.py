@@ -12,6 +12,7 @@ class Play(context.Context):
         self.shots = []
         self.paused = False
         self.target = None
+        self.healmode = False
         self.clearselections()
         self.clickat = None
         noise.nexttrack()
@@ -86,14 +87,8 @@ class Play(context.Context):
                 if self.target is not None:
                     self.target.setbranchstatus("target")
         elif self.healmode:
-            newtarget = self.body.nearestorgan(vista.screentoworld(mousepos))
-            self.target = newtarget
-            #if newtarget != self.target:
-            #    if self.target is not None:
-            #        self.target.setbranchstatus()
-            #    self.target = newtarget
-            #    if self.target is not None:
-            #        self.target.setstatus("toheal")
+            self.body.sethealstatus()
+            self.target = self.body.nearestorgan(vista.screentoworld(mousepos))
         elif self.target is not None:
             self.target.setbranchstatus()
             self.target = None
@@ -139,6 +134,8 @@ class Play(context.Context):
         if clearstatus:
             self.status.select()
         if clearheal:
+            if self.healmode:
+                self.body.core.setbranchstatus()
             self.healmode = False
         if clearcut:
             self.cutmode = False
@@ -167,6 +164,7 @@ class Play(context.Context):
         elif vicon == "music":
             noise.nexttrack()
         elif vicon == "heal":
+            self.body.core.setbranchstatus()
             if self.healmode:
                 self.clearselections()
             else:
@@ -193,8 +191,7 @@ class Play(context.Context):
                 self.target.die()
                 self.clearselections()
             elif self.healmode and self.target is not None:
-                dhp = self.target.heal()
-                self.status.usehp(dhp)
+                self.target.autoheal = not self.target.autoheal
             elif self.parttobuild is not None and self.canbuild and self.body.canaddpart(self.parttobuild):
                 if self.panel.selected is not None:
                     self.panel.claimtile()
@@ -225,6 +222,8 @@ class Play(context.Context):
         elif vicon == "music":
             return "click to hear new song or turn off"
         elif vicon == "heal":
+            if self.healmode:
+                return "click on organs to change them so they don't heal by self. no want to waste ooze on non-vital organs"
             return "me organs will use ooze to heal when they get hurt. if you want some organs not to take ooze, click here to change them"
         elif vicon == "cut":
             return "no like a stalk or a organ? click to get rid of it! it okay, it not hurt me"

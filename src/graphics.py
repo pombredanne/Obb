@@ -22,6 +22,8 @@ colors["star"] = 1, 1, 0, 1
 colors["mutagen"] = 0, 1, 1, 0
 colors["plaster"] = 1, 1, 0, 1
 colors["zotter"] = 1, 1, 0, 1
+colors["bad"] = 1, 0, 0, 1
+colors["good"] = 0, 1, 0, 1
 
 def qBezier((x0,y0), (x1,y1), (x2,y2), n = 8, ccache = {}):
     """Quadratic bezier curve"""
@@ -342,7 +344,7 @@ class GeneratorCircles(ColorCircles):
                     ax, ay = (x*c+y*s), (y*c-x*s)
                     yield z, -ax*C-ay*S, ay*C-ax*S, r, (0, g*.5+.5, 0)
         if growth > 0.2:
-            for z, x, y, r, g in spherecircles.getcircles(1.5*R*growth, r0, (-1,-1,2)):
+            for z, x, y, r, g in spherecircles.getcircles(1.7*R*growth, r0, (-1,-1,2)):
                 yield z, x, y, r, (g, 0, 0)
 
         segs = min(int(growth * 8 + 0.5), 3)

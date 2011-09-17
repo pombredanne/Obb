@@ -186,7 +186,7 @@ class Body(object):
             self.trytoheal(meter)
 
     def trytoheal(self, meter):
-        toheal = [part for part in self.parts if part.targetable and part.autoheal and part.hp < part.hp0]
+        toheal = [part for part in self.organs.values() if part.targetable and part.autoheal and part.hp < part.hp0]
         if not toheal: return
         random.shuffle(toheal)
         for part in toheal:
@@ -196,6 +196,10 @@ class Body(object):
             dhp = min(available, part.hp0 - part.hp)
             part.heal(dhp)
             meter.amount -= dhp
+
+    def sethealstatus(self):
+        for part in self.organs.values():
+            part.status = "good" if part.autoheal else "bad"
 
     def claimtwinklers(self, ts):
         random.shuffle(self.suckers)

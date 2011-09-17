@@ -3,7 +3,7 @@ import data
 
 
 track = 0
-tracks = ["fighter", "ittybitty", "killing", "rocket"]
+tracks = ["rocket", "fighter", "ittybitty", "killing"]
 
 def play(name = ""):
     pass
