@@ -16,8 +16,9 @@ class layout:
     meterbottom = 330
     mutagenmeterx = 120
     healmeterx = 160
-    brainiconpos = 0, 486
-    countsize = 32  # Font size of counters
+    brainiconpos = -20, 486
+    controlpos = 42, 450
+    countsize = 60  # Font size of counters
     organcountsize = 40
     cubeiconpos = 42, 36
     ptilesize = 58 # Size of selectable tiles in the panel
@@ -36,7 +37,7 @@ iconpos["trash"] = 51, 429
 iconpos["cut"] = 136, 429
 iconpos["heal"] = 803, 370
 
-
+maxtextwidth = 140
 
 tzoom0 = 400  # Default tile size
 zooms = 16, 24, 32, 40, 48, 60, 72

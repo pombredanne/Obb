@@ -38,3 +38,11 @@ LICENSE:
 
 This game skellington is placed in the Public Domain.
 
+
+
+FONT LICENSE:
+I suck at golf by Divide by Zero
+See the file data/suckgolf-README.TXT for license information
+http://www.fontspace.com/divide-by-zero/i-suck-at-golf
+
+

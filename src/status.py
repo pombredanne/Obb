@@ -132,7 +132,7 @@ class Status(object):
         self.selected = None
         self.control = 5
         self.maxcontrol = 10
-        self.brainimg = graphics.brain.img(zoom = 40)
+        self.brainimg = graphics.brain.img(zoom = settings.layout.organcountsize)
         self.brainrect = self.brainimg.get_rect(bottomleft = settings.layout.brainiconpos)
 
     def setheights(self, mutagenheight, healheight):
@@ -177,7 +177,7 @@ class Status(object):
             color, size = (128, 0, 0), int(size * 1.5)
         controlimg = font.img("%s/%s" % (self.body.control, self.body.maxcontrol), size=size, color=color)
         vista.rsurf.blit(self.brainimg, self.brainrect)
-        vista.rsurf.blit(controlimg, controlimg.get_rect(midleft = self.brainrect.midright))
+        vista.rsurf.blit(controlimg, controlimg.get_rect(midleft = settings.layout.controlpos))
 
 
 
