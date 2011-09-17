@@ -479,18 +479,27 @@ class EyeBrain(Brain):
         return graphics.eyebrain.img(zoom = zoom, growth = growth, color = status, edge0 = self.edge)
 
 
-class Leaf(Organ):
-    """Collects light and generates energy"""
-
 class MutagenPod(Organ):
     mutagen = 20
     def draw0(self, zoom, status, growth):
         return graphics.pod.imgmutagen(zoom = zoom, growth = growth, color = status, edge0 = self.edge)
 
+# By the way I couldn't think of what to call the stuff you heal yourself
+#   with so I went with plaster.
 class PlasterPod(Organ):
     plaster = 20
     def draw0(self, zoom, status, growth):
         return graphics.pod.imgplaster(zoom = zoom, growth = growth, color = status, edge0 = self.edge)
+
+class GiantMutagenPod(Organ):
+    mutagen = 40
+    def draw0(self, zoom, status, growth):
+        return graphics.pod.giantimgmutagen(zoom = zoom, growth = growth, color = status, edge0 = self.edge)
+
+class GiantPlasterPod(Organ):
+    plaster = 40
+    def draw0(self, zoom, status, growth):
+        return graphics.pod.giantimgplaster(zoom = zoom, growth = growth, color = status, edge0 = self.edge)
 
 class Mutagenitor(Organ):
     """Collects twinklers and generates mutagen"""
@@ -498,7 +507,6 @@ class Mutagenitor(Organ):
     amount = mechanics.mutagenhit
 
     def draw0(self, zoom, status, growth):
-        # TODO: redraw
         return graphics.generator.imgmutagen(zoom = zoom, growth = growth, color = status, edge0 = self.edge)
 
     def energize(self):
@@ -512,13 +520,22 @@ class Plasteritor(Organ):
     amount = mechanics.plasterhit
 
     def draw0(self, zoom, status, growth):
-        # TODO: redraw
         return graphics.generator.imgplaster(zoom = zoom, growth = growth, color = status, edge0 = self.edge)
 
     def energize(self):
         if self.attached():
             self.body.plaster += self.amount
         self.glowtime = 0.5
+
+class GiantMutagenitor(Mutagenitor):
+    amount = 2 * mechanics.mutagenhit
+    def draw0(self, zoom, status, growth):
+        return graphics.generator.giantimgmutagen(zoom = zoom, growth = growth, color = status, edge0 = self.edge)
+
+class GiantPlasteritor(Plasteritor):
+    amount = 2 * mechanics.plasterhit
+    def draw0(self, zoom, status, growth):
+        return graphics.generator.giantimgplaster(zoom = zoom, growth = growth, color = status, edge0 = self.edge)
 
 class Cube(Organ):
     """Faster tile generation"""
@@ -700,7 +717,9 @@ otypes = {"eye":Eye, "brain":Brain, "giantbrain":GiantBrain, "eyebrain":EyeBrain
         "cube":Cube, "zotter":Zotter,
         "bulb":Bulb, "star":Star,
         "mutagenpod":MutagenPod, "plasterpod":PlasterPod,
+        "giantmutagenpod":GiantMutagenPod, "giantplasterpod":GiantPlasterPod,
         "mutagenitor":Mutagenitor, "plasteritor":Plasteritor,
+        "giantmutagenitor":GiantMutagenitor, "giantplasteritor":GiantPlasteritor,
         "shield":Shield}
 
 

@@ -38,12 +38,14 @@ def randomspec(color = None):
     return AppendageSpec(dedges, color)
 
 # Colors determine where you can build organs
+# Because of graphical limitations, giant versions should have the same
+#   colors as their regular versions
 colors = {}
 
 # Monitor/oversee
 colors["eye"] = "app0"
 colors["brain"] = "app0"
-colors["giantbrain"] = "app0"  # Should be same as brain
+colors["giantbrain"] = "app0"
 colors["eyebrain"] = "app0"
 colors["tripleeye"] = "app0"
 
@@ -55,13 +57,17 @@ colors["zotter"] = "app1"
 
 # Build/heal
 colors["mutagenitor"] = "app2"
+colors["giantmutagenitor"] = "app2"
 colors["mutagenpod"] = "app2"
+colors["giantmutagenpod"] = "app2"
 colors["plasteritor"] = "app2"
+colors["giantplasteritor"] = "app2"
 colors["plasterpod"] = "app2"
+colors["giantplasterpod"] = "app2"
 colors["cube"] = "app2"
 
 
 #costs = {"eye":30, "brain":60, "eyebrain": 120, "mutagenitor":80, "tripleeye": 0, "coil":20, "ball":50, "cube": 10}
 costs = {"mutagenitor":10, "zotter":20, "cube":30}
-costs = {"brain":10, "giantbrain": 20}
+costs = {"plasteritor":10, "giantplasteritor": 20}
 

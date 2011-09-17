@@ -16,7 +16,7 @@ colors["brain"] = 1, 0.85, 0.85, 1
 colors["eye"] = 1, 1, 1, 1
 colors["yellow"] = 1, 1, 0.4, 1
 colors["shield"] = 0.7, 0.7, 1, 1
-colors["cube"] = 0, 1, 1, 1
+colors["cube"] = 0, 0.2, 1, 1
 colors["bulb"] = 1, 0.5, 0.5, 1
 colors["star"] = 1, 1, 0, 1
 colors["mutagen"] = 0, 1, 1, 0
@@ -261,7 +261,7 @@ class CoilCircles(ColorCircles):
 coil = CoilCircles()
 
 class PodCircles(ColorCircles):
-    def getargs(self, growth = 1, edge0 = 3, R = 0.55, r0 = 0.03):
+    def getargs(self, growth = 1, edge0 = 3, R = 0.5, r0 = 0.03):
         growth = int(growth * 8) / 8.
         return edge0, growth, R, r0
     
@@ -295,26 +295,32 @@ class PodCircles(ColorCircles):
             for z, x, y, r, g in app.getcircles((3,), edge0, 0.3, segs):
                 yield z, x, y, r, (g, 0, 0)
 
-    def img(self, color0, color1, growth = 1, edge0 = 3, zoom = settings.tzoom0):
-        gimg = self.graytile(zoom, growth, edge0).copy()
+    def img(self, color0, color1, growth = 1, edge0 = 3, Rfac = 1., zoom = settings.tzoom0):
+        gimg = self.graytile(zoom, growth, edge0, 0.4 * Rfac).copy()
         filtercolorsurface(gimg, color0, color1)
         return gimg
 
-    def imgmutagen(self, color = None, growth = 1, edge0 = 3, zoom = settings.tzoom0):
+    def imgmutagen(self, color = None, growth = 1, edge0 = 3, Rfac = 1., zoom = settings.tzoom0):
         if color:
             if color in colors: color = colors[color]
-            return self.img(color, color, growth, edge0, zoom)
+            return self.img(color, color, growth, edge0, Rfac, zoom)
         color0 = colors[mechanics.colors["mutagenpod"]]
         color1 = colors["mutagen"]
-        return self.img(color0, color1, growth, edge0, zoom)
+        return self.img(color0, color1, growth, edge0, Rfac, zoom)
 
-    def imgplaster(self, color = None, growth = 1, edge0 = 3, zoom = settings.tzoom0):
+    def imgplaster(self, color = None, growth = 1, edge0 = 3, Rfac = 1., zoom = settings.tzoom0):
         if color:
             if color in colors: color = colors[color]
-            return self.img(color, color, growth, edge0, zoom)
+            return self.img(color, color, growth, edge0, Rfac, zoom)
         color0 = colors[mechanics.colors["plasterpod"]]
         color1 = colors["plaster"]
-        return self.img(color0, color1, growth, edge0, zoom)
+        return self.img(color0, color1, growth, edge0, Rfac, zoom)
+
+    def giantimgmutagen(self, color = None, growth = 1, edge0 = 3, Rfac = 1.6, zoom = settings.tzoom0):
+        return self.imgmutagen(color, growth, edge0, Rfac, zoom)
+
+    def giantimgplaster(self, color = None, growth = 1, edge0 = 3, Rfac = 1.6, zoom = settings.tzoom0):
+        return self.imgplaster(color, growth, edge0, Rfac, zoom)
 
 pod = PodCircles()
 
@@ -344,26 +350,33 @@ class GeneratorCircles(ColorCircles):
             for z, x, y, r, g in app.getcircles((3,), edge0, 0.3, segs):
                 yield z, x, y, r, (g, 0, 0)
 
-    def img(self, color0, color1, growth = 1, edge0 = 3, zoom = settings.tzoom0):
-        gimg = self.graytile(zoom, growth, edge0).copy()
+    def img(self, color0, color1, growth = 1, edge0 = 3, Rfac = 1, zoom = settings.tzoom0):
+        gimg = self.graytile(zoom, growth, edge0, 0.2 * Rfac).copy()
         filtercolorsurface(gimg, color0, color1)
         return gimg
 
-    def imgmutagen(self, color = None, growth = 1, edge0 = 3, zoom = settings.tzoom0):
+    def imgmutagen(self, color = None, growth = 1, edge0 = 3, Rfac = 1, zoom = settings.tzoom0):
         if color:
             if color in colors: color = colors[color]
-            return self.img(color, color, growth, edge0, zoom)
+            return self.img(color, color, growth, edge0, Rfac, zoom)
         color0 = colors[mechanics.colors["mutagenitor"]]
         color1 = colors["mutagen"]
-        return self.img(color0, color1, growth, edge0, zoom)
+        return self.img(color0, color1, growth, edge0, Rfac, zoom)
 
-    def imgplaster(self, color = None, growth = 1, edge0 = 3, zoom = settings.tzoom0):
+    def imgplaster(self, color = None, growth = 1, edge0 = 3, Rfac = 1, zoom = settings.tzoom0):
         if color:
             if color in colors: color = colors[color]
-            return self.img(color, color, growth, edge0, zoom)
+            return self.img(color, color, growth, edge0, Rfac, zoom)
         color0 = colors[mechanics.colors["plasteritor"]]
         color1 = colors["plaster"]
-        return self.img(color0, color1, growth, edge0, zoom)
+        return self.img(color0, color1, growth, edge0, Rfac, zoom)
+
+    def giantimgmutagen(self, color = None, growth = 1, edge0 = 3, Rfac = 1.6, zoom = settings.tzoom0):
+        return self.imgmutagen(color, growth, edge0, Rfac, zoom)
+
+    def giantimgplaster(self, color = None, growth = 1, edge0 = 3, Rfac = 1.6, zoom = settings.tzoom0):
+        return self.imgplaster(color, growth, edge0, Rfac, zoom)
+
 
 generator = GeneratorCircles()
 
@@ -1013,7 +1026,7 @@ if __name__ == "__main__":
 #        helixcircles.draw(img, 1, (100, 200), (0, -160))
 #        img = helixmeter(200)
 #        img = meter(img, 120)
-        img = generator.img(zoom = 80, edge0 = 1)
+        img = pod.giantimgmutagen(zoom = 80)
 #        img = spherecircles.img(zoom = 200, R = 0.3, color = (0.8, 0.3, 0.3, 1))
 
         pass
