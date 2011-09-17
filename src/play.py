@@ -202,6 +202,10 @@ class Play(context.Context):
                     self.status.build()
                 self.body.addpart(self.parttobuild)
                 self.clearselections()
+            else:
+                worldpos = vista.screentoworld(mousepos)
+                if vista.HexGrid.nearesttile(worldpos) == (0,0):
+                    settings.showtips = not settings.showtips
 
 
     def choosetip(self, mousepos):
@@ -227,13 +231,16 @@ class Play(context.Context):
         elif vista.prect.collidepoint(mousepos):
             jtile = self.panel.iconp(mousepos)
             if jtile in (0, 1, 2, 3, 4, 5):
-                return "click on a stalk to grow it out from same color bud. try make lots of branches"
+                return "stalk can grow out from same color bud. try make lots of branches. you can also right-click on stalk to throw it out for new one"
             else:
                 return self.panel.choosetip(mousepos)
         elif bicon is not None:
             return "you want build %s?" % bicon
         elif vista.vrect.collidepoint(mousepos):
-            pass
+            worldpos = vista.screentoworld(mousepos)
+            if vista.HexGrid.nearesttile(worldpos) == (0,0):
+                return "click me mouth to turn me tips on or off"
+            organ = self.body.nearestorgan(worldpos)
         elif vista.rrect.collidepoint(mousepos):
             return self.status.choosetip(mousepos)
 
