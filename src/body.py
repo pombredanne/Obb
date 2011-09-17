@@ -4,21 +4,25 @@ import vista, mask, graphics, mechanics, noise
 
 class Body(object):
     def __init__(self, (x, y) = (0, 0)):
+        self.tick = 0   # Generic timekeeping
+
         self.parts = []
+        self.suckers = []
+        self.shields = []
+        self.attackers = []
+        self.organs = {}  # Reverse lookup
+
         self.takentiles = {}
         self.takenedges = {}
         self.takenbuds = {}
         self.calccontrol()
+
         self.mask = None
-        self.suckers = []
         self.mutagen = 0
         self.maxmutagen = mechanics.mutagen0
         self.plaster = 0
         self.maxplaster = mechanics.plaster0
-        self.shields = []
-        self.attackers = []
-        self.tick = 0   # Generic timekeeping
-        self.organs = {}  # Reverse lookup
+        self.ncubes = 0
 
         self.core = Core(self, (x, y))
         self.addpart(self.core)
@@ -125,6 +129,7 @@ class Body(object):
             self.organs[(part.x, part.y)] = part
         self.maxmutagen += part.mutagen
         self.maxplaster += part.plaster
+        self.ncubes += part.ncubes
 
     def remakemask(self):
         """Build the mask from scratch"""
@@ -160,6 +165,7 @@ class Body(object):
             del self.organs[(part.x, part.y)]
         self.maxmutagen -= part.mutagen
         self.maxplaster -= part.plaster
+        self.ncubes -= part.ncubes
 
     def removebranch(self, part):
         """Remove a part and all its children"""
@@ -227,6 +233,7 @@ class BodyPart(object):
     glowtime = 0
     mutagen = 0
     plaster = 0
+    ncubes = 0
     def __init__(self, body, parent, (x,y), edge = 0):
         self.body = body
         self.parent = parent
@@ -524,6 +531,7 @@ class Ball(Organ):
 # TODO
 class Cube(Organ):
     """Faster tile generation"""
+    ncubes = 1
 
     def draw0(self, zoom, status, growth):
         return graphics.cube.img(zoom = zoom, growth = growth, color = status, edge0 = self.edge)

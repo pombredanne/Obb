@@ -4,13 +4,12 @@ import vista, graphics, mechanics, font, settings
 
 
 class Meter(object):
-    left = 30
     def __init__(self):
         self.maxheight = 300
         self.height = 5
         self.goalheight = 5
         self.baseimg = self.getimg(self.height)
-        self.bottom = self.left, self.maxheight + 40
+        self.bottom = self.left, settings.layout.meterbottom
         self.amount = 0
 
     def setheight(self, height):
@@ -34,13 +33,14 @@ class Meter(object):
             self.height -= 50 * dt
         self.baseimg = self.getimg(self.height)
 
-    def meterpos(self, amount):
+    def meterpos(self, amount, bounded = True):
         """pixel coordinates corresponding to an amount on this meter"""
-        return self.bottom[0], self.bottom[1] - self.getlevel(amount)
+        return self.bottom[0], self.bottom[1] - self.getlevel(amount, bounded)
     
-    def getlevel(self, amount = None):
+    def getlevel(self, amount = None, bounded = True):
         if amount is None: amount = self.amount
-        return int(max(min(amount, self.height), 0))
+        h = int(amount)
+        return int(max(min(amount, self.height), 0)) if bounded else h
     
     def draw(self):
         level = self.getlevel()
@@ -48,54 +48,50 @@ class Meter(object):
         vista.rsurf.blit(img, img.get_rect(midbottom = self.bottom))
 
 class BuildIcon(object):
-    def __init__(self, meter, name):
+    def __init__(self, meter, name, number):
         self.meter = meter
         self.name = name
-        self.img0 = graphics.icon(self.name)
-        self.ghost0 = graphics.ghostify(self.img0)
-        self.img = pygame.transform.rotozoom(self.img0, 0, 0.4)
-        self.ghost = pygame.transform.rotozoom(self.ghost0, 0, 0.4)
+        self.img = graphics.icon(self.name)
+        self.ghost = graphics.ghostify(self.img)
         self.amount = mechanics.costs[self.name]
-        self.focustimer = 0
         self.active = None  # Enough mutagen to activate
         self.currentimg = self.img
-        self.currentrect = self.img.get_rect()
         self.pointedto = False
+        number %= len(settings.layout.buildiconxs)
+        self.x = settings.layout.buildiconxs[number]
+        _, self.y = self.meter.meterpos(self.amount, bounded = False)
+        self.rect = self.currentimg.get_rect(center = (self.x, self.y))
 
     def think(self, dt):
         active = self.meter.amount > self.amount
         if self.active is False and active:
             self.activate()
         self.active = active
-        if self.focustimer:
-            self.focustimer = max(self.focustimer - dt, 0)
-        if self.pointedto or self.focustimer:
-            self.currentimg = self.img0 if self.active else self.ghost0
-        else:
-            self.currentimg = self.img if self.active else self.ghost
-        self.linepos = x,y = self.meter.meterpos(self.amount)
-        self.currentrect = self.currentimg.get_rect(midright = (x-self.amount % 50,y))
-        self.currentrect.move_ip(*vista.rrect.topleft)
+        self.currentimg = self.img if self.active else self.ghost
+#       self.linepos = x,y = self.meter.meterpos(self.amount)
         self.pointedto = False
 
     def ispointedto(self, pos):
-        return self.active and self.currentrect.collidepoint(pos)
+        return self.active and self.rect.collidepoint(pos)
 
     def activate(self):
-        self.focustimer = 2
+        pass
 
     def draw(self):
-        x,y = self.linepos
-        pygame.draw.line(vista.rsurf, (255, 255, 255), (x-20,y), (x,y))
-        vista.addoverlay(self.currentimg, self.currentrect)
+#        x,y = self.linepos
+#        pygame.draw.line(vista.rsurf, (255, 255, 255), (x-20,y), (x,y))
+        vista.addoverlay(self.currentimg, self.rect)
         
 
 class MutagenMeter(Meter):
     rate = mechanics.basemutagenrate
     color = graphics.colors["mutagen"]
+    left = settings.layout.mutagenmeterx
     def __init__(self):
         Meter.__init__(self)
-        self.icons = [BuildIcon(self, name) for name in mechanics.costs]
+        inames = [(value, key) for key, value in mechanics.costs.items()]
+        inames.sort()
+        self.icons = [BuildIcon(self, name, j) for j, (cost, name) in enumerate(inames)]
 
     def think(self, dt):
         Meter.think(self, dt)
@@ -110,8 +106,7 @@ class MutagenMeter(Meter):
 class HealMeter(Meter):
     rate = mechanics.basehealrate
     color = graphics.colors["plaster"]
-
-    left = 90
+    left = settings.layout.healmeterx
 
     def getimg(self, height):
         return graphics.stalkmeter(height)
@@ -138,7 +133,7 @@ class Status(object):
         self.control = 5
         self.maxcontrol = 10
         self.brainimg = graphics.brain.img(zoom = 40)
-        self.brainrect = self.brainimg.get_rect(bottomleft = (0, 480+6))
+        self.brainrect = self.brainimg.get_rect(bottomleft = settings.layout.brainiconpos)
 
     def setheights(self, mutagenheight, healheight):
         self.mutagenmeter.setheight(mutagenheight)
@@ -177,10 +172,9 @@ class Status(object):
         self.healmeter.draw()
         
         # Draw control tally
+        color, size = (0,0,0), settings.layout.countsize
         if self.body.control >= self.body.maxcontrol:
-            color, size = (128, 0, 0), 48
-        else:
-            color, size = (0,0,0), 32
+            color, size = (128, 0, 0), int(size * 1.5)
         controlimg = font.img("%s/%s" % (self.body.control, self.body.maxcontrol), size=size, color=color)
         vista.rsurf.blit(self.brainimg, self.brainrect)
         vista.rsurf.blit(controlimg, controlimg.get_rect(midleft = self.brainrect.midright))

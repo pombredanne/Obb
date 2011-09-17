@@ -11,6 +11,8 @@ mutagen0 = 40  # Base amount
 plaster0 = 10
 mutagenpodamount = 20
 plasterpodamount = 20
+baseloadrate = 1
+cubeloadrate = 4
 
 # Permissable dedges for tiles
 # Conspicuous in its absense is a straight piece
@@ -54,9 +56,10 @@ colors["mutagenitor"] = "app2"
 colors["mutagenpod"] = "app2"
 colors["plasteritor"] = "app2"
 colors["plasterpod"] = "app2"
+colors["cube"] = "app2"
 
 
 #costs = {"eye":30, "brain":60, "eyebrain": 120, "mutagenitor":80, "tripleeye": 0, "coil":20, "ball":50, "cube": 10}
-costs = {"mutagenitor":10, "plasteritor":20}
+costs = {"mutagenitor":10, "plasteritor":20, "cube":30}
 
 

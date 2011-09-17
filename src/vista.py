@@ -45,10 +45,12 @@ def Surface(x, y = None, color = None, alpha = True):
 
 icons = {}
 class Icon(object):
-    def __init__(self, color = (255, 255, 255)):  # TODO: replace with a real icon
+    def __init__(self, name, color = (255, 255, 255)):  # TODO: replace with a real icon
         import graphics
-        self.img = Surface(40, 40, color)
+        self.name = name
+        self.img = Surface(settings.iconsize, settings.iconsize, color)
         self.rect = self.img.get_rect()
+        self.rect.center = settings.iconpos[self.name]
         self.ghost = graphics.ghostify(self.img)
         self.active = True
         
@@ -78,8 +80,9 @@ def init():
     prect = pygame.Rect(settings.px0, settings.py0, settings.px, settings.py)
     rrect = pygame.Rect(settings.rx0, settings.ry0, settings.rx, settings.ry)
 
-    icons["zoomin"] = Icon()
-    icons["zoomin"].rect.bottomright = (settings.vx0 + settings.vx - 4, settings.vy0 + settings.vy - 4)
+    for name in "zoomin zoomout pause music trash cut heal".split():
+        icons[name] = Icon(name)
+    """
     icons["zoomout"] = Icon()
     icons["zoomout"].rect.bottomleft = (settings.vx0 + 4, settings.vy0 + settings.vy - 4)
     icons["pause"] = Icon()
@@ -92,7 +95,7 @@ def init():
     icons["cut"].rect.center = (120, 400)
     icons["heal"] = Icon()
     icons["heal"].rect.center = (800, 400)
-    
+    """
     stars = [(random.randint(64, 255), random.randint(-10000, 10000), random.randint(-10000, 10000)) for _ in range(settings.vx * settings.vy / 2000)]
     stars.sort()
 

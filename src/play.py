@@ -5,7 +5,7 @@ import vista, context, body, settings, panel, status, noise, twinkler, enemy, gr
 class Play(context.Context):
     def __init__(self):
         self.body = body.Body()
-        self.panel = panel.Panel()
+        self.panel = panel.Panel(self.body)
         self.status = status.Status(self.body)
         self.edgepoint = None
         self.twinklers = []

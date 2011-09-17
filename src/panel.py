@@ -1,24 +1,25 @@
 import pygame
-import settings, vista, graphics, mechanics
+import settings, vista, graphics, mechanics, font
 
 
 class Panel(object):
     """Place where available tiles appear and you can pick them"""
-    def __init__(self):
+    def __init__(self, body):
+        self.body = body
         self.tiles = [self.newspec(c) for c in (0,1,2)]
         self.ages = [-2, -2.5, -3]
-        self.centers = [(settings.px/2, (j*2+1)*settings.ptilesize) for j in (0,1,2)]
+        ys = [(j*1.9+1)*settings.layout.ptilesize + settings.layout.ptiley for j in (0,1,2)]
+        self.centers = [(settings.px/2, int(y)) for y in ys]
         self.selected = None
-        self.trashimg = vista.Surface(80, 80, (64, 64, 64))
-        self.trashrect = self.trashimg.get_rect(bottomleft = (20, 440))
-        self.cutimg = vista.Surface(80, 80, (128, 0, 0))
-        self.cutrect = self.trashimg.get_rect(bottomleft = (100, 440))
-        self.loadrate = 1.
+        self.loadrate = mechanics.baseloadrate
+        self.cubeimg = graphics.cube.img(zoom = settings.layout.organcountsize, edge0 = 0)
+        self.cuberect = self.cubeimg.get_rect(center = settings.layout.cubeiconpos)
 
     def newspec(self, jtile):
         return mechanics.randomspec("app%s" % jtile)
 
     def think(self, dt):
+        self.loadrate = mechanics.baseloadrate + mechanics.cubeloadrate * self.body.ncubes
         for j in (0,1,2):
             self.ages[j] = min(self.ages[j] + (1 if self.ages[j] > -1 else self.loadrate) * dt, 0)
         
@@ -33,10 +34,13 @@ class Panel(object):
                 rect = img.get_rect(center = (cx + age*300, cy))
             vista.psurf.blit(img, rect)
         if self.selected is not None:
-            pygame.draw.circle(vista.psurf, (255, 255, 255), self.centers[self.selected], settings.ptilesize, 2)
+            pygame.draw.circle(vista.psurf, (255, 255, 255), self.centers[self.selected], settings.layout.ptilesize, 2)
 
-        vista.psurf.blit(self.trashimg, self.trashrect)
-        vista.psurf.blit(self.cutimg, self.cutrect)
+        # Draw cube tally
+        color, size = (0,0,0), settings.layout.countsize
+        img = font.img("%s" % (self.body.ncubes), size=size, color=color)
+        vista.psurf.blit(self.cubeimg, self.cuberect)
+        vista.psurf.blit(img, img.get_rect(midleft = self.cuberect.midright))
 
 
     def iconp(self, (mx, my)):
@@ -44,7 +48,7 @@ class Panel(object):
         mx -= settings.px0
         my -= settings.py0
         for j, (age, (cx, cy)) in enumerate(zip(self.ages, self.centers)):
-            if age == 0 and (cx - mx) ** 2 + (cy - my) ** 2 < settings.ptilesize ** 2:
+            if age == 0 and (cx - mx) ** 2 + (cy - my) ** 2 < settings.layout.ptilesize ** 2:
                 return j
         return None
 

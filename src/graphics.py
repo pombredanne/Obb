@@ -549,7 +549,7 @@ class PanelTile(Circles):
 paneltile = PanelTile()
 
 def drawpaneltile(dedges, color, tilt = 0):
-    img = paneltile.img(dedges, color, zoom = settings.ptilesize)
+    img = paneltile.img(dedges, color, zoom = settings.layout.ptilesize)
     return pygame.transform.rotate(img, -tilt) if tilt else img
 
 
@@ -930,14 +930,15 @@ def meter(img, level, color1 = (0.5, 0, 1), color0 = (0.2, 0.2, 0.2)):
     if z != 1: arr[...,:p,2] *= z
     return img2
 
-def icon(name):
-    s = settings.largeiconsize
+def icon(name, size = settings.layout.buildiconsize):
+    s = settings.largebuildicon
     img = vista.Surface(s)
     r, g, b, a = colors[mechanics.colors[name]]
     color0 = int(r*255), int(g*255), int(b*255)
     color1 = int(r*128), int(g*128), int(b*128)
     img.fill(color0)
     img.fill(color1, (3, 3, s-6, s-6))
+    img = pygame.transform.smoothscale(img, (size, size))
     return img
 
 def ghostify(img):
