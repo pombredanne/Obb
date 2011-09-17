@@ -7,6 +7,7 @@ tracks = "ittybitty rocket fighter killing".split()
 
 sounds = {}
 def play(name = ""):
+    if settings.silent: return
 
     if name == "removepart": name = "addpart"
     if name == "trash": name = "addpart"
@@ -17,6 +18,7 @@ def play(name = ""):
         filename = data.filepath(name + ".ogg")
         if os.path.exists(filename):
             sounds[name] = pygame.mixer.Sound(filename)
+            sounds[name].set_volume(settings.soundvolume)
         else:
 #            print "sound missing: %s" % name
             sounds[name] = None
@@ -27,6 +29,7 @@ def play(name = ""):
 
 def nexttrack():
     global track
+    if settings.silent: return
     if track == len(tracks):  # music off
         pygame.mixer.music.stop()
         track = 0
@@ -38,8 +41,10 @@ def nexttrack():
     vista.musicicontext = font.img(str(track), size = settings.layout.countsize, color=(0,0,0))
 
 def pause():
+    if settings.silent: return
     pygame.mixer.music.pause()
 
 def resume():
+    if settings.silent: return
     pygame.mixer.music.unpause()
 

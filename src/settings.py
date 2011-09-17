@@ -77,18 +77,23 @@ showstars = True
 twisty = True  # Twisty paths
 
 audiobuffer = False  # Works better for me with buffer off
+soundvolume = 0.5
 
 showtips = True
 
+
+silent = "--silent" in sys.argv or "--nosound" in sys.argv
 restart = "--restart" in sys.argv
 fullscreen = "--fullscreen" in sys.argv
 barrage = "--barrage" in sys.argv  # Loads of enemies. Not fun.
 if "--slow" in sys.argv:
     showstars = False
     tzoom0 = 72
+fast = "--doubletime" in sys.argv    
 
 # Cheat
-unlockall = "--unlockall" in sys.argv
+unlockall = "--unlockall" in sys.argv   # Will probably only work if you restart
+debugkeys = False
 
 showfps = True
 saveonquit = True

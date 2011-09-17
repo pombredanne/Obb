@@ -22,6 +22,8 @@ def main():
     savetime = settings.savetimer
     while context.top():
         dt = min(clock.tick(settings.maxfps) * 0.001, 1./settings.minfps)
+        if settings.fast:
+            dt *= 2
         con = context.top()
         events = pygame.event.get()
         keys = pygame.key.get_pressed()

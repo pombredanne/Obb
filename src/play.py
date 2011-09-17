@@ -45,19 +45,19 @@ class Play(context.Context):
 
         for event in events:
             if event.type == KEYDOWN and event.key == K_SPACE:
-                self.body.addrandompart()
+                if settings.debugkeys:
+                    self.body.addrandompart()
             if event.type == KEYDOWN and event.key == K_BACKSPACE:
-                self.body.addrandompart(20)
+                if settings.debugkeys:
+                    self.body.addrandompart(20)
             if event.type == KEYDOWN and event.key == K_v:
-                wpos = vista.screentoworld(mousepos)
-                print "Visibility:", self.body.mask.visibility(wpos)
+                if settings.debugkeys:
+                    wpos = vista.screentoworld(mousepos)
+                    print "Visibility:", self.body.mask.visibility(wpos)
             if event.type == KEYUP and event.key == K_x:
-                if self.target is not None:
-                    self.target.die()
-            if event.type == KEYUP and event.key == K_F1:
-                vista.zoomin()
-            if event.type == KEYUP and event.key == K_F2:
-                vista.zoomout()
+                if settings.debugkeys:
+                    if self.target is not None:
+                        self.target.die()
             if event.type == MOUSEBUTTONDOWN and event.button == 1:
                 self.clickat = event.pos
             if event.type == MOUSEBUTTONUP and event.button == 1:
@@ -74,10 +74,10 @@ class Play(context.Context):
         if settings.showtips:
             tip.settip(self.choosetip(mousepos))
 
-        if keys[K_F5]:
+        if keys[K_F5] and settings.debugkeys:
             self.body.addrandompart()
 
-        if keys[K_x] or self.cutmode:
+        if (keys[K_x] and settings.debugkeys) or self.cutmode:
             newtarget = self.pointchildbyedge(mousepos)
             if newtarget != self.target:
                 if self.target is not None:

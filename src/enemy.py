@@ -141,25 +141,25 @@ def newshots(body):
             y += random.uniform(-1, 1)
         return x, y
 
-    dw = body.control / 4.
+    dw = body.control / 10.
     
 
     for part in body.parts:
         if not part.targetable: continue
         wx, wy = part.worldpos
         w = math.sqrt(wx ** 2 + wy ** 2)
-        p = 1 - math.exp(-((w+dw) / 30) ** 2)
+        p = 1 - math.exp(-((w+dw) / 35) ** 2)
         if settings.barrage:
             p = 0.5
         if random.random() < p:  # Deploy a single shot
             shots.append(Shot(scaleposout((wx, wy)), part))
         if w+dw > 10:
-            p = 1 - math.exp(-((w+dw-10) / 30) ** 2)
+            p = 1 - math.exp(-((w+dw-10) / 35) ** 2)
             if random.random() < p:  # Deploy a single ship
                 w2 = (wy,-wx) if random.random() < 0.5 else (-wy,wx)
                 shots.append(Ship(scaleposout((wx, wy)), part, scaleposout(w2)))
             if w+dw > 20:
-                p = 1 - math.exp(-((w+dw-20) / 30) ** 2)
+                p = 1 - math.exp(-((w+dw-20) / 35) ** 2)
                 if random.random() < p:  # Deploy five ships
                     w2 = (wy,-wx) if random.random() < 0.5 else (-wy,wx)
                     x0, y0 = scaleposout((wx, wy))
