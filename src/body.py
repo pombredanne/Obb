@@ -435,6 +435,7 @@ class Core(BodyPart):
             oppedge = vista.grid.opposite((x, y), edge)
             self.buds[oppedge] = None
             self.budcolors[oppedge] = "app%s" % (edge % 3)
+        self.nmouth = 0
 
     def tiles(self):
         return ((self.x, self.y),)
@@ -442,6 +443,15 @@ class Core(BodyPart):
     def draw0(self, zoom, status, growth):
         color = "core"
         return graphics.core(color, growth, zoom)
+
+    def draw(self, *args):
+        BodyPart.draw(self, *args)
+        wx, wy = vista.grid.hextoworld((self.x, self.y))
+        px, py = vista.worldtoview((wx, wy))
+        mouth = graphics.mouthimg(self.nmouth)
+        rect = mouth.get_rect(center = (px, py))
+        vista.screen.blit(mouth, rect)
+        
 
 class Appendage(BodyPart):
     """A stalk that leads to one or more subsequent buds"""

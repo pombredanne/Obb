@@ -1027,7 +1027,18 @@ def dustcloudimg(angle = 0, alpha = 1, R = 1, cache = {}):
     cache[key] = img
     return cache[key]
 
-    
+
+def mouthimg(n = 0, cache = {}):
+    z = int(0.7 * vista.zoom)
+    key = z, n
+    if key in cache:
+        return cache[key]
+    if (n, "base") not in cache:
+        cache[(n, "base")] = pygame.image.load(data.filepath("mouth-%s.png" % n)).convert_alpha()
+    img = pygame.transform.rotozoom(cache[(n, "base")], 1, float(z) / settings.tzoom0)
+    cache[key] = img
+    return cache[key]
+
 
 
 

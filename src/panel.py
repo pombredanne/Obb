@@ -35,6 +35,7 @@ class Panel(object):
         self.loadrate = mechanics.baseloadrate + mechanics.cubeloadrate * self.body.ncubes
         for j in range(len(self.ages)):
             self.ages[j] = min(self.ages[j] + (1 if self.ages[j] > -1 else self.loadrate) * dt, 0)
+        vista.icons["trash"].active = self.selected is not None
         
     def draw(self):
         for j, (age, appspec, (cx, cy)) in enumerate(zip(self.ages, self.tiles, self.centers)):
