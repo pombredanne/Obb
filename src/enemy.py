@@ -1,5 +1,5 @@
 import pygame, random, math
-import vista, mechanics, noise, data, settings
+import vista, mechanics, noise, data, settings, twinkler
 
 
 def getimg(name, cache = {}):
@@ -15,12 +15,14 @@ def getshotimg(zoom, angle = 0, cache = {}):
     cache[key] = pygame.transform.rotozoom(getimg("shot"), angle, float(zoom) / 240.)
     return cache[key]
 
+spoils = []  # Twinklers that get created when you kill an enemy
 
 class Shot(object):
     """A projectile. No not that kind. Wait, actually, yes, that kind."""
     v0 = 3
     dhp = 1
     hp0 = 1
+    ntwinklers = 1
     def __init__(self, (x, y), target):
         self.x, self.y = x, y
         self.target = target
@@ -64,6 +66,8 @@ class Shot(object):
         self.hp -= dhp
         if self.hp <= 0:
             self.active = False
+            for _ in range(self.ntwinklers):
+                spoils.append(twinkler.Twinkler((self.x, self.y)))
 
     def alive(self):
         return self.active and self.t > 0

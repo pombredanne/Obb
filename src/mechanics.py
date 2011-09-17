@@ -1,5 +1,5 @@
 import random
-import vista
+import vista, settings
 
 vthreshold = 0.2  # Visibility threshold
 twinklerrate = 0.004  # Twinklers per unit area per second
@@ -8,6 +8,8 @@ plasterhit = 5
 basemutagenrate = 0.5  # How fast it rises on its own
 basehealrate = 0.3
 mutagen0 = 65  # Base amount
+if settings.unlockall:
+    mutagen0 = 300
 plaster0 = 20
 mutagenpodsize = 15
 plasterpodsize = 15

@@ -87,6 +87,9 @@ if "--slow" in sys.argv:
     showstars = False
     tzoom0 = 72
 
+# Cheat
+unlockall = "--unlockall" in sys.argv
+
 showfps = True
 saveonquit = True
 autosave = True

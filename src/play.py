@@ -111,6 +111,8 @@ class Play(context.Context):
         self.status.mutagenmeter.amount += self.body.checkmutagen()
         self.status.healmeter.amount += self.body.checkplaster()
         tip.think(dt)
+        self.twinklers += enemy.spoils
+        del enemy.spoils[:]
 
     def pause(self):
         self.paused = True
