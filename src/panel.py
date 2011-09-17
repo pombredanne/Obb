@@ -45,10 +45,11 @@ class Panel(object):
                 rect = img.get_rect(center = (cx, cy))
             else:
                 img = graphics.drawpaneltile(appspec.dedges, color, tilt = age*450)
+                if self.selected == j:
+                    img = graphics.brighten(img)
+#                    pygame.draw.circle(vista.psurf, (255, 255, 255), self.centers[self.selected], settings.layout.ptilesize, 2)
                 rect = img.get_rect(center = (cx + age*300, cy))
             vista.psurf.blit(img, rect)
-        if self.selected is not None:
-            pygame.draw.circle(vista.psurf, (255, 255, 255), self.centers[self.selected], settings.layout.ptilesize, 2)
 
         # Draw cube tally
         color, size = (0,0,0), settings.layout.countsize

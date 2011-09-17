@@ -1045,6 +1045,19 @@ def shipimg(angle = 0, cache = {}):
     cache[key] = img
     return cache[key]
 
+def heartimg(alpha = 1, cache = {}):
+    z = int(vista.zoom)
+    alpha = min(max(int(alpha * 10) / 10., 0), 1)
+    key = z, alpha
+    if key in cache:
+        return cache[key]
+    if "base" not in cache:
+        cache["base"] = pygame.image.load(data.filepath("heart.png")).convert_alpha()
+    img = pygame.transform.smoothscale(cache["base"], (z, z))
+    if alpha != 1:
+        pygame.surfarray.pixels_alpha(img)[:] *= alpha
+    cache[key] = img
+    return cache[key]
 
 
 

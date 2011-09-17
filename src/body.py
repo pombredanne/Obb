@@ -257,6 +257,7 @@ class BodyPart(object):
     hp0 = 0
     attacker = False
     glowtime = 0
+    hearttime = 0
     mutagen = 0
     plaster = 0
     ncubes = 0
@@ -300,6 +301,7 @@ class BodyPart(object):
         if self.hp < self.hp0:
             self.adddust(40 * dt * (1. - float(self.hp) / self.hp0))
         self.glowtime = max(self.glowtime - dt, 0)
+        self.hearttime = max(self.hearttime - dt, 0)
         self.dusts = [(dx, dy, t-dt) for dx, dy, t in self.dusts if t > dt]
 
     def adddust(self, n = 1):
@@ -323,7 +325,7 @@ class BodyPart(object):
         if not dhp: return 0
         self.hp = self.hp0
         noise.play("heal")
-        self.glowtime = 0.5
+        self.hearttime = 1
         self.pulsefreq = 0
         return dhp
 
@@ -387,8 +389,13 @@ class BodyPart(object):
 
     def drawglow(self, (px, py), t):
         for img in graphics.gettwinklerimgs(t * 3, r0 = 4):
-            pos = vista.worldtoview((self.x, self.y))
             vista.screen.blit(img, img.get_rect(center = (px, py)))
+
+    def drawheart(self, (px, py), t):
+        alpha = t
+        py -= int(vista.zoom * (1 - t) * 1.5)
+        img = graphics.heartimg(alpha)
+        vista.screen.blit(img, img.get_rect(center = (px, py)))
 
     def draw(self):
         wx, wy = vista.grid.hextoworld((self.x, self.y))
@@ -403,6 +410,8 @@ class BodyPart(object):
         if self.glowtime:
             self.drawglow((px, py), self.glowtime)
         vista.screen.blit(img, self.img.get_rect(center = (px, py)))
+        if self.hearttime:
+            self.drawheart((px, py), self.hearttime)
         for dx, dy, t in self.dusts:
             x, y = wx + dx * (0.65 - t), wy + dy * (0.65 - t)
             px, py = vista.worldtoview((x, y))
@@ -735,6 +744,7 @@ class Star(Organ):
     def __init__(self, *args):
         Organ.__init__(self, *args)
         self.wavetime = 0
+        self.recovertime = 0
 
     def cansee(self, (x, y)):
         x0, y0 = self.worldpos
@@ -756,11 +766,15 @@ class Star(Organ):
         Organ.think(self, dt)
         self.wavetime = max(self.wavetime - dt, 0)
         self.attackrange = self.range0 * (1 - self.wavetime / 0.5) if self.wavetime else 0
+        self.recovertime = max(self.recovertime - dt, 0)
 
     def energize(self):
+        if self.recovertime:
+            return
         self.wavetime = 0.5
         noise.play("wavego")
         self.glowtime = 0.5
+        self.recovertime = 5
 
     def draw0(self, zoom, status, growth):
         return graphics.star.img(zoom = zoom, growth = growth, color = status, edge0 = self.edge)

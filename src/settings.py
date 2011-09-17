@@ -5,8 +5,8 @@ import sys
 # combination. These settings are here for my benefit.
 
 # Having said that, feel free to mess with these settings. :)
-
-
+# At the very least, if you change any of the settings, you should
+#   restart the game with --restart
 
 
 # Controls

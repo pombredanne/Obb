@@ -150,7 +150,7 @@ class Play(context.Context):
         if self.clickat is None:  # It's a drag
             return
         (x0, y0), (x1, y1) = self.clickat, mousepos
-        if abs(x0-x1) + abs(y0-y1) > 10:
+        if abs(x0-x1) + abs(y0-y1) > 25:
             return
     
         bicon = self.status.iconpoint(mousepos)  # Any build icons pointed to
@@ -232,7 +232,7 @@ class Play(context.Context):
                 return "click on organs to change them so they don't heal by self. no want to waste ooze on non-vital organs"
             return "me organs will use ooze to heal when they get hurt. if you want some organs not to take ooze, click here to change them"
         elif vicon == "cut":
-            return "no like a stalk or a organ? click to get rid of it! it okay, it not hurt me"
+            return "no like a stalk or a organ on me body? use this to get rid of it! it okay, me not get hurt"
         elif vista.prect.collidepoint(mousepos):
             jtile = self.panel.iconp(mousepos)
             if jtile in (0, 1, 2, 3, 4, 5):
@@ -267,7 +267,7 @@ class Play(context.Context):
     def handleleftdrag(self, pos, rel):
         if self.clickat is not None:
             (x0, y0), (x1, y1) = self.clickat, pos
-            if abs(x0-x1) + abs(y0-y1) > 10:
+            if abs(x0-x1) + abs(y0-y1) > 25:
                 self.clickat = None
 
         if settings.panondrag:

@@ -17,16 +17,16 @@ baseloadrate = 0.5
 cubeloadrate = 0.3
 shieldradius = 4
 bulbrange = 10
-zotterrange = 5
-zotterdhp = 4
-bulbdhp = 1
-stardhp = 6
-starrange = 8
+zotterrange = 4
+zotterdhp = 3
+bulbdhp = 2
+stardhp = 1
+starrange = 6
 
 eyelightradius = 7
 corelightradius = 7
-braincontrol = 10
-corecontrol = 10
+braincontrol = 6
+corecontrol = 6
 
 
 # Permissable dedges for tiles
@@ -97,19 +97,19 @@ costs = {
              "brain": 50,
          "mutagenpod": 65,
            "plasterpod": 80,
-             "zotter": 100,
-         "cube": 115,
-           "plasteritor": 130,
-             "bulb": 145,
-         "shield": 160,
-           "eyebrain": 175,
-             "star": 190,
-         "tripleeye": 205,
-           "giantbrain": 220,
-             "giantmutagenpod": 235,
-         "giantmutagenitor": 250,
-           "giantplasterpod": 265,
-             "giantplasteritor": 280,
+             "zotter": 95,
+         "cube": 110,
+           "plasteritor": 125,
+             "bulb": 140,
+         "shield": 155,
+           "eyebrain": 170,
+             "giantmutagenpod": 185,
+         "tripleeye": 200,
+           "giantbrain": 215,
+             "giantmutagenitor": 230,
+         "giantplasterpod": 245,
+           "giantplasteritor": 260,
+             "star": 275,
          }
 
 info = {}

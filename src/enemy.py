@@ -23,7 +23,7 @@ spawnedshots = []
 class Shot(object):
     """A projectile. No not that kind. Wait, actually, yes, that kind."""
     v0 = 3
-    dhp = 1
+    dhp = 2
     hp0 = 1
     ntwinklers = 1
     shieldprob = 0.5
@@ -86,9 +86,10 @@ class Ship(Shot):
     """A shot that spawns more shots. Yikes!"""
     shieldprob = 1
     shotrange = 6
-    shottime = 5
+    shottime = 5.
     hp0 = 12
     v0 = 1.5
+    ntwinklers = 3
 
     def shoot(self, target):
         """Fire a bullet"""
@@ -108,7 +109,7 @@ class Ship(Shot):
         return nearest
 
     def think(self, dt):
-        if int(self.shottime * (self.t - dt)) != int(self.shottime * (self.t)):
+        if int((self.t - dt) / self.shottime) != int(self.t / self.shottime):
             target = self.randomtarget()
             if target:
                 self.shoot(target)
@@ -121,6 +122,8 @@ class Ship(Shot):
         pos = vista.worldtoview((self.x, self.y))
         img = graphics.shipimg(self.traj)
         vista.screen.blit(img, img.get_rect(center = pos))
+
+
 
 
 
@@ -138,19 +141,35 @@ def newshots(body):
             y += random.uniform(-1, 1)
         return x, y
 
+    dw = body.control / 4.
+    
+
     for part in body.parts:
         if not part.targetable: continue
         wx, wy = part.worldpos
-        w2 = wx ** 2 + wy ** 2
-        p = 1 - math.exp(-w2 / 8000)
+        w = math.sqrt(wx ** 2 + wy ** 2)
+        p = 1 - math.exp(-((w+dw) / 30) ** 2)
         if settings.barrage:
             p = 0.5
-        if random.random() > p: continue
-        
-        w2 = (wy,-wx) if random.random() < 0.5 else (-wy,wx)
-#        shots.append(Shot(scaleposout((wx, wy)), part))
-        p = 0.1
-        shots.append(Ship(scaleposout((wx, wy)), part, scaleposout(w2)))
+        if random.random() < p:  # Deploy a single shot
+            shots.append(Shot(scaleposout((wx, wy)), part))
+        if w+dw > 10:
+            p = 1 - math.exp(-((w+dw-10) / 30) ** 2)
+            if random.random() < p:  # Deploy a single ship
+                w2 = (wy,-wx) if random.random() < 0.5 else (-wy,wx)
+                shots.append(Ship(scaleposout((wx, wy)), part, scaleposout(w2)))
+            if w+dw > 20:
+                p = 1 - math.exp(-((w+dw-20) / 30) ** 2)
+                if random.random() < p:  # Deploy five ships
+                    w2 = (wy,-wx) if random.random() < 0.5 else (-wy,wx)
+                    x0, y0 = scaleposout((wx, wy))
+                    x1, y1 = scaleposout(w2)
+                    dx, dy = x1 - x0, y1 - y0
+                    d = math.sqrt(dx ** 2 + dy ** 2)
+                    dx /= d
+                    dy /= d
+                    for ex, ey in ((0,0), (dx,dy), (-dx,-dy), (dy,-dx), (-dy,dx)):
+                        shots.append(Ship((x0+ex,y0+ey), part, (x1+ex,y1+ey)))
     return shots
 
 

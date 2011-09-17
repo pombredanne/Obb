@@ -12,7 +12,6 @@ You might need to install some of these before running the game:
 
   Python:     http://www.python.org/
   PyGame:     http://www.pygame.org/
-  PyOpenGL:   http://pyopengl.sf.net/
 
 
 
@@ -58,5 +57,11 @@ Sounds were resampled from the following sources:
 
 "Pumpkin Guts Long" by MWLANDI - CC-SAMPLING+
 http://www.freesound.org/people/MWLANDI/sounds/85861/
+"Lazer" by THE bizniss - CC-SAMPLING+
+http://www.freesound.org/people/THE_bizniss/sounds/39459/
+"Thud" by farbin - CC-SAMPLING+
+http://www.freesound.org/people/farbin/sounds/36787/
+"shields3" by PhreaKsAccount - CC-SAMPLING+
+http://www.freesound.org/people/PhreaKsAccount/sounds/46494/
 
 

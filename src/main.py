@@ -8,7 +8,7 @@ pygame.init()
 
 def main():
     vista.init()
-    pygame.display.set_caption("Obb")
+    pygame.display.set_caption("Obb is loading.... Please wait")
     savefile = data.filepath("savegame.pkl")
     noise.nexttrack()
     if settings.restart:
@@ -54,6 +54,8 @@ def main():
             pygame.display.set_caption("Obb - %.1ffps" % clock.get_fps())
             if settings.fullscreen:
                 print clock.get_fps()
+        else:
+            pygame.display.set_caption("Obb")
         
         
 

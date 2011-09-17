@@ -3,10 +3,14 @@ import data, font, vista, settings
 
 
 track = 0
-tracks = ["rocket", "fighter", "ittybitty", "killing"]
+tracks = "ittybitty rocket fighter killing".split()
 
 sounds = {}
 def play(name = ""):
+
+    if name == "removepart": name = "addpart"
+    if name == "trash": name = "addpart"
+
     if name == "addpart":
         return play("addpart-%s" % random.choice((0,1,2)))
     if name not in sounds:
@@ -14,7 +18,7 @@ def play(name = ""):
         if os.path.exists(filename):
             sounds[name] = pygame.mixer.Sound(filename)
         else:
-            print "sound missing: %s" % name
+#            print "sound missing: %s" % name
             sounds[name] = None
     if sounds[name] is not None:
         sounds[name].play()
