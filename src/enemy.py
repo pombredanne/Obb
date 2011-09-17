@@ -17,16 +17,20 @@ def getshotimg(zoom, angle = 0, cache = {}):
 
 spoils = []  # Twinklers that get created when you kill an enemy
 
+spawnedshots = []
+
+
 class Shot(object):
     """A projectile. No not that kind. Wait, actually, yes, that kind."""
     v0 = 3
     dhp = 1
     hp0 = 1
     ntwinklers = 1
-    def __init__(self, (x, y), target):
+    shieldprob = 0.5
+    def __init__(self, (x, y), target, tpos = None):
         self.x, self.y = x, y
         self.target = target
-        self.tx, self.ty = self.target.worldpos
+        self.tx, self.ty = tpos or self.target.worldpos
         self.dx, self.dy = x - self.tx, y - self.ty
         d = math.sqrt(self.dx ** 2 + self.dy ** 2)
         self.t = d / self.v0
@@ -48,7 +52,7 @@ class Shot(object):
                 continue
             sx, sy = shield.worldpos
             if (sx - self.x) ** 2 + (sy - self.y) ** 2 < shield.shield ** 2:
-                if random.random() < 0.5:
+                if random.random() < self.shieldprob:
                     self.passedshields.append(shield)
                     shield.wobble()
                 else:
@@ -79,11 +83,57 @@ class Shot(object):
 
 class Ship(Shot):
     """A shot that spawns more shots. Yikes!"""
+    shieldprob = 1
+    shotrange = 6
+
+    def shoot(self, target):
+        """Fire a bullet"""
+        spawnedshots.append(Shot((self.x, self.y), target))
+
+    def randomtarget(self):
+        if not self.target: return None
+        if not self.target.body: return None
+        targs = [part for part in self.target.body.organs.values() if part.targetable]
+        if not targs: return None
+        dist2, nearest = self.shotrange ** 2, None
+        for targ in targs:
+            wx, wy = targ.worldpos
+            d2 = (self.x - wx) ** 2 + (self.y - wy) ** 2
+            if d2 < dist2:
+                dist2, nearest = d2, targ
+        return nearest
+
+    def think(self, dt):
+        if int(self.t - dt) != int(self.t):
+            target = self.randomtarget()
+            if target:
+                self.shoot(target)
+        Shot.think(self, dt)
+
+    def complete(self):
+        pass
+
+    def draw(self):
+        pos = vista.worldtoview((self.x, self.y))
+        img = vista.Surface(20, 20, (255, 255, 255))
+        vista.screen.blit(img, img.get_rect(center = pos))
+
 
 
 def newshots(body):
     shots = []
     mx0, my0, mx1, my1 = body.mask.bounds()
+    def scaleposout((x, y)):
+        """Find a point roughly in that direction that's outside the mask"""
+        x *= random.uniform(0.5, 1.5)
+        y *= random.uniform(0.5, 1.5)
+        while mx0 < x < mx1 and my0 < y < my1:
+            x *= 1.3
+            y *= 1.3
+            x += random.uniform(-1, 1)
+            y += random.uniform(-1, 1)
+        return x, y
+
     for part in body.parts:
         if not part.targetable: continue
         wx, wy = part.worldpos
@@ -91,15 +141,11 @@ def newshots(body):
         if settings.barrage:
             p = 0.5
         if random.random() > p: continue
-
-        x = wx * random.uniform(0.5, 1.5)
-        y = wy * random.uniform(0.5, 1.5)
-        while mx0 < x < mx1 and my0 < y < my1:
-            x *= 1.3
-            y *= 1.3
-            x += random.uniform(-1, 1)
-            y += random.uniform(-1, 1)
-        shots.append(Shot((x, y), part))
+        
+        w2 = (wy,-wx) if random.random() < 0.5 else (-wy,wx)
+#        shots.append(Shot(scaleposout((wx, wy)), part))
+        p = 0.1
+        shots.append(Ship(scaleposout((wx, wy)), part, scaleposout(w2)))
     return shots
 
 

@@ -115,6 +115,8 @@ class Play(context.Context):
         tip.think(dt)
         self.twinklers += enemy.spoils
         del enemy.spoils[:]
+        self.shots += enemy.spawnedshots
+        del enemy.spawnedshots[:]
 
     def pause(self):
         self.paused = True
