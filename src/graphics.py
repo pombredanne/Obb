@@ -2,7 +2,7 @@
 
 import pygame, math, random
 from pygame.locals import *
-import vista, settings, mechanics
+import vista, settings, mechanics, data
 
 colors = {}
 colors["app0"] = 0, 0.8, 0.4, 1
@@ -990,7 +990,26 @@ def thoughtbubble(h, w = settings.maxblockwidth, cache = {}):
     drawgraycircles(img, circs)
     cache[key] = img
     return img
+
+
+def gettwinklerimg(zoom, angle, cache = {}):
+    angle = int(angle % 90) / 5 * 5
+    zoom  = int(zoom)
+    key = zoom, angle
+    if key in cache: return cache[key]
+    if "base" not in cache:
+        cache["base"] = pygame.image.load(data.filepath("twinkler.png")).convert_alpha()
+    img = pygame.transform.rotozoom(cache["base"], angle, float(zoom) / 240.)
     
+    cache[key] = img
+    return cache[key]
+
+def gettwinklerimgs(t, r0 = 1):
+    return [gettwinklerimg(vista.zoom*r*r0, angle) for r, angle in
+            [(1, t * 40), (0.8, t * 100), (0.8, t * -100)]]
+    
+
+
 
 
 if __name__ == "__main__":
