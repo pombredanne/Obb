@@ -135,7 +135,7 @@ class HealMeter(Meter):
 
     def think(self, dt):
         Meter.think(self, dt)
-        vista.icons["heal"].active = self.amount > 10
+        vista.icons["heal"].active = True
 
 def toscreen(rect):
     return rect.move(settings.rx0, settings.ry0)

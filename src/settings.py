@@ -17,52 +17,61 @@ trashonrightclick = True  # Trash a tile by right-clicking on it
 panonrightclick = False   # Jump to a position by right-clicking on viewport
 panondrag = True  # Move the viewport by left-click and dragging
 
+fac = 1
+if "--small" in sys.argv:
+    fac = 0.75
+elif "--big" in sys.argv:
+    fac = 1.25
+elif "--huge" in sys.argv:
+    fac = 1.5
+def f(*args):
+    return int(fac * args[0]) if len(args) == 1 else [int(fac*arg) for arg in args]
 
 # Overall game window
-size = sx, sy = 854, 480
+size = sx, sy = f(854, 480)
 # Main game viewport
-vsize = vx, vy = 480, 480
-vx0, vy0 = 187, 0
+vsize = vx, vy = f(480), sy
+vx0, vy0 = f(187), 0
 # Tile panel (left)
-psize = px, py = 187, 480
+psize = px, py = vx0, sy
 px0, py0 = 0, 0
 # Status panel (right)
-rsize = rx, ry = 187, 480
-rx0, ry0 = 667, 0
+rsize = rx, ry = sx - px - vx, sy
+rx0, ry0 = px + vx, 0
 
 class layout:
-    meterbottom = 330
-    mutagenmeterx = 124
-    metermaxy = 300
-    healmeterx = 160
-    brainiconpos = -20, 486
-    controlpos = 42, 450
-    countsize = 60  # Font size of counters
-    organcountsize = 40
-    cubeiconpos = 42, 36
-    ptilesize = 48 # Size of selectable tiles in the panel
-    ptiley = 70  # Offset position of top tile
-    buildiconsize = 36
-    buildiconxs = [752, 752-36, 752-2*36]
+    meterbottom = f(330)
+    mutagenmeterx = f(124)
+    metermaxy = f(300)
+    healmeterx = f(160)
+    brainiconpos = f(-20, 486)
+    controlpos = f(42, 450)
+    countsize = f(60)  # Font size of counters
+    organcountsize = f(40)
+    cubeiconpos = f(42, 36)
+    ptilesize = f(48) # Size of selectable tiles in the panel
+    ptiley = f(70)  # Offset position of top tile
+    buildiconsize = f(36)
+    buildiconxs = f(752, 752-36, 752-2*36)
 
-
-iconsize = 70
+iconsize = f(70)
 iconpos = {}
-iconpos["zoomin"] = 227, 440
-iconpos["zoomout"] = 627, 440
-iconpos["pause"] = 227, 40
-iconpos["music"] = 627, 40
-iconpos["trash"] = 51, 429
-iconpos["cut"] = 136, 429
-iconpos["heal"] = 803, 370
+iconpos["zoomin"] = f(227, 440)
+iconpos["zoomout"] = f(627, 440)
+iconpos["pause"] = f(227, 40)
+iconpos["music"] = f(627, 40)
+iconpos["trash"] = f(51, 429)
+iconpos["cut"] = f(136, 429)
+iconpos["heal"] = f(803, 370)
 
-maxtextwidth = 140
-maxblockwidth = 400
+maxtextwidth = f(140)
+maxblockwidth = f(420)
 
-tzoom0 = 100  # Default tile size
+tzoom0 = 144  # Default tile size
 zooms = 16, 24, 32, 40, 48, 60, 72
-zoom0 = 48
+zoom0 = max(z for z in zooms if z <= f(48))
 largebuildicon = tzoom0
+
 
 showstars = True
 twisty = True  # Twisty paths
