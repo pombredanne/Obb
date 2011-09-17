@@ -1,12 +1,25 @@
-import pygame
+import pygame, os, random
 import data
 
 
 track = 0
 tracks = ["rocket", "fighter", "ittybitty", "killing"]
 
+sounds = {}
 def play(name = ""):
-    pass
+    if name == "addpart":
+        play("addpart-%s" % random.choice((0,1,2)))
+    if name not in sounds:
+        filename = data.filepath(name + ".ogg")
+        if os.path.exists(filename):
+            sounds[name] = pygame.mixer.Sound(filename)
+        else:
+            print "sound missing: %s" % name
+            sounds[name] = None
+    if sounds[name] is not None:
+        sounds[name].play()
+        
+    
 
 def nexttrack():
     global track
@@ -20,8 +33,8 @@ def nexttrack():
         track += 1
 
 def pause():
-    pass
+    pygame.mixer.music.pause()
 
 def resume():
-    pass
+    pygame.mixer.music.unpause()
 
