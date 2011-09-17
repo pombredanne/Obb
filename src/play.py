@@ -144,7 +144,7 @@ class Play(context.Context):
         if self.clickat is None:  # It's a drag
             return
         (x0, y0), (x1, y1) = self.clickat, mousepos
-        if abs(x0-x1) + abs(y0-y1) > 4:
+        if abs(x0-x1) + abs(y0-y1) > 10:
             return
     
         bicon = self.status.iconpoint(mousepos)  # Any build icons pointed to
@@ -202,6 +202,7 @@ class Play(context.Context):
                 worldpos = vista.screentoworld(mousepos)
                 if vista.HexGrid.nearesttile(worldpos) == (0,0):
                     settings.showtips = not settings.showtips
+                    noise.play("addpart")
 
 
     def choosetip(self, mousepos):
@@ -260,7 +261,7 @@ class Play(context.Context):
     def handleleftdrag(self, pos, rel):
         if self.clickat is not None:
             (x0, y0), (x1, y1) = self.clickat, pos
-            if abs(x0-x1) + abs(y0-y1) > 4:
+            if abs(x0-x1) + abs(y0-y1) > 10:
                 self.clickat = None
 
         if settings.panondrag:

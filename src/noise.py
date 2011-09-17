@@ -1,5 +1,5 @@
 import pygame, os, random
-import data
+import data, font, vista, settings
 
 
 track = 0
@@ -8,7 +8,7 @@ tracks = ["rocket", "fighter", "ittybitty", "killing"]
 sounds = {}
 def play(name = ""):
     if name == "addpart":
-        play("addpart-%s" % random.choice((0,1,2)))
+        return play("addpart-%s" % random.choice((0,1,2)))
     if name not in sounds:
         filename = data.filepath(name + ".ogg")
         if os.path.exists(filename):
@@ -31,6 +31,7 @@ def nexttrack():
         pygame.mixer.music.load(fname)
         pygame.mixer.music.play(-1)
         track += 1
+    vista.musicicontext = font.img(str(track), size = settings.layout.countsize, color=(0,0,0))
 
 def pause():
     pygame.mixer.music.pause()

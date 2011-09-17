@@ -72,6 +72,7 @@ def iconhit(pos):
             return name
     return None
 
+musicicontext = None
 def init():
     global screen, _screen, vrect, prect, zoom, psurf, rsurf, rrect
     global stars
@@ -184,8 +185,8 @@ def screentoworld((x, y)):
 
 def clear(color = (0, 0, 0)):
     screen.fill(color)
-    psurf.fill((144, 144, 192))
-    rsurf.fill((144, 144, 192))
+    psurf.fill((144, 144, 144))
+    rsurf.fill((144, 144, 144))
     if settings.showstars:
         for c, x, y in stars:
             px = int(x+gx0*c/400)%settings.vx
@@ -218,6 +219,9 @@ def flip():
     for surf, rect in overlays:
         _screen.blit(surf, rect)
     for icon in icons.values(): icon.draw()
+    if musicicontext:
+        rect = musicicontext.get_rect(midright = icons["music"].rect.center)
+        _screen.blit(musicicontext, rect)
     tip.draw()
     pygame.display.flip()
 

@@ -128,13 +128,14 @@ class Body(object):
             self.attackers.append(part)
         if part.shield > 0:
             self.shields.append(part)
-        noise.play("addpart")
         vista.icons["cut"].active = len(self.parts) > 1
         if isinstance(part, Organ):
             self.organs[(part.x, part.y)] = part
         self.maxmutagen += part.mutagen
         self.maxplaster += part.plaster
         self.ncubes += part.ncubes
+        if not isinstance(part, Core):
+            noise.play("addpart")
 
     def remakemask(self):
         """Build the mask from scratch"""
@@ -292,6 +293,7 @@ class BodyPart(object):
                 self.dietimer -= dt
                 if self.dietimer < 0:
                     self.body.removepart(self)
+                    noise.play("addpart")
         else:
             if self.hp0 and self.hp < self.hp0:
                 self.pulsefreq = 1. - float(self.hp) / self.hp0
