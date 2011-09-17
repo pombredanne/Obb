@@ -1,6 +1,15 @@
 import sys
 
 
+# Controls
+panonpoint = False # Viewport follows mouse cursor
+panonarrows = True  # Use arrow keys (or WASD) to move viewport
+zoomonscroll = True  # Zoom using scroll wheel
+trashonrightclick = True  # Trash a tile by right-clicking on it
+panonrightclick = False   # Jump to a position by right-clicking on viewport
+panondrag = True  # Move the viewport by left-click and dragging
+
+
 # Overall game window
 size = sx, sy = 854, 480
 # Main game viewport
@@ -47,13 +56,6 @@ largebuildicon = tzoom0
 
 showstars = True
 twisty = True  # Twisty paths
-
-# Controls
-panonpoint = False
-panonarrows = True
-zoomonscroll = True
-trashonrightclick = True
-panonrightclick = False
 
 
 fullscreen = "--fullscreen" in sys.argv

@@ -13,6 +13,7 @@ class Play(context.Context):
         self.paused = False
         self.target = None
         self.clearselections()
+        self.clickat = None
 
     def think(self, dt, events, keys, mousepos, buttons):
 
@@ -57,13 +58,17 @@ class Play(context.Context):
             if event.type == KEYUP and event.key == K_F2:
                 vista.zoomout()
             if event.type == MOUSEBUTTONDOWN and event.button == 1:
+                self.clickat = event.pos
+            if event.type == MOUSEBUTTONUP and event.button == 1:
                 self.handleleftclick(mousepos)
-            if event.type == MOUSEBUTTONDOWN and event.button == 3:
+            if event.type == MOUSEBUTTONUP and event.button == 3:
                 self.handlerightclick(mousepos)
-            if event.type == MOUSEBUTTONDOWN and event.button == 4 and settings.zoomonscroll:
+            if event.type == MOUSEBUTTONUP and event.button == 4 and settings.zoomonscroll:
                 vista.zoomin()
-            if event.type == MOUSEBUTTONDOWN and event.button == 5 and settings.zoomonscroll:
+            if event.type == MOUSEBUTTONUP and event.button == 5 and settings.zoomonscroll:
                 vista.zoomout()
+            if event.type == MOUSEMOTION and event.buttons[0]:
+                self.handleleftdrag(event.pos, event.rel)
 
         if keys[K_F5]:
             self.body.addrandompart()
@@ -134,6 +139,13 @@ class Play(context.Context):
             self.cutmode = False
 
     def handleleftclick(self, mousepos):
+
+        if self.clickat is None:  # It's a drag
+            return
+        (x0, y0), (x1, y1) = self.clickat, mousepos
+        if abs(x0-x1) + abs(y0-y1) > 4:
+            return
+    
         bicon = self.status.iconpoint(mousepos)  # Any build icons pointed to
         vicon = vista.iconhit(mousepos)  # Any vista icons pointed to
         if vicon == "trash":
@@ -174,6 +186,7 @@ class Play(context.Context):
         elif vista.vrect.collidepoint(mousepos):
             if self.cutmode and self.target is not None:
                 self.target.die()
+                self.clearselections()
             elif self.healmode and self.target is not None:
                 dhp = self.target.heal()
                 self.status.usehp(dhp)
@@ -200,6 +213,15 @@ class Play(context.Context):
             else:
                 self.clearselections()
 
+    def handleleftdrag(self, pos, rel):
+        if self.clickat is not None:
+            (x0, y0), (x1, y1) = self.clickat, pos
+            if abs(x0-x1) + abs(y0-y1) > 4:
+                self.clickat = None
+
+        if settings.panondrag:
+            if vista.vrect.collidepoint(pos):
+                vista.scoot(rel)
 
 
     def pointchildbyedge(self, screenpos):

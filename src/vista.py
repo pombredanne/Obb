@@ -145,7 +145,12 @@ def jumptoscreenpos((x, y)):
     wx, wy = screentoworld((x, y))
     gx0 = settings.vx / 2 - zoom * wx
     gy0 = settings.vy / 2 + zoom * wy
-    
+
+def scoot((dx, dy)):
+    global gx0, gy0
+    gx0 += dx
+    gy0 += dy
+
 
 def worldtogameplay((x, y)):
     return int(gx0 + x * zoom + 0.5), int(gy0 - y * zoom + 0.5)
