@@ -53,6 +53,7 @@ panonpoint = False
 panonarrows = True
 zoomonscroll = True
 trashonrightclick = True
+panonrightclick = False
 
 
 fullscreen = "--fullscreen" in sys.argv

@@ -194,6 +194,11 @@ class Play(context.Context):
                     self.panel.selecttile(jtile)
                     self.panel.claimtile()
                     noise.play("trash")
+        elif vista.vrect.collidepoint(mousepos):  # Click on main window
+            if settings.panonrightclick:
+                vista.jumptoscreenpos(mousepos)
+            else:
+                self.clearselections()
 
 
 
