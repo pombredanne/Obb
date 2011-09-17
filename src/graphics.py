@@ -24,6 +24,7 @@ colors["plaster"] = 1, 1, 0, 1
 colors["zotter"] = 1, 1, 0, 1
 colors["bad"] = 1, 0, 0, 1
 colors["good"] = 0, 1, 0, 1
+colors["dust"] = 0.8, 0.4, 0, 1
 
 def qBezier((x0,y0), (x1,y1), (x2,y2), n = 8, ccache = {}):
     """Quadratic bezier curve"""
@@ -1009,6 +1010,24 @@ def gettwinklerimgs(t, r0 = 1):
             [(1, t * 40), (0.8, t * 100), (0.8, t * -100)]]
     
 
+def dustcloudimg(angle = 0, alpha = 1, R = 1, cache = {}):
+    z = int(R * vista.zoom)
+    angle = int(angle % 360) / 10 * 10
+    alpha = min(max(int(alpha * 10) / 10., 0), 1)
+    key = z, angle, alpha
+    if key in cache:
+        return cache[key]
+    if "base" not in cache:
+        img0 = spherecircles.img(R = 0.3, color = "dust", zoom = settings.tzoom0)
+        cache["base"] = vista.Surface(0.8*settings.tzoom0)
+        cache["base"].blit(img0, img0.get_rect(center = cache["base"].get_rect().center))
+    img = pygame.transform.rotozoom(cache["base"], angle, float(z) / settings.tzoom0)
+    if alpha != 1:
+        pygame.surfarray.pixels_alpha(img)[:] *= alpha
+    cache[key] = img
+    return cache[key]
+
+    
 
 
 
@@ -1075,7 +1094,7 @@ if __name__ == "__main__":
 #        img = meter(img, 120)
 #        img = pod.giantimgmutagen(zoom = 80)
 #        img = spherecircles.img(zoom = 200, R = 0.3, color = (0.8, 0.3, 0.3, 1))
-        img = thoughtbubble(100)
+        img = dustcloudimg()
         pass
     if False:
         img = vista.Surface(40, 400, (0, 0, 0))

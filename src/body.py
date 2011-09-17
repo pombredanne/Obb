@@ -274,6 +274,7 @@ class BodyPart(object):
         self.growtimer = self.growtime
         self.dietimer = None
         self.hp = self.hp0
+        self.dusts = []
 
     def __getstate__(self):
         d = dict(self.__dict__)
@@ -294,14 +295,25 @@ class BodyPart(object):
         else:
             if self.hp0 and self.hp < self.hp0:
                 self.pulsefreq = 1. - float(self.hp) / self.hp0
+        if self.hp < self.hp0:
+            self.adddust(40 * dt * (1. - float(self.hp) / self.hp0))
         self.glowtime = max(self.glowtime - dt, 0)
+        self.dusts = [(dx, dy, t-dt) for dx, dy, t in self.dusts if t > dt]
+
+    def adddust(self, n = 1):
+        for j in range(int(n) + (random.random() < n % 1)):
+            dx = random.uniform(-3, 3)
+            dy = random.uniform(-3, 3)
+            self.dusts.append([dx, dy, 0.5])
 
     def hit(self, dhp = 1):
         self.hp -= dhp
         if self.hp < 0:
+            self.adddust(200)
             self.die()
             noise.play("die")
         else:
+            self.adddust(40)
             noise.play("ouch")
 
     def heal(self, dhp = None):
@@ -377,17 +389,23 @@ class BodyPart(object):
             vista.screen.blit(img, img.get_rect(center = (px, py)))
 
     def draw(self):
+        wx, wy = vista.grid.hextoworld((self.x, self.y))
         key = self.getkey()
         if key != self.lastkey:
             self.lastkey = key
             self.img = self.draw0(*key)
         img = self.img
-        if self.pulsefreq:
-            img = self.pulseredimg(self.img, self.pulsefreq)
-        px, py = vista.worldtoview(vista.grid.hextoworld((self.x, self.y)))
+#        if self.pulsefreq:
+#            img = self.pulseredimg(self.img, self.pulsefreq)
+        px, py = vista.worldtoview((wx, wy))
         if self.glowtime:
             self.drawglow((px, py), self.glowtime)
         vista.screen.blit(img, self.img.get_rect(center = (px, py)))
+        for dx, dy, t in self.dusts:
+            x, y = wx + dx * (0.65 - t), wy + dy * (0.65 - t)
+            px, py = vista.worldtoview((x, y))
+            img = graphics.dustcloudimg(angle = t * 100, R = 1, alpha = 1.6 * t)
+            vista.screen.blit(img, img.get_rect(center = (px, py)))
 
     def pulse(self, freq = 0):
         """A value that's usable as a pulsation amount. The frequency
