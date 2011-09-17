@@ -57,6 +57,7 @@ largebuildicon = tzoom0
 showstars = True
 twisty = True  # Twisty paths
 
+audiobuffer = False  # Works better for me with buffer off
 
 fullscreen = "--fullscreen" in sys.argv
 if "--slow" in sys.argv:

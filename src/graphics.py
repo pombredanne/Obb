@@ -891,31 +891,31 @@ def loadbar(f, color = "eye", w = 60, h = 8):
 # TODO
 stalkimages = []
 def core(_color, growth = 0, zoom = settings.tzoom0):
-#    z = settings.tzoom0
-#    img = vista.Surface(3*z)
-#    if not stalkimages:
-#        for edge in range(6):
-#            stalkimg = vista.Surface(z)
-#            x0, y0 = stalkimg.get_rect().center
-#            stalkimg.fill((0,0,0,0))
-#            r, g, b, a = colors["app%s" % (edge % 3)]
-#            S, C = math.sin(math.radians(60 * edge)), -math.cos(math.radians(60 * edge))
-#            dx, dy = 0.3 * S * z, 0.3 * C * z
-#            segmentcircles.draw(stalkimg, (x0,y0), (dx, dy), 0.3 * z)
-#            filtersurface(stalkimg, r, g, b, a)
-#            stalkimages.append(stalkimg)
-#    for edge in range(6):
-#        stalkimg = stalkimages[edge]
-#        x0, y0 = stalkimg.get_rect().center
-#        S, C = math.sin(math.radians(60 * edge)), -math.cos(math.radians(60 * edge))
-#        dx, dy = 0.3 * S * z, 0.3 * C * z
-#        dr = min(max((1 - growth) * 4 - 0.2 * (5 - edge), 0), 0.5) if growth != 1 else 0
-#        x, y = (1.5+(.65-dr)*S) * z, (1.5+(.65-dr)*C) * z
-#        img.blit(stalkimg, stalkimg.get_rect(center = (x,y)))
-    sphereimg = spherecircles.img(R = 0.75, color = "core", zoom = zoom)
-    return sphereimg
-#    img.blit(sphereimg, sphereimg.get_rect(center = img.get_rect().center))
-#    return pygame.transform.smoothscale(img, (3*zoom, 3*zoom))
+    z = settings.tzoom0
+    img = vista.Surface(3*z)
+    if not stalkimages:
+        for edge in range(6):
+            stalkimg = vista.Surface(2*z)
+            x0, y0 = stalkimg.get_rect().center
+            stalkimg.fill((0,0,0,0))
+            r, g, b, a = colors["app%s" % (edge % 3)]
+            S, C = math.sin(math.radians(60 * edge)), -math.cos(math.radians(60 * edge))
+            dx, dy = 0.3 * S, 0.3 * C
+            segmentcircles.draw(stalkimg, z, (1, 1), (dx, dy), 0.3)
+            filtersurface(stalkimg, r, g, b, a)
+            stalkimages.append(stalkimg)
+    for edge in range(6):
+        stalkimg = stalkimages[edge]
+        x0, y0 = stalkimg.get_rect().center
+        S, C = math.sin(math.radians(60 * edge)), -math.cos(math.radians(60 * edge))
+        dx, dy = 0.3 * S * z, 0.3 * C * z
+        dr = min(max((1 - growth) * 4 - 0.2 * (5 - edge), 0), 0.5) if growth != 1 else 0
+        x, y = (1.5+(.65-dr)*S) * z, (1.5+(.65-dr)*C) * z
+        img.blit(stalkimg, stalkimg.get_rect(center = (x,y)))
+    sphereimg = spherecircles.img(R = 0.75, color = "core", zoom = z)
+#    return sphereimg
+    img.blit(sphereimg, sphereimg.get_rect(center = img.get_rect().center))
+    return pygame.transform.smoothscale(img, (3*zoom, 3*zoom))
 
 
 # Coordinates of vertices and edges
@@ -959,7 +959,7 @@ def icon(name, size = settings.layout.buildiconsize):
 def ghostify(img):
     img2 = img.copy()
     arr = pygame.surfarray.pixels3d(img2)
-    g = arr[...,0]/6 + arr[...,1]/6 + arr[...,2]/6
+    g = (arr[...,0]/8 + arr[...,1]/8 + arr[...,2]/8) + 64
     arr[...,0] = arr[...,1] = arr[...,2] = g
     return img2
     

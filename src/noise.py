@@ -1,10 +1,23 @@
+import pygame
+import data
 
+
+track = 0
+tracks = ["ittybitty"]
 
 def play(name = ""):
     pass
 
 def nexttrack():
-    pass
+    global track
+    if track == len(tracks):  # music off
+        pygame.mixer.music.stop()
+        track = 0
+    else:
+        fname = data.filepath(tracks[track] + ".ogg")
+        pygame.mixer.music.load(fname)
+        pygame.mixer.music.play(-1)
+        track += 1
 
 def pause():
     pass

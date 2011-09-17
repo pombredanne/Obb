@@ -1,6 +1,6 @@
 import pygame, math, datetime, collections, random
 from pygame.locals import *
-import settings
+import settings, data
 
 # Okay, here's the deal. There are six simultaneous coordinate systems
 #   going on at once.
@@ -48,7 +48,12 @@ class Icon(object):
     def __init__(self, name, color = (255, 255, 255)):  # TODO: replace with a real icon
         import graphics
         self.name = name
-        self.img = Surface(settings.iconsize, settings.iconsize, color)
+        size = settings.iconsize
+        try:
+            self.img = pygame.image.load(data.filepath(name + ".png")).convert_alpha()
+            self.img = pygame.transform.smoothscale(self.img, (size, size))
+        except:
+            self.img = Surface(size, size, color)
         self.rect = self.img.get_rect()
         self.rect.center = settings.iconpos[self.name]
         self.ghost = graphics.ghostify(self.img)
