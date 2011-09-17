@@ -21,6 +21,7 @@ colors["bulb"] = 1, 0.5, 0.5, 1
 colors["star"] = 1, 1, 0, 1
 colors["mutagen"] = 0, 1, 1, 0
 colors["plaster"] = 1, 1, 0, 1
+colors["zotter"] = 1, 1, 0, 1
 
 def qBezier((x0,y0), (x1,y1), (x2,y2), n = 8, ccache = {}):
     """Quadratic bezier curve"""
@@ -252,7 +253,7 @@ class CoilCircles(ColorCircles):
         if color in colors:
             color = colors[color]
         if not color:
-            filtercolorsurface(gimg, colors[mechanics.colors["coil"]], colors["shield"])
+            filtercolorsurface(gimg, colors[mechanics.colors["zotter"]], colors["zotter"])
         else:
             filtercolorsurface(gimg, color, color)
         return gimg

@@ -533,7 +533,7 @@ class Shield(Organ):
 class Bulb(Organ):
     """Silent but deadly. Actually not so silent."""
     attacker = True
-    attackrange = 3
+    attackrange = 5
     def __init__(self, *args):
         Organ.__init__(self, *args)
         self.target = None
@@ -557,7 +557,7 @@ class Bulb(Organ):
     def attack(self, enemy):
         self.target = enemy.x, enemy.y
         self.shoottime = 0.25
-        self.recovertime = 2
+        self.recovertime = 0.35
         enemy.hit(1)
         noise.play("zot")
 
@@ -579,6 +579,64 @@ class Bulb(Organ):
             pygame.draw.circle(vista.screen, (255, 0, 0), p1, r, 1)
             pygame.draw.aaline(vista.screen, (255, 0, 0), p0, p1, 1)
         Organ.draw(self, *args)
+
+class Zotter(Organ):
+    """It's a coil. Tesla coil that is...."""
+    attacker = True
+    attackrange = 2.
+    def __init__(self, *args):
+        Organ.__init__(self, *args)
+        self.target = None
+        self.shoottime = 0
+        self.recovertime = 0
+
+    def canattack(self, enemy):
+        if not self.wavetime: return False
+        return self.cansee((enemy.x, enemy.y))
+
+    def attack(self, enemy):
+        dhp = 4
+        enemy.hit(dhp)
+        noise.play("zot")
+
+    def cansee(self, (x, y)):
+        x0, y0 = self.worldpos
+        dx, dy = x - x0, y - y0
+        d = math.sqrt(dx ** 2 + dy ** 2)
+        return d < self.attackrange
+
+    def canattack(self, enemy):
+        if self.target is not None: return False
+        if self.recovertime: return False
+        return self.cansee((enemy.x, enemy.y))
+
+    def attack(self, enemy):
+        self.target = enemy.x, enemy.y
+        self.shoottime = 0.25
+        self.recovertime = 2
+        enemy.hit(1)
+        noise.play("zot")
+
+    def think(self, dt):
+        Organ.think(self, dt)
+        self.shoottime = max(self.shoottime - dt, 0)
+        self.recovertime = max(self.recovertime - dt, 0)
+        if not self.shoottime:
+            self.target = None
+
+    def draw0(self, zoom, status, growth):
+        return graphics.coil.img(zoom = zoom, growth = growth, color = status, edge0 = self.edge)
+    
+    def draw(self, *args):
+        if self.target:
+            p0 = vista.worldtoview(self.worldpos)
+            p1 = vista.worldtoview(self.target)
+            r = int(2 + vista.zoom * 3 * (0.25 - self.shoottime))
+            pygame.draw.circle(vista.screen, (255, 0, 0), p1, r, 1)
+            pygame.draw.aaline(vista.screen, (255, 0, 0), p0, p1, 1)
+        Organ.draw(self, *args)
+
+
 
 class Star(Organ):
     """Unleashes a wave of destruction!"""
@@ -631,7 +689,7 @@ class Star(Organ):
 
 
 otypes = {"eye":Eye, "brain":Brain, "eyebrain":EyeBrain, "tripleeye":TripleEye,
-        "cube":Cube,
+        "cube":Cube, "zotter":Zotter,
         "bulb":Bulb, "star":Star,
         "mutagenpod":MutagenPod, "plasterpod":PlasterPod,
         "mutagenitor":Mutagenitor, "plasteritor":Plasteritor,

@@ -50,6 +50,7 @@ colors["tripleeye"] = "app0"
 colors["shield"] = "app1"
 colors["bulb"] = "app1"
 colors["star"] = "app1"
+colors["zotter"] = "app1"
 
 # Build/heal
 colors["mutagenitor"] = "app2"
@@ -60,6 +61,6 @@ colors["cube"] = "app2"
 
 
 #costs = {"eye":30, "brain":60, "eyebrain": 120, "mutagenitor":80, "tripleeye": 0, "coil":20, "ball":50, "cube": 10}
-costs = {"mutagenitor":10, "shield":20, "cube":30}
+costs = {"mutagenitor":10, "zotter":20, "cube":30}
 
 
