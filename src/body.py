@@ -396,9 +396,9 @@ class BodyPart(object):
 
 class Core(BodyPart):
     """The central core of the body, that has the funny mouth"""
-    lightradius = 5
+    lightradius = mechanics.corelightradius
     growtime = 1.8
-    control = 5
+    control = mechanics.corecontrol
     def __init__(self, body, (x,y) = (0,0)):
         BodyPart.__init__(self, body, None, (x,y), 0)
         for edge in range(6):  # One bud in each of six directions
@@ -443,7 +443,7 @@ class Organ(BodyPart):
 
 class Eye(Organ):
     """Extends your visible region"""
-    lightradius = 5
+    lightradius = mechanics.eyelightradius
 
     def __init__(self, *args, **kw):
         Organ.__init__(self, *args, **kw)
@@ -468,7 +468,7 @@ class Eye(Organ):
         return graphics.eye.img(zoom = zoom, growth = growth, color = status, edge0 = self.edge, blink = blink)
 
 class TripleEye(Eye):
-    lightradius = 8
+    lightradius = 1.5 * mechanics.eyelightradius
 
     def draw0(self, zoom, status, growth, blink = 1):
         return graphics.tripleeye.img(zoom = zoom, growth = growth, color = status, edge0 = self.edge, blink = blink)
@@ -477,7 +477,7 @@ class TripleEye(Eye):
 
 class Brain(Organ):
     """Lets you control more organs"""
-    control = 5
+    control = mechanics.braincontrol
     controlneed = 0
 
     def draw0(self, zoom, status, growth):
@@ -485,7 +485,7 @@ class Brain(Organ):
 
 class GiantBrain(Organ):
     """Lets you control even more organs"""
-    control = 10
+    control = 2 * mechanics.braincontrol
     controlneed = 0
 
     def draw0(self, zoom, status, growth):
@@ -493,31 +493,31 @@ class GiantBrain(Organ):
 
 class EyeBrain(Brain):
     """Hey, you got eyeballs in my brain! Hey, you got brains in my eyeball!"""
-    lightradius = 5
+    lightradius = mechanics.eyelightradius
 
     def draw0(self, zoom, status, growth):
         return graphics.eyebrain.img(zoom = zoom, growth = growth, color = status, edge0 = self.edge)
 
 
 class MutagenPod(Organ):
-    mutagen = 20
+    mutagen = mechanics.mutagenpodsize
     def draw0(self, zoom, status, growth):
         return graphics.pod.imgmutagen(zoom = zoom, growth = growth, color = status, edge0 = self.edge)
 
 # By the way I couldn't think of what to call the stuff you heal yourself
-#   with so I went with plaster.
+#   with so I went with plaster. But in the game it's called ooze.
 class PlasterPod(Organ):
-    plaster = 20
+    plaster = mechanics.plasterpodsize
     def draw0(self, zoom, status, growth):
         return graphics.pod.imgplaster(zoom = zoom, growth = growth, color = status, edge0 = self.edge)
 
 class GiantMutagenPod(Organ):
-    mutagen = 40
+    mutagen = 2 * mechanics.mutagenpodsize
     def draw0(self, zoom, status, growth):
         return graphics.pod.giantimgmutagen(zoom = zoom, growth = growth, color = status, edge0 = self.edge)
 
 class GiantPlasterPod(Organ):
-    plaster = 40
+    plaster = 2 * mechanics.plasterpodsize
     def draw0(self, zoom, status, growth):
         return graphics.pod.giantimgplaster(zoom = zoom, growth = growth, color = status, edge0 = self.edge)
 
@@ -548,12 +548,12 @@ class Plasteritor(Organ):
         self.glowtime = 0.5
 
 class GiantMutagenitor(Mutagenitor):
-    amount = 2 * mechanics.mutagenhit
+    amount = 3 * mechanics.mutagenhit
     def draw0(self, zoom, status, growth):
         return graphics.generator.giantimgmutagen(zoom = zoom, growth = growth, color = status, edge0 = self.edge)
 
 class GiantPlasteritor(Plasteritor):
-    amount = 2 * mechanics.plasterhit
+    amount = 3 * mechanics.plasterhit
     def draw0(self, zoom, status, growth):
         return graphics.generator.giantimgplaster(zoom = zoom, growth = growth, color = status, edge0 = self.edge)
 
@@ -567,7 +567,7 @@ class Cube(Organ):
 
 class Shield(Organ):
     """Shield"""
-    shield = 2.5
+    shield = mechanics.shieldradius
 
     def draw0(self, zoom, status, growth):
         return graphics.shield.img(zoom = zoom, growth = growth, color = status, edge0 = self.edge)
@@ -578,7 +578,8 @@ class Shield(Organ):
 class Bulb(Organ):
     """Silent but deadly. Actually not so silent."""
     attacker = True
-    attackrange = 5
+    attackrange = mechanics.bulbrange
+    dhp = mechanics.bulbdhp
     def __init__(self, *args):
         Organ.__init__(self, *args)
         self.target = None
@@ -601,9 +602,9 @@ class Bulb(Organ):
 
     def attack(self, enemy):
         self.target = enemy.x, enemy.y
-        self.shoottime = 0.25
-        self.recovertime = 0.35
-        enemy.hit(1)
+        self.shoottime = 0.15
+        self.recovertime = 0.25
+        enemy.hit(self.dhp)
         noise.play("zot")
 
     def think(self, dt):
@@ -620,7 +621,7 @@ class Bulb(Organ):
         if self.target:
             p0 = vista.worldtoview(self.worldpos)
             p1 = vista.worldtoview(self.target)
-            r = int(2 + vista.zoom * 3 * (0.25 - self.shoottime))
+            r = int(2 + vista.zoom * 4 * (0.15 - self.shoottime))
             pygame.draw.circle(vista.screen, (255, 0, 0), p1, r, 1)
             pygame.draw.aaline(vista.screen, (255, 0, 0), p0, p1, 1)
         Organ.draw(self, *args)
@@ -628,7 +629,8 @@ class Bulb(Organ):
 class Zotter(Organ):
     """It's a coil. Tesla coil that is...."""
     attacker = True
-    attackrange = 2.
+    attackrange = mechanics.zotterrange
+    dhp = mechanics.zotterdhp
     def __init__(self, *args):
         Organ.__init__(self, *args)
         self.target = None
@@ -640,7 +642,7 @@ class Zotter(Organ):
         return self.cansee((enemy.x, enemy.y))
 
     def attack(self, enemy):
-        dhp = 4
+        dhp = self.dhp
         enemy.hit(dhp)
         noise.play("zot")
 
@@ -684,10 +686,12 @@ class Zotter(Organ):
 
 
 class Star(Organ):
-    """Unleashes a wave of destruction!"""
+    """Unleashes a wave of destruction! Unleashes it I say!"""
     attacker = True
     attackrange = 0
     suction = True
+    dhp = mechanics.stardhp
+    range0 = mechanics.starrange
     def __init__(self, *args):
         Organ.__init__(self, *args)
         self.wavetime = 0
@@ -704,14 +708,14 @@ class Star(Organ):
         return self.cansee((enemy.x, enemy.y))
 
     def attack(self, enemy):
-        dhp = int(6 - self.attackrange)
+        dhp = self.dhp
         enemy.hit(dhp)
         noise.play("wavehit")
 
     def think(self, dt):
         Organ.think(self, dt)
         self.wavetime = max(self.wavetime - dt, 0)
-        self.attackrange = 5 * (1 - self.wavetime / 0.5) if self.wavetime else 0
+        self.attackrange = self.range0 * (1 - self.wavetime / 0.5) if self.wavetime else 0
 
     def energize(self):
         self.wavetime = 0.5

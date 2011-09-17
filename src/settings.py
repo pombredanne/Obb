@@ -24,7 +24,8 @@ rx0, ry0 = 667, 0
 
 class layout:
     meterbottom = 330
-    mutagenmeterx = 120
+    mutagenmeterx = 124
+    metermaxy = 300
     healmeterx = 160
     brainiconpos = -20, 486
     controlpos = 42, 450
@@ -33,8 +34,8 @@ class layout:
     cubeiconpos = 42, 36
     ptilesize = 48 # Size of selectable tiles in the panel
     ptiley = 70  # Offset position of top tile
-    buildiconsize = 40
-    buildiconxs = [740, 695]
+    buildiconsize = 36
+    buildiconxs = [752, 752-36, 752-2*36]
 
 
 iconsize = 70

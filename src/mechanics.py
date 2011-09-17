@@ -2,17 +2,30 @@ import random
 import vista
 
 vthreshold = 0.2  # Visibility threshold
-twinklerrate = 0.002  # Twinklers per unit area per second
-mutagenhit = 5  # How much you get when a twinkler hit a mutagenitor
+twinklerrate = 0.004  # Twinklers per unit area per second
+mutagenhit = 6  # How much you get when a twinkler hit a mutagenitor
 plasterhit = 5
-basemutagenrate = 1  # How fast it rises on its own
-basehealrate = 1
-mutagen0 = 60  # Base amount
+basemutagenrate = 0.5  # How fast it rises on its own
+basehealrate = 0.3
+mutagen0 = 300  # Base amount
 plaster0 = 20
-mutagenpodamount = 20
-plasterpodamount = 20
+mutagenpodsize = 20
+plasterpodsize = 20
 baseloadrate = 0.5
 cubeloadrate = 0.3
+shieldradius = 4
+bulbrange = 10
+zotterrange = 5
+zotterdhp = 4
+bulbdhp = 1
+stardhp = 6
+starrange = 8
+
+eyelightradius = 7
+corelightradius = 7
+braincontrol = 10
+corecontrol = 10
+
 
 # Permissable dedges for tiles
 #dedgesets = [(1,), (2,), (4,), (5,),
@@ -20,9 +33,8 @@ cubeloadrate = 0.3
 #    (1,2,3), (1,2,4), (1,2,5), (1,3,4), (1,3,5), (1,4,5),
 #        (2,3,4), (2,3,5), (2,4,5), (3,4,5)]
 
-dedgesets = ([(1,), (5,), (1,3), (3,5)] +
-            [(2,), (3,), (4,)] * 2 +
-            [(2,3), (2,4), (3,4)] * 3)
+dedgesets = ([(1,), (5,), (1,3), (3,5), (1,4), (2,5), (2,), (3,), (4,)] +
+            [(2,3), (2,4), (3,4)] * 2)
 
 
 
@@ -77,8 +89,26 @@ costs = {"plasteritor":10, "giantplasteritor": 20}
 
 costs = {"eye":30, "brain":60, "eyebrain": 120, "mutagenitor":80, "tripleeye": 0, "coil":20, "ball":50, "cube": 10}
 
-costs = {"mutagenpod": 30, "eye": 40, "brain": 50, "mutagenitor": 20,
-         "plasterpod": 70, "cube": 80, "star": 100, }
+costs = {
+         "mutagenitor": 20,
+           "eye": 35,
+             "brain": 50,
+         "mutagenpod": 65,
+           "plasterpod": 80,
+             "zotter": 100,
+         "cube": 115,
+           "plasteritor": 130,
+             "bulb": 145,
+         "shield": 160,
+           "eyebrain": 175,
+             "star": 190,
+         "tripleeye": 205,
+           "giantbrain": 220,
+             "giantmutagenpod": 235,
+         "giantmutagenitor": 250,
+           "giantplasterpod": 265,
+             "giantplasteritor": 280,
+         }
 
 info = {}
 info["eye"] = "this organ let me see out farther. me no can grow where me no can see"
@@ -87,10 +117,19 @@ info["giantbrain"] = "biggest brain is best brain!"
 info["eyebrain"] = "it eye! it brain! it both!"
 info["tripleeye"] = "me see way far out with this. sometimes me get dizzy"
 
+info["shield"] = "this organ for protection. it block half of incoming danger"
+info["bulb"] = "this weapon good for rapid fire long range, but only shoot forward"
+info["star"] = "this weapon absorb white energy and make blast range. unreliable but powerful"
+info["zotter"] = "this weapon good for short-range attacks"
+
 info["mutagenitor"] = "this organ absorb white energy and make mutagen. very important!"
 info["mutagenpod"] = "this organ hold more mutagen. me need this to grow more advanced organs"
 info["plasteritor"] = "this organ absorb white energy and make ooze. me need ooze to heal"
 info["plasterpod"] = "this organ hold more ooze, help me survive big attacks"
+info["giantmutagenitor"] = "this organ absorb white energy and make even more mutagen!"
+info["giantmutagenpod"] = "this organ hold lots of mutagen"
+info["giantplasteritor"] = "this organ absorb white energy and make even more ooze!"
+info["giantplasterpod"] = "this organ hold lots of healing ooze"
 info["cube"] = "want stalk options to appear faster? grow this organ!"
 
 

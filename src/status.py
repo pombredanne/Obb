@@ -5,7 +5,7 @@ import vista, graphics, mechanics, font, settings
 
 class Meter(object):
     def __init__(self):
-        self.maxheight = 1000
+        self.maxheight = 300
         self.height = 60
         self.goalheight = 60
         self.baseimg = self.getimg(self.getlevel(self.height, False))
@@ -42,7 +42,8 @@ class Meter(object):
     def getlevel(self, amount = None, bounded = True):
         if amount is None: amount = self.amount
         if bounded: amount = min(amount, self.height)
-        return int(self.maxheight * (1 - math.exp(-2. * amount / self.maxheight)))
+        return int(amount * settings.layout.metermaxy / self.maxheight)
+#        return int(self.maxheight * (1 - math.exp(-2. * amount / self.maxheight)))
     
     def draw(self):
         level = self.getlevel()
@@ -53,33 +54,31 @@ class BuildIcon(object):
     def __init__(self, meter, name, number):
         self.meter = meter
         self.name = name
-        self.img = graphics.icon(self.name)
-        self.ghost = graphics.ghostify(self.img)
         self.amount = mechanics.costs[self.name]
         self.active = None  # Enough mutagen to activate
         self.visible = False
-        self.currentimg = self.img
         self.pointedto = False
         number %= len(settings.layout.buildiconxs)
         self.x = settings.layout.buildiconxs[number]
         _, self.y = self.meter.meterpos(self.amount, bounded = False)
-        self.rect = self.currentimg.get_rect(center = (self.x, self.y))
+        self.img = None
 
     def think(self, dt):
         active = self.meter.amount >= self.amount
         self.visible = self.meter.height >= self.amount
-        if self.active is False and active:
-            self.activate()
+        if not self.visible: return
         self.active = active
+        if not self.img:
+            self.img = graphics.icon(self.name)
+            self.ghost = graphics.ghostify(self.img)
+            self.currentimg = self.img
+            self.rect = self.currentimg.get_rect(center = (self.x, self.y))
         self.currentimg = self.img if self.active else self.ghost
-#       self.linepos = x,y = self.meter.meterpos(self.amount)
+        self.linepos = x,y = self.meter.meterpos(self.amount)
         self.pointedto = False
 
     def ispointedto(self, pos):
-        return self.active and self.rect.collidepoint(pos)
-
-    def activate(self):
-        pass
+        return self.visible and self.rect.collidepoint(pos)
 
     def draw(self):
 #        x,y = self.linepos
