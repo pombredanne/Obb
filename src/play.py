@@ -1,6 +1,6 @@
 import pygame, random
 from pygame.locals import *
-import vista, context, body, settings, panel, status, noise, twinkler, enemy, graphics, tip
+import vista, context, body, settings, panel, status, noise, twinkler, enemy, graphics, tip, mechanics
 
 class Play(context.Context):
     def __init__(self):
@@ -215,7 +215,7 @@ class Play(context.Context):
             if self.panel.selected is not None:
                 return "click this to get rid of stalk and get new one"
             else:
-                return "if you no like a stalk, click on stalk then click here to get new one"
+                return "if you no like a stalk, click on stalk then click here to get new one. or you can right-click on stalk, it faster"
         elif vicon == "zoomin":
             return
         elif vicon == "zoomout":
@@ -231,11 +231,11 @@ class Play(context.Context):
         elif vista.prect.collidepoint(mousepos):
             jtile = self.panel.iconp(mousepos)
             if jtile in (0, 1, 2, 3, 4, 5):
-                return "stalk can grow out from same color bud. try make lots of branches. you can also right-click on stalk to throw it out for new one"
+                return "these me stalk options, har har har! can grow stalks where colors match. try make lots of branches."
             else:
                 return self.panel.choosetip(mousepos)
         elif bicon is not None:
-            return "you want build %s?" % bicon
+            return mechanics.info[bicon.name]
         elif vista.vrect.collidepoint(mousepos):
             worldpos = vista.screentoworld(mousepos)
             if vista.HexGrid.nearesttile(worldpos) == (0,0):

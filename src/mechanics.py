@@ -3,8 +3,8 @@ import vista
 
 vthreshold = 0.2  # Visibility threshold
 twinklerrate = 0.002  # Twinklers per unit area per second
-mutagenhit = 10  # How much you get when a twinkler hit a mutagenitor
-plasterhit = 10
+mutagenhit = 5  # How much you get when a twinkler hit a mutagenitor
+plasterhit = 5
 basemutagenrate = 1  # How fast it rises on its own
 basehealrate = 1
 mutagen0 = 60  # Base amount
@@ -77,8 +77,22 @@ costs = {"plasteritor":10, "giantplasteritor": 20}
 
 costs = {"eye":30, "brain":60, "eyebrain": 120, "mutagenitor":80, "tripleeye": 0, "coil":20, "ball":50, "cube": 10}
 
-costs = {"mutagenpod": 30, "eye": 40, "brain": 50, "mutagenitor": 60,
+costs = {"mutagenpod": 30, "eye": 40, "brain": 50, "mutagenitor": 20,
          "plasterpod": 70, "cube": 80, "star": 100, }
+
+info = {}
+info["eye"] = "this organ let me see out farther. me no can grow where me no can see"
+info["brain"] = "me need this organ to work other organs"
+info["giantbrain"] = "biggest brain is best brain!"
+info["eyebrain"] = "it eye! it brain! it both!"
+info["tripleeye"] = "me see way far out with this. sometimes me get dizzy"
+
+info["mutagenitor"] = "this organ absorb white energy and make mutagen. very important!"
+info["mutagenpod"] = "this organ hold more mutagen. me need this to grow more advanced organs"
+info["plasteritor"] = "this organ absorb white energy and make ooze. me need ooze to heal"
+info["plasterpod"] = "this organ hold more ooze, help me survive big attacks"
+info["cube"] = "want stalk options to appear faster? grow this organ!"
+
 
 
 

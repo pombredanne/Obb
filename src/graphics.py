@@ -975,8 +975,8 @@ def thoughtbubble(h, w = settings.maxblockwidth, cache = {}):
         r = random.uniform(10, 20)
         g = z
         circs.append((z, x, y, r, g))
-    circs = normcircles(circs, 1, (60, 60))
-    img = vista.Surface(w+120, h+120)
+    circs = normcircles(circs, 1, (20, 20))
+    img = vista.Surface(w+40, h+40)
     drawgraycircles(img, circs)
     cache[key] = img
     return img
