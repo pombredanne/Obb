@@ -6,26 +6,27 @@ class Panel(object):
     """Place where available tiles appear and you can pick them"""
     def __init__(self, body):
         self.body = body
-        self.tiles = [self.newspec(c) for c in (0,1,2)]
-        self.ages = [-2, -2.5, -3]
-        ys = [(j*1.9+1)*settings.layout.ptilesize + settings.layout.ptiley for j in (0,1,2)]
-        self.centers = [(settings.px/2, int(y)) for y in ys]
+        self.tiles = [self.newspec(c) for c in (0,1,2,3,4,5)]
+        self.ages = [-2, -2.4, -2.8, -3.2, -3.6, -4.0]
+        ys = [(j*0.95+1)*settings.layout.ptilesize for j in (0,1,2,3,4,5)]
+        xs = [(.85 if j % 2 else -.85) * settings.layout.ptilesize for j in (0,1,2,3,4,5)]
+        self.centers = [(int(settings.px/2 + x), int(y + settings.layout.ptiley)) for x,y in zip(xs, ys)]
         self.selected = None
         self.loadrate = mechanics.baseloadrate
         self.cubeimg = graphics.cube.img(zoom = settings.layout.organcountsize, edge0 = 0)
         self.cuberect = self.cubeimg.get_rect(center = settings.layout.cubeiconpos)
 
     def newspec(self, jtile):
-        return mechanics.randomspec("app%s" % jtile)
+        return mechanics.randomspec("app%s" % int(jtile/2))
 
     def think(self, dt):
         self.loadrate = mechanics.baseloadrate + mechanics.cubeloadrate * self.body.ncubes
-        for j in (0,1,2):
+        for j in range(len(self.ages)):
             self.ages[j] = min(self.ages[j] + (1 if self.ages[j] > -1 else self.loadrate) * dt, 0)
         
     def draw(self):
         for j, (age, appspec, (cx, cy)) in enumerate(zip(self.ages, self.tiles, self.centers)):
-            color = "app%s" % j
+            color = "app%s" % int(j/2)
             if age < -1:
                 img = graphics.loadbar(1 - ((-age-1) / 5), color)
                 rect = img.get_rect(center = (cx, cy))

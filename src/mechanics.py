@@ -1,7 +1,7 @@
 import random
 import vista
 
-vthreshold = 0.3  # Visibility threshold
+vthreshold = 0.2  # Visibility threshold
 twinklerrate = 0.002  # Twinklers per unit area per second
 mutagenhit = 10  # How much you get when a twinkler hit a mutagenitor
 plasterhit = 10
@@ -15,11 +15,16 @@ baseloadrate = 0.5
 cubeloadrate = 0.3
 
 # Permissable dedges for tiles
-# Conspicuous in its absense is a straight piece
-dedgesets = [(1,), (2,), (4,), (5,),
-    (1,2), (1,3), (1,4), (1,5), (2,3), (2,4), (2,5), (3,4), (3,5), (4,5),
-    (1,2,3), (1,2,4), (1,2,5), (1,3,4), (1,3,5), (1,4,5),
-        (2,3,4), (2,3,5), (2,4,5), (3,4,5)]
+#dedgesets = [(1,), (2,), (4,), (5,),
+#    (1,2), (1,3), (1,4), (1,5), (2,3), (2,4), (2,5), (3,4), (3,5), (4,5),
+#    (1,2,3), (1,2,4), (1,2,5), (1,3,4), (1,3,5), (1,4,5),
+#        (2,3,4), (2,3,5), (2,4,5), (3,4,5)]
+
+dedgesets = ([(1,), (5,), (1,3), (3,5)] +
+            [(2,), (3,), (4,)] * 2 +
+            [(2,3), (2,4), (3,4)] * 3)
+
+
 
 class AppendageSpec(object):
     """Data to specify the path of an appendage, irrespective of starting position"""

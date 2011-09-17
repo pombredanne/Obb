@@ -1,5 +1,6 @@
 import sys
 
+
 # Overall game window
 size = sx, sy = 854, 480
 # Main game viewport
@@ -21,8 +22,8 @@ class layout:
     countsize = 60  # Font size of counters
     organcountsize = 40
     cubeiconpos = 42, 36
-    ptilesize = 58 # Size of selectable tiles in the panel
-    ptiley = 48  # Offset position of top tile
+    ptilesize = 48 # Size of selectable tiles in the panel
+    ptiley = 70  # Offset position of top tile
     buildiconsize = 40
     buildiconxs = [740, 695]
 
@@ -39,7 +40,7 @@ iconpos["heal"] = 803, 370
 
 maxtextwidth = 140
 
-tzoom0 = 400  # Default tile size
+tzoom0 = 100  # Default tile size
 zooms = 16, 24, 32, 40, 48, 60, 72
 zoom0 = 48
 largebuildicon = tzoom0
@@ -52,6 +53,10 @@ panonarrows = True
 zoomonscroll = True
 
 fullscreen = "--fullscreen" in sys.argv
+if "--slow" in sys.argv:
+    showstars = False
+    tzoom0 = 72
+
 showfps = True
 
 minfps, maxfps = 10, 60

@@ -164,7 +164,7 @@ class Play(context.Context):
         elif vista.prect.collidepoint(mousepos):  # Click on panel
             self.clearselections(clearpanel = False)
             jtile = self.panel.iconp(mousepos)
-            if jtile in (None, 0, 1, 2):
+            if jtile in (None, 0, 1, 2, 3, 4, 5):
                 self.panel.selecttile(jtile)
         elif bicon is not None:
             self.clearselections(clearstatus = False)

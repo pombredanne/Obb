@@ -39,8 +39,8 @@ class Meter(object):
     
     def getlevel(self, amount = None, bounded = True):
         if amount is None: amount = self.amount
-        h = int(self.maxheight * (1 - math.exp(-2. * amount / self.maxheight)))
-        return int(max(min(h, self.height), 0)) if bounded else h
+        if bounded: amount = min(amount, self.height)
+        return int(self.maxheight * (1 - math.exp(-2. * amount / self.maxheight)))
     
     def draw(self):
         level = self.getlevel()
@@ -55,6 +55,7 @@ class BuildIcon(object):
         self.ghost = graphics.ghostify(self.img)
         self.amount = mechanics.costs[self.name]
         self.active = None  # Enough mutagen to activate
+        self.visible = False
         self.currentimg = self.img
         self.pointedto = False
         number %= len(settings.layout.buildiconxs)
@@ -63,7 +64,8 @@ class BuildIcon(object):
         self.rect = self.currentimg.get_rect(center = (self.x, self.y))
 
     def think(self, dt):
-        active = self.meter.amount > self.amount
+        active = self.meter.amount >= self.amount
+        self.visible = self.meter.height >= self.amount
         if self.active is False and active:
             self.activate()
         self.active = active
@@ -80,7 +82,8 @@ class BuildIcon(object):
     def draw(self):
 #        x,y = self.linepos
 #        pygame.draw.line(vista.rsurf, (255, 255, 255), (x-20,y), (x,y))
-        vista.addoverlay(self.currentimg, self.rect)
+        if self.visible:
+            vista.addoverlay(self.currentimg, self.rect)
         
 
 class MutagenMeter(Meter):
