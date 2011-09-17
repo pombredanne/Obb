@@ -90,11 +90,14 @@ def init():
     stars = [(random.randint(64, 255), random.randint(-10000, 10000), random.randint(-10000, 10000)) for _ in range(settings.vx * settings.vy / 2000)]
     stars.sort()
     
-    _screen.fill((0,0,0))
-    splash = pygame.image.load("obb.png").convert()
-    splash = pygame.transform.smoothscale(splash, (settings.sy, settings.sy))
-    _screen.blit(splash, splash.get_rect(center = _screen.get_rect().center))
-    pygame.display.flip()
+    try:
+        _screen.fill((0,0,0))
+        splash = pygame.image.load("obb.png").convert()
+        splash = pygame.transform.smoothscale(splash, (settings.sy, settings.sy))
+        _screen.blit(splash, splash.get_rect(center = _screen.get_rect().center))
+        pygame.display.flip()
+    except:
+        pass
     
 
 

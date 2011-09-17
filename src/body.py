@@ -371,11 +371,10 @@ class BodyPart(object):
             growth = 1
         return zoom, self.status, growth
 
-    def drawglow(self, (px, py)):
-        # TODO: this better
-        r = int(vista.zoom)
-        pygame.draw.circle(vista.screen, (255, 255, 128), (px, py), r, 0)
-        
+    def drawglow(self, (px, py), t):
+        for img in graphics.gettwinklerimgs(t * 3, r0 = 4):
+            pos = vista.worldtoview((self.x, self.y))
+            vista.screen.blit(img, img.get_rect(center = (px, py)))
 
     def draw(self):
         key = self.getkey()
@@ -387,7 +386,7 @@ class BodyPart(object):
             img = self.pulseredimg(self.img, self.pulsefreq)
         px, py = vista.worldtoview(vista.grid.hextoworld((self.x, self.y)))
         if self.glowtime:
-            self.drawglow((px, py))
+            self.drawglow((px, py), self.glowtime)
         vista.screen.blit(img, self.img.get_rect(center = (px, py)))
 
     def pulse(self, freq = 0):

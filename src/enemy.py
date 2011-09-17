@@ -1,5 +1,5 @@
 import pygame, random, math
-import vista, mechanics, noise, data
+import vista, mechanics, noise, data, settings
 
 
 def getimg(name, cache = {}):
@@ -84,7 +84,8 @@ def newshots(body):
         if not part.targetable: continue
         wx, wy = part.worldpos
         p = 1 - math.exp(-(wx ** 2 + wy ** 2) / 2000)
-#        p = 0.5
+        if settings.barrage:
+            p = 0.5
         if random.random() > p: continue
 
         x = wx * random.uniform(0.5, 1.5)

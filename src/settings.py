@@ -73,6 +73,7 @@ showtips = True
 
 restart = "--restart" in sys.argv
 fullscreen = "--fullscreen" in sys.argv
+barrage = "--barrage" in sys.argv  # Loads of enemies. Not fun.
 if "--slow" in sys.argv:
     showstars = False
     tzoom0 = 72
