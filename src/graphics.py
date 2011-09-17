@@ -945,14 +945,22 @@ def meter(img, level, color1 = (0.5, 0, 1), color0 = (0.2, 0.2, 0.2)):
     if z != 1: arr[...,:p,2] *= z
     return img2
 
-def icon(name, size = settings.layout.buildiconsize):
+def icon(name, size = settings.layout.buildiconsize, cache = {}):
+    key = name, size
+    if key in cache:
+        return cache[key]
     s = settings.largebuildicon
     img = vista.Surface(s)
     r, g, b, a = colors[mechanics.colors[name]]
     color0 = int(r*255), int(g*255), int(b*255)
-    color1 = int(r*128), int(g*128), int(b*128)
+    color1 = int(r*32), int(g*32), int(b*32)
     img.fill(color0)
-    img.fill(color1, (3, 3, s-6, s-6))
+    img.fill(color1, (6, 6, s-12, s-12))
+    import body
+    otype = body.otypes[name]
+    part = otype(None, None, (0, 0), 3)
+    partimg = part.draw0(zoom = int(s*.6), status = "", growth = 1)
+    img.blit(partimg, partimg.get_rect(center = img.get_rect().center))
     img = pygame.transform.smoothscale(img, (size, size))
     return img
 

@@ -100,7 +100,7 @@ class Play(context.Context):
 
         vista.think(dt, mousepos, keys)
 
-        self.body.think(dt)
+        self.body.think(dt, self.status.healmeter)
         self.panel.think(dt)
         self.status.think(dt, mousepos)
         self.twinklers += twinkler.newtwinklers(self.body.mask, dt)

@@ -174,13 +174,28 @@ class Body(object):
                 self.removebranch(child)
         self.removepart(part)
 
-    def think(self, dt):
+    def think(self, dt, meter):
+        shallheal = int(self.tick + dt) != int(self.tick)
         self.tick += dt
         for part in self.parts:
             part.think(dt)
         if self.mask is None:
             self.remakemask()
             vista.setgrect(self.mask.bounds())
+        if shallheal:
+            self.trytoheal(meter)
+
+    def trytoheal(self, meter):
+        toheal = [part for part in self.parts if part.targetable and part.autoheal and part.hp < part.hp0]
+        if not toheal: return
+        random.shuffle(toheal)
+        for part in toheal:
+            available = int(meter.amount)
+            if not available:
+                return
+            dhp = min(available, part.hp0 - part.hp)
+            part.heal(dhp)
+            meter.amount -= dhp
 
     def claimtwinklers(self, ts):
         random.shuffle(self.suckers)
@@ -227,6 +242,7 @@ class BodyPart(object):
     shield = 0
     suction = False
     targetable = False
+    autoheal = True
     pulsefreq = 0
     hp0 = 0
     attacker = False
@@ -273,8 +289,8 @@ class BodyPart(object):
         else:
             noise.play("ouch")
 
-    def heal(self):
-        dhp = self.hp0 - self.hp
+    def heal(self, dhp = None):
+        if dhp is None: dhp = self.hp0 - self.hp
         if not dhp: return 0
         self.hp = self.hp0
         noise.play("heal")
@@ -444,13 +460,13 @@ class Eye(Organ):
         if "ghost" in self.status: blink = 1
         return Organ.getkey(self) + (blink,)
 
-    def draw0(self, zoom, status, growth, blink):
+    def draw0(self, zoom, status, growth, blink = 1):
         return graphics.eye.img(zoom = zoom, growth = growth, color = status, edge0 = self.edge, blink = blink)
 
 class TripleEye(Eye):
     lightradius = 8
 
-    def draw0(self, zoom, status, growth, blink):
+    def draw0(self, zoom, status, growth, blink = 1):
         return graphics.tripleeye.img(zoom = zoom, growth = growth, color = status, edge0 = self.edge, blink = blink)
 
 
