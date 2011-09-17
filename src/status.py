@@ -10,6 +10,7 @@ class Meter(object):
         self.goalheight = 60
         self.baseimg = self.getimg(self.getlevel(self.height, False))
         self.bottom = self.left, settings.layout.meterbottom
+        self.rect = self.baseimg.get_rect(midbottom = self.bottom)
         self.amount = 60
 
     def setheight(self, height):
@@ -32,6 +33,7 @@ class Meter(object):
         elif dh < 0:
             self.height -= 50 * dt
         self.baseimg = self.getimg(self.getlevel(self.height, False))
+        self.rect = self.baseimg.get_rect(midbottom = self.bottom)
 
     def meterpos(self, amount, bounded = True):
         """pixel coordinates corresponding to an amount on this meter"""
@@ -45,7 +47,7 @@ class Meter(object):
     def draw(self):
         level = self.getlevel()
         img = graphics.meter(self.baseimg, level, self.color)
-        vista.rsurf.blit(img, img.get_rect(midbottom = self.bottom))
+        vista.rsurf.blit(img, self.rect)
 
 class BuildIcon(object):
     def __init__(self, meter, name, number):
@@ -137,6 +139,7 @@ class Status(object):
         self.maxcontrol = 10
         self.brainimg = graphics.brain.img(zoom = settings.layout.organcountsize)
         self.brainrect = self.brainimg.get_rect(bottomleft = settings.layout.brainiconpos)
+        self.controlrect = self.brainrect
 
     def setheights(self, mutagenheight, healheight):
         self.mutagenmeter.setheight(mutagenheight)
@@ -180,7 +183,18 @@ class Status(object):
             color, size = (128, 0, 0), int(size * 1.5)
         controlimg = font.img("%s/%s" % (self.body.control, self.body.maxcontrol), size=size, color=color)
         vista.rsurf.blit(self.brainimg, self.brainrect)
-        vista.rsurf.blit(controlimg, controlimg.get_rect(midleft = settings.layout.controlpos))
+        self.controlrect = controlimg.get_rect(midleft = settings.layout.controlpos)
+        vista.rsurf.blit(controlimg, self.controlrect)
+
+    def choosetip(self, (mx, my)):
+        mousepos = mx - settings.rx0, my - settings.ry0
+        if self.mutagenmeter.rect.collidepoint(mousepos):
+            return "that show how much mutagen me have. me like mutagen. it let me grow"
+        if self.healmeter.rect.collidepoint(mousepos):
+            return "that show how much ooze me have. ooze let me fix organs when they get broke"
+        if self.brainrect.collidepoint(mousepos) or self.controlrect.collidepoint(mousepos):
+            return "me need brains to grow. the more brains me have the more organs me can have"
+        
 
 
 

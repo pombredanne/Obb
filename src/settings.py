@@ -59,6 +59,8 @@ twisty = True  # Twisty paths
 
 audiobuffer = False  # Works better for me with buffer off
 
+showtips = True
+
 fullscreen = "--fullscreen" in sys.argv
 if "--slow" in sys.argv:
     showstars = False

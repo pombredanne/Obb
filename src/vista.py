@@ -1,6 +1,6 @@
 import pygame, math, datetime, collections, random
 from pygame.locals import *
-import settings, data
+import settings, data, tip
 
 # Okay, here's the deal. There are six simultaneous coordinate systems
 #   going on at once.
@@ -209,6 +209,7 @@ def flip():
     for surf, rect in overlays:
         _screen.blit(surf, rect)
     for icon in icons.values(): icon.draw()
+    tip.draw()
     pygame.display.flip()
 
 s3 = math.sqrt(3.)

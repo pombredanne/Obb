@@ -1,6 +1,6 @@
 import pygame, random
 from pygame.locals import *
-import vista, context, body, settings, panel, status, noise, twinkler, enemy, graphics
+import vista, context, body, settings, panel, status, noise, twinkler, enemy, graphics, tip
 
 class Play(context.Context):
     def __init__(self):
@@ -71,6 +71,9 @@ class Play(context.Context):
             if event.type == MOUSEMOTION and event.buttons[0]:
                 self.handleleftdrag(event.pos, event.rel)
 
+        if settings.showtips:
+            tip.settip(self.choosetip(mousepos))
+
         if keys[K_F5]:
             self.body.addrandompart()
 
@@ -113,6 +116,7 @@ class Play(context.Context):
         self.status.setheights(self.body.maxmutagen, self.body.maxplaster)
         self.status.mutagenmeter.amount += self.body.checkmutagen()
         self.status.healmeter.amount += self.body.checkplaster()
+        tip.think(dt)
 
     def pause(self):
         self.paused = True
@@ -198,7 +202,41 @@ class Play(context.Context):
                     self.status.build()
                 self.body.addpart(self.parttobuild)
                 self.clearselections()
-    
+
+
+    def choosetip(self, mousepos):
+        bicon = self.status.iconpoint(mousepos)  # Any build icons pointed to
+        vicon = vista.iconhit(mousepos)  # Any vista icons pointed to
+        if vicon == "trash":
+            if self.panel.selected is not None:
+                return "click this to get rid of stalk and get new one"
+            else:
+                return "if you no like a stalk, click on stalk then click here to get new one"
+        elif vicon == "zoomin":
+            return
+        elif vicon == "zoomout":
+            return
+        elif vicon == "pause":
+            return "click to pause game. it okay. me wait"
+        elif vicon == "music":
+            return "click to hear new song or turn off"
+        elif vicon == "heal":
+            return "me organs will use ooze to heal when they get hurt. if you want some organs not to take ooze, click here to change them"
+        elif vicon == "cut":
+            return "no like a stalk or a organ? click to get rid of it! it okay, it not hurt me"
+        elif vista.prect.collidepoint(mousepos):
+            jtile = self.panel.iconp(mousepos)
+            if jtile in (0, 1, 2, 3, 4, 5):
+                return "click on a stalk to grow it out from same color bud. try make lots of branches"
+            else:
+                return self.panel.choosetip(mousepos)
+        elif bicon is not None:
+            return "you want build %s?" % bicon
+        elif vista.vrect.collidepoint(mousepos):
+            pass
+        elif vista.rrect.collidepoint(mousepos):
+            return self.status.choosetip(mousepos)
+
     def handlerightclick(self, mousepos):
         if vista.prect.collidepoint(mousepos):  # Click on panel
             self.clearselections()

@@ -15,6 +15,7 @@ class Panel(object):
         self.loadrate = mechanics.baseloadrate
         self.cubeimg = graphics.cube.img(zoom = settings.layout.organcountsize, edge0 = 0)
         self.cuberect = self.cubeimg.get_rect(center = settings.layout.cubeiconpos)
+        self.ncuberect = self.cuberect
 
     def newspec(self, jtile):
         return mechanics.randomspec("app%s" % int(jtile/2))
@@ -41,7 +42,14 @@ class Panel(object):
         color, size = (0,0,0), settings.layout.countsize
         img = font.img("%s" % (self.body.ncubes), size=size, color=color)
         vista.psurf.blit(self.cubeimg, self.cuberect)
-        vista.psurf.blit(img, img.get_rect(midleft = self.cuberect.midright))
+        self.ncuberect = img.get_rect(midleft = self.cuberect.midright)
+        vista.psurf.blit(img, self.ncuberect)
+
+    def choosetip(self, (mx, my)):
+        mousepos = mx - settings.px0, my - settings.py0
+        if self.cuberect.collidepoint(mousepos) or self.ncuberect.collidepoint(mousepos):
+            return "the more me have of that organ, the faster the new stalks come"
+        
 
 
     def iconp(self, (mx, my)):
