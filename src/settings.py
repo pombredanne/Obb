@@ -48,6 +48,7 @@ twisty = True  # Twisty paths
 
 panonpoint = False
 panonarrows = True
+zoomonscroll = True
 
 fullscreen = "--fullscreen" in sys.argv
 showfps = True

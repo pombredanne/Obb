@@ -6,8 +6,7 @@ pygame.init()
 
 def main():
     vista.init()
-    pygame.display.set_caption("Ubb")
-#    graphics.loadallappimages(settings.zooms)
+    pygame.display.set_caption("Obb")
     context.push(play.Play())
     clock = pygame.time.Clock()
     while context.top():
@@ -29,7 +28,7 @@ def main():
         con.think(dt, events, keys, mousepos, buttons)
         con.draw()
         if settings.showfps:
-            pygame.display.set_caption("Ubb - %.1ffps" % clock.get_fps())
+            pygame.display.set_caption("Obb - %.1ffps" % clock.get_fps())
             if settings.fullscreen:
                 print clock.get_fps()
         

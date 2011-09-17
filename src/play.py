@@ -58,6 +58,10 @@ class Play(context.Context):
                 vista.zoomout()
             if event.type == MOUSEBUTTONDOWN and event.button == 1:
                 self.handleleftclick(mousepos)
+            if event.type == MOUSEBUTTONDOWN and event.button == 4 and settings.zoomonscroll:
+                vista.zoomin()
+            if event.type == MOUSEBUTTONDOWN and event.button == 5 and settings.zoomonscroll:
+                vista.zoomout()
 
         if keys[K_F5]:
             self.body.addrandompart()

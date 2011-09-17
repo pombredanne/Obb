@@ -768,7 +768,7 @@ class EyeBrainCircles(BrainCircles):
 
 eyebrain = EyeBrainCircles()
 
-class MutagenitorCircles(ColorCircles):
+class ShieldCircles(ColorCircles):
     def getargs(self, growth = 1, edge0 = 3, lvector = (-1,-1,2)):
         segs = min(int(growth * 6), 3)
         R0 = growth - 0.6
@@ -778,14 +778,12 @@ class MutagenitorCircles(ColorCircles):
         return R0, R1, edge0, segs, r0, width, tuple(lvector)
 
     def getcircles(self, R0, R1, edge0, segs, r0, width, lvector):
-#        angle = edge0 * 60 + 180
         dx, dy = eps[edge0]
 
         for z, x, y, r, g in spherecircles.getcircles(R0, r0, lvector):
             yield z, x, y, r, (0, g, 0)
         for z, x, y, r, g in spherecircles.getcircles(R0*.5, r0, lvector):
             yield z, x+dx*.45, y+dy*.45, r, (g, 0, 0)
-
             yield z, x-dx*.35, y-dy*.35, r, (g, 0, 0)
             yield z, x-dy*.35, y+dx*.35, r, (g, 0, 0)
             yield z, x+dy*.35, y-dx*.35, r, (g, 0, 0)
@@ -798,12 +796,12 @@ class MutagenitorCircles(ColorCircles):
         if color in colors:
             color = colors[color]
         if not color:
-            filtercolorsurface(gimg, colors["eye"], colors[mechanics.colors["mutagenitor"]])
+            filtercolorsurface(gimg, colors["shield"], colors[mechanics.colors["shield"]])
         else:
             filtercolorsurface(gimg, color, color)
         return gimg
 
-mutagenitor = MutagenitorCircles()
+shield = ShieldCircles()
 
 
 

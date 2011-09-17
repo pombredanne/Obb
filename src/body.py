@@ -512,23 +512,6 @@ class Plasteritor(Organ):
             self.body.plaster += self.amount
         self.glowtime = 0.5
 
-'''
-    """
-class Ball(Organ):
-    """Collects twinklers and generates heal power"""
-    suction = True
-
-    def draw0(self, zoom, status, growth):
-        return graphics.ball.img(zoom = zoom, growth = growth, color = status, edge0 = self.edge)
-
-    def energize(self):
-        pass  # TODO
-#        if self.attached():
-#            self.body.mutagen += mechanics.mutagenhit
-        self.glowtime = 0.5
-'''
-
-# TODO
 class Cube(Organ):
     """Faster tile generation"""
     ncubes = 1
@@ -537,12 +520,12 @@ class Cube(Organ):
         return graphics.cube.img(zoom = zoom, growth = growth, color = status, edge0 = self.edge)
 
 
-class Coil(Organ):
+class Shield(Organ):
     """Shield"""
     shield = 2.5
 
     def draw0(self, zoom, status, growth):
-        return graphics.coil.img(zoom = zoom, growth = growth, color = status, edge0 = self.edge)
+        return graphics.shield.img(zoom = zoom, growth = growth, color = status, edge0 = self.edge)
 
     def wobble(self):
         """Something penetrated the shield"""
@@ -648,10 +631,11 @@ class Star(Organ):
 
 
 otypes = {"eye":Eye, "brain":Brain, "eyebrain":EyeBrain, "tripleeye":TripleEye,
-        "coil":Coil, "cube":Cube,
+        "cube":Cube,
         "bulb":Bulb, "star":Star,
         "mutagenpod":MutagenPod, "plasterpod":PlasterPod,
-        "mutagenitor":Mutagenitor, "plasteritor":Plasteritor}
+        "mutagenitor":Mutagenitor, "plasteritor":Plasteritor,
+        "shield":Shield}
 
 
 
