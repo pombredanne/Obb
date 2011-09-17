@@ -48,9 +48,12 @@ largebuildicon = tzoom0
 showstars = True
 twisty = True  # Twisty paths
 
+# Controls
 panonpoint = False
 panonarrows = True
 zoomonscroll = True
+trashonrightclick = True
+
 
 fullscreen = "--fullscreen" in sys.argv
 if "--slow" in sys.argv:

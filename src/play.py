@@ -58,6 +58,8 @@ class Play(context.Context):
                 vista.zoomout()
             if event.type == MOUSEBUTTONDOWN and event.button == 1:
                 self.handleleftclick(mousepos)
+            if event.type == MOUSEBUTTONDOWN and event.button == 3:
+                self.handlerightclick(mousepos)
             if event.type == MOUSEBUTTONDOWN and event.button == 4 and settings.zoomonscroll:
                 vista.zoomin()
             if event.type == MOUSEBUTTONDOWN and event.button == 5 and settings.zoomonscroll:
@@ -182,6 +184,18 @@ class Play(context.Context):
                     self.status.build()
                 self.body.addpart(self.parttobuild)
                 self.clearselections()
+    
+    def handlerightclick(self, mousepos):
+        if vista.prect.collidepoint(mousepos):  # Click on panel
+            self.clearselections()
+            if settings.trashonrightclick:
+                jtile = self.panel.iconp(mousepos)
+                if jtile in (0, 1, 2, 3, 4, 5):
+                    self.panel.selecttile(jtile)
+                    self.panel.claimtile()
+                    noise.play("trash")
+
+
 
     def pointchildbyedge(self, screenpos):
         edge = vista.grid.nearestedge(vista.screentoworld(screenpos))

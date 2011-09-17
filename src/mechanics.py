@@ -78,7 +78,7 @@ costs = {"plasteritor":10, "giantplasteritor": 20}
 costs = {"eye":30, "brain":60, "eyebrain": 120, "mutagenitor":80, "tripleeye": 0, "coil":20, "ball":50, "cube": 10}
 
 costs = {"mutagenpod": 30, "eye": 40, "brain": 50, "mutagenitor": 60,
-         "plasterpod": 70, "cube": 80 }
+         "plasterpod": 70, "cube": 80, "star": 100, }
 
 
 
