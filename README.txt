@@ -1,18 +1,20 @@
-Your Game Title
-===============
+Obb
+===
 
-Entry in PyWeek #4  <http://www.pyweek.org/4/>
-Team: YOUR TEAM NAME (leave the "Team: bit")
-Members: YOUR TEAM MEMBERS (leave the "Members: bit")
+Entry in PyWeek #13  <http://www.pyweek.org/13/>
+Team: Universe Factory 13 (unifac13)
+Members: Cosmologicon (Christopher Night)
 
 
 DEPENDENCIES:
 
 You might need to install some of these before running the game:
 
-  Python:     http://www.python.org/
-  PyGame:     http://www.pygame.org/
+  Python 2.6+:     http://www.python.org/
+  PyGame 1.9+:     http://www.pygame.org/
 
+You probably also need numpy installed, since the game makes heavy use
+of pygame.surfarray.
 
 
 RUNNING THE GAME:
@@ -23,21 +25,35 @@ Othewise open a terminal / console and "cd" to the game directory and run:
 
   python run_game.py
 
+The game will take a minute to load up as the graphics engine gets started.
+It may also run slowly at first, the first time it renders new objects.
+Hey, I put a lot of time into that graphics engine. All things
+considered, it's pretty well optimized for Pyweek. Have a little patience!
 
+Command-line options include:
+
+--silent
+--fullscreen
+--showfps (in title bar if windowed)
+--restart (game is saved/loaded automatically; this overwrites the existing save)
+--slow (disables some effects; use this if your computer is slow)
+--doubletime (if the game is too slow-paced for you)
 
 HOW TO PLAY THE GAME:
 
-Move the cursor around the screen with the mouse.
+Use the mouse.
 
-Press the left mouse button to fire the ducks.
+Scroll by dragging or use the arrow keys or WASD.
 
+Hints and tips can be found in the file HINTS.txt
 
 
 LICENSE:
 
-This game skellington is placed in the Public Domain.
+The code for this game is placed in the Public Domain.
 
-
+ARTWORK LICENSE
+Clip art is CC0 (public domain), taken from:
 http://www.openclipart.org/detail/85753/red-axe-by-inky2010
 http://www.openclipart.org/detail/68/trash-can-by-andy
 http://www.openclipart.org/detail/3344/treble-clefs-by-zeimusu-3344
@@ -51,10 +67,12 @@ See the file data/suckgolf-README.TXT for license information
 http://www.fontspace.com/divide-by-zero/i-suck-at-golf
 
 MUSIC LICENSE:
+Music by Kevin MacLeod, released under CC-BY
+Specific songs are: Rocket, Killing Time, Itty Bitty 8 Bit, and Space Fighter Loop
+Find them at incompetech.com.
 
 SOUND LICENSE:
 Sounds were resampled from the following sources:
-
 "Pumpkin Guts Long" by MWLANDI - CC-SAMPLING+
 http://www.freesound.org/people/MWLANDI/sounds/85861/
 "Lazer" by THE bizniss - CC-SAMPLING+
