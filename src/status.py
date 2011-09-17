@@ -5,12 +5,12 @@ import vista, graphics, mechanics, font, settings
 
 class Meter(object):
     def __init__(self):
-        self.maxheight = 300
-        self.height = 5
-        self.goalheight = 5
-        self.baseimg = self.getimg(self.height)
+        self.maxheight = 1000
+        self.height = 60
+        self.goalheight = 60
+        self.baseimg = self.getimg(self.getlevel(self.height, False))
         self.bottom = self.left, settings.layout.meterbottom
-        self.amount = 0
+        self.amount = 60
 
     def setheight(self, height):
         if height == self.goalheight: return
@@ -31,7 +31,7 @@ class Meter(object):
             self.height += 50 * dt
         elif dh < 0:
             self.height -= 50 * dt
-        self.baseimg = self.getimg(self.height)
+        self.baseimg = self.getimg(self.getlevel(self.height, False))
 
     def meterpos(self, amount, bounded = True):
         """pixel coordinates corresponding to an amount on this meter"""
@@ -39,8 +39,8 @@ class Meter(object):
     
     def getlevel(self, amount = None, bounded = True):
         if amount is None: amount = self.amount
-        h = int(amount)
-        return int(max(min(amount, self.height), 0)) if bounded else h
+        h = int(self.maxheight * (1 - math.exp(-2. * amount / self.maxheight)))
+        return int(max(min(h, self.height), 0)) if bounded else h
     
     def draw(self):
         level = self.getlevel()

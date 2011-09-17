@@ -275,7 +275,7 @@ class BodyPart(object):
 
     def heal(self):
         dhp = self.hp0 - self.hp
-        if not dhp: return
+        if not dhp: return 0
         self.hp = self.hp0
         noise.play("heal")
         self.glowtime = 0.5

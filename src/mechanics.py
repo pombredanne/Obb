@@ -2,17 +2,17 @@ import random
 import vista
 
 vthreshold = 0.3  # Visibility threshold
-twinklerrate = 0.01  # Twinklers per unit area per second
-mutagenhit = 20  # How much you get when a twinkler hit a mutagenitor
-plasterhit = 20
-basemutagenrate = 4  # How fast it rises on its own
-basehealrate = 4
-mutagen0 = 40  # Base amount
-plaster0 = 10
+twinklerrate = 0.002  # Twinklers per unit area per second
+mutagenhit = 10  # How much you get when a twinkler hit a mutagenitor
+plasterhit = 10
+basemutagenrate = 1  # How fast it rises on its own
+basehealrate = 1
+mutagen0 = 60  # Base amount
+plaster0 = 20
 mutagenpodamount = 20
 plasterpodamount = 20
-baseloadrate = 1
-cubeloadrate = 4
+baseloadrate = 0.5
+cubeloadrate = 0.3
 
 # Permissable dedges for tiles
 # Conspicuous in its absense is a straight piece
@@ -67,7 +67,14 @@ colors["giantplasterpod"] = "app2"
 colors["cube"] = "app2"
 
 
-#costs = {"eye":30, "brain":60, "eyebrain": 120, "mutagenitor":80, "tripleeye": 0, "coil":20, "ball":50, "cube": 10}
 costs = {"mutagenitor":10, "zotter":20, "cube":30}
 costs = {"plasteritor":10, "giantplasteritor": 20}
+
+costs = {"eye":30, "brain":60, "eyebrain": 120, "mutagenitor":80, "tripleeye": 0, "coil":20, "ball":50, "cube": 10}
+
+costs = {"mutagenpod": 30, "eye": 40, "brain": 50, "mutagenitor": 60,
+         "plasterpod": 70, "cube": 80 }
+
+
+
 

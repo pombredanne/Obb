@@ -38,7 +38,7 @@ iconpos["heal"] = 803, 370
 
 
 
-tzoom0 = 120  # Default tile size
+tzoom0 = 400  # Default tile size
 zooms = 16, 24, 32, 40, 48, 60, 72
 zoom0 = 48
 largebuildicon = tzoom0
