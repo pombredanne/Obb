@@ -1,5 +1,5 @@
 import pygame, random, math
-import vista, mechanics, noise, data, settings, twinkler
+import vista, mechanics, noise, data, settings, twinkler, graphics
 
 
 def getimg(name, cache = {}):
@@ -12,7 +12,7 @@ def getshotimg(zoom, angle = 0, cache = {}):
     zoom  = int(zoom)
     key = zoom, angle
     if key in cache: return cache[key]
-    cache[key] = pygame.transform.rotozoom(getimg("shot"), angle, float(zoom) / 240.)
+    cache[key] = pygame.transform.rotozoom(getimg("shot"), angle, float(zoom) / 400.)
     return cache[key]
 
 spoils = []  # Twinklers that get created when you kill an enemy
@@ -41,6 +41,7 @@ class Shot(object):
         self.hp = self.hp0
         self.angle = 0
         self.omega = random.uniform(30, 120) * (1 if random.random() < 0.5 else -1)
+        self.traj = math.degrees(math.atan2(self.dx, -self.dy))
 
     def think(self, dt):
         self.t -= dt
@@ -85,6 +86,9 @@ class Ship(Shot):
     """A shot that spawns more shots. Yikes!"""
     shieldprob = 1
     shotrange = 6
+    shottime = 5
+    hp0 = 12
+    v0 = 1.5
 
     def shoot(self, target):
         """Fire a bullet"""
@@ -104,7 +108,7 @@ class Ship(Shot):
         return nearest
 
     def think(self, dt):
-        if int(self.t - dt) != int(self.t):
+        if int(self.shottime * (self.t - dt)) != int(self.shottime * (self.t)):
             target = self.randomtarget()
             if target:
                 self.shoot(target)
@@ -115,7 +119,7 @@ class Ship(Shot):
 
     def draw(self):
         pos = vista.worldtoview((self.x, self.y))
-        img = vista.Surface(20, 20, (255, 255, 255))
+        img = graphics.shipimg(self.traj)
         vista.screen.blit(img, img.get_rect(center = pos))
 
 
@@ -137,7 +141,8 @@ def newshots(body):
     for part in body.parts:
         if not part.targetable: continue
         wx, wy = part.worldpos
-        p = 1 - math.exp(-(wx ** 2 + wy ** 2) / 2000)
+        w2 = wx ** 2 + wy ** 2
+        p = 1 - math.exp(-w2 / 8000)
         if settings.barrage:
             p = 0.5
         if random.random() > p: continue

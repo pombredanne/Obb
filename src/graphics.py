@@ -1033,6 +1033,20 @@ def dustcloudimg(angle = 0, alpha = 1, R = 1, cache = {}):
     cache[key] = img
     return cache[key]
 
+def shipimg(angle = 0, cache = {}):
+    z = int(vista.zoom)
+    angle = int((angle + 2.5) % 360) / 5 * 5
+    key = z, angle
+    if key in cache:
+        return cache[key]
+    if "base" not in cache:
+        cache["base"] = pygame.image.load(data.filepath("ship.png")).convert_alpha()
+    img = pygame.transform.rotozoom(cache["base"], angle, float(z) / 150.)
+    cache[key] = img
+    return cache[key]
+
+
+
 
 def mouthimg(n = 0, cache = {}):
     z = int(0.7 * vista.zoom)
