@@ -65,7 +65,9 @@ to the game.
 
 LICENSE:
 
-The code for this game is placed in the Public Domain.
+The code for this game by Christopher Night is placed in the Public Domain.
+
+The "fixes" module is by Greg Ewing. See fixes.py for details.
 
 ARTWORK LICENSE
 Clip art is CC0 (public domain), taken from:
