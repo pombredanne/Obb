@@ -601,7 +601,7 @@ spherecircles = SphereCircles()
 class OrganCircles(Circles):
     def getargs(self, growth = 1, edge0 = 3, r0 = 0.05, width = 0.3, lvector = (-1,-1,2)):
         segs = min(int(growth * 6), 3)
-        R = growth - 0.5
+        R = int(growth * 8) / 8. - 0.5
         return R, edge0, segs, r0, width, tuple(lvector)
 
     def getcircles(self, R, edge0, segs, r0, width, lvector):
@@ -645,7 +645,7 @@ def eyeball(R, edge0 = 3, blink = 1, color = (0, 255, 0), cache = {}):
 class EyeCircles(ColorCircles):
     def getargs(self, growth = 1, edge0 = 3, blink = 1, r0 = 0.05, width = 0.3, lvector = (-1,-1,2)):
         segs = min(int(growth * 6), 3)
-        R = growth - 0.5
+        R = int(growth * 8) / 8. - 0.5
         return R, edge0, segs, r0, width, tuple(lvector)
 
     def getcircles(self, R, edge0, segs, r0, width, lvector):
@@ -673,6 +673,7 @@ eye = EyeCircles()
 class TripleEyeCircles(ColorCircles):
     def getargs(self, growth = 1, edge0 = 3, blink = 1, r0 = 0.05, width = 0.3, lvector = (-1,-1,2)):
         segs = min(int(growth * 6), 3)
+        growth = int(growth * 8) / 8.
         R = (growth - 0.5) * 0.7
         return R, edge0, segs, r0, width, tuple(lvector)
 
@@ -727,6 +728,7 @@ lobecircles = LobeCircles()
 class BrainCircles(ColorCircles):
     def getargs(self, growth = 1, edge0 = 3, Rfac = 1, lvector = (-1,-1,2)):
         segs = min(int(growth * 6), 3)
+        growth = int(growth * 8) / 8.
         R = (growth - 0.5) * Rfac
         r0 = 0.05
         width = 0.3
@@ -757,6 +759,7 @@ brain = BrainCircles()
 class EyeBrainCircles(BrainCircles):
     def getargs(self, growth = 1, edge0 = 3, blink = 1, lvector = (-1,-1,2)):
         segs = min(int(growth * 6), 3)
+        growth = int(growth * 8) / 8.
         R = growth - 0.5
         if growth != 1: blink = 1
         r0 = 0.05
@@ -792,6 +795,7 @@ eyebrain = EyeBrainCircles()
 class ShieldCircles(ColorCircles):
     def getargs(self, growth = 1, edge0 = 3, lvector = (-1,-1,2)):
         segs = min(int(growth * 6), 3)
+        growth = int(growth * 8) / 8.
         R0 = growth - 0.6
         R1 = growth - 0.8
         r0 = 0.05
