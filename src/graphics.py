@@ -3,6 +3,7 @@
 import pygame, math, random
 from pygame.locals import *
 import vista, settings, mechanics, data
+from fixes import pixels_alpha
 
 colors = {}
 colors["app0"] = 0, 0.8, 0.4, 1
@@ -70,7 +71,7 @@ def filtersurface(surf, x, y, z, a=1):
     if x != 1: arr[...,0] *= x
     if y != 1: arr[...,1] *= y
     if z != 1: arr[...,2] *= z
-    if a != 1: pygame.surfarray.pixels_alpha(surf)[:] *= a
+    if a != 1: pixels_alpha(surf)[:] *= a
 
 def filtercolorsurface(surf, (x0,y0,z0,a0), (x1,y1,z1,a1)=(0,0,0,0), (x2,y2,z2,a2)=(0,0,0,0)):
     arr = pygame.surfarray.pixels3d(surf)
@@ -81,7 +82,7 @@ def filtercolorsurface(surf, (x0,y0,z0,a0), (x1,y1,z1,a1)=(0,0,0,0), (x2,y2,z2,a
     arr[...,1] = g
     arr[...,2] = b
     # TODO: what to do about transparency here??
-    if a0 != 1: pygame.surfarray.pixels_alpha(surf)[:] *= a0
+    if a0 != 1: pixels_alpha(surf)[:] *= a0
 
 
 def maketransparent(surf):
@@ -1029,7 +1030,7 @@ def dustcloudimg(angle = 0, alpha = 1, R = 1, cache = {}):
         cache["base"].blit(img0, img0.get_rect(center = cache["base"].get_rect().center))
     img = pygame.transform.rotozoom(cache["base"], angle, float(z) / settings.tzoom0)
     if alpha != 1:
-        pygame.surfarray.pixels_alpha(img)[:] *= alpha
+        pixels_alpha(img)[:] *= alpha
     cache[key] = img
     return cache[key]
 
@@ -1055,7 +1056,7 @@ def heartimg(alpha = 1, cache = {}):
         cache["base"] = pygame.image.load(data.filepath("heart.png")).convert_alpha()
     img = pygame.transform.smoothscale(cache["base"], (z, z))
     if alpha != 1:
-        pygame.surfarray.pixels_alpha(img)[:] *= alpha
+        pixels_alpha(img)[:] *= alpha
     cache[key] = img
     return cache[key]
 

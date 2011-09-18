@@ -1,6 +1,7 @@
 import pygame, math
 from pygame.locals import *
 import vista, mechanics
+from fixes import pixels_alpha
 
 class Mask(object):
     """A fog-of-war style mask (black with a variable alpha)"""
@@ -71,7 +72,7 @@ class Mask(object):
     def alphacopy(self):
         """Copy from pixel data in the blue surface to the alpha
         channel of the main surface"""
-        pygame.surfarray.pixels_alpha(self.surf)[:,:] = 255 - pygame.surfarray.array2d(self.blue)
+        pixels_alpha(self.surf)[:,:] = 255 - pygame.surfarray.array2d(self.blue)
 
     def getmask(self, (x0, y0, x1, y1), (sx, sy)):
         """Return a piece of the mask that covers the rectangle of given

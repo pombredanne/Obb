@@ -10,6 +10,7 @@ class Meter(object):
         self.goalheight = 60
         self.baseimg = None
         self.amount = 60
+        self.rect = pygame.Rect(0,0,0,0)
     
     def __getstate__(self):
         d = dict(self.__dict__)
