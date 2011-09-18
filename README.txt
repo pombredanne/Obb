@@ -39,6 +39,14 @@ Command-line options include:
 --slow (disables some effects; use this if your computer is slow)
 --doubletime (if the game is too slow-paced for you)
 
+Default resolution is 854x480. The following command-line options change
+the resolution:
+
+--small : 640x360
+--big : 1068x600
+--huge : 1280x720
+
+
 HOW TO PLAY THE GAME:
 
 Use the mouse.
@@ -46,6 +54,13 @@ Use the mouse.
 Scroll by dragging or use the arrow keys or WASD.
 
 Hints and tips can be found in the file HINTS.txt
+
+This is a sandbox game. There's no way to die and no way to win. Feel
+free to quit whenever you feel like it. There are 18 organs total. If
+you unlock all 18, and you survive for a few minutes with 70 or so
+organs built (lower-right corner), you've seen pretty much all there is
+to the game.
+
 
 
 LICENSE:

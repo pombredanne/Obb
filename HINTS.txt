@@ -7,6 +7,10 @@ two aspects, you won't do well in the game. So don't come complaining to
 me if the tile placing got in the way of your tower defensing, because
 it's an essential part of the game. :)
 
+Take some time getting used to the interface. Make sure you understand
+what each piece does, because it might be helpful in your strategy.
+
+
 Tile placement tips:
 
 You want to make as many branches as possible whenever possible. You
@@ -34,7 +38,7 @@ Finally, don't hesitate to chop pieces off and try again!
 Real-time strategy tips:
 
 So, it's not the most awesomely balanced tower defense in the world, but
-it's okay. There are a couple of tiles you can ignore. Cubes are not
+it's okay. There are a couple of organs you can ignore. Cubes are not
 really essential. Many of the organs will be obsoleted by later ones.
 Don't hesitate to replace them if you need the real estate.
 
