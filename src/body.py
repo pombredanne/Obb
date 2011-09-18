@@ -103,7 +103,7 @@ class Body(object):
 
     def canaddpart(self, part):
         tiles, edges = part.claimedsets()
-        if part.controlneed + self.control > self.maxcontrol: return False
+        if part.controlneed and part.controlneed + self.control > self.maxcontrol: return False
         if any(tile in self.takentiles for tile in tiles): return False
         if any(edge in self.takenedges for edge in edges): return False
         return True

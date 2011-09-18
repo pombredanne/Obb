@@ -170,7 +170,7 @@ class Status(object):
     def select(self, name = None):
         self.selected = name if name != self.selected else None
         for icon in self.mutagenmeter.icons:
-            icon.selected = icon.name == name
+            icon.selected = icon.name == self.selected
 
     def build(self):
         assert self.selected

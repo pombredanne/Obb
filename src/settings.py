@@ -17,18 +17,24 @@ trashonrightclick = True  # Trash a tile by right-clicking on it
 panonrightclick = False   # Jump to a position by right-clicking on viewport
 panondrag = True  # Move the viewport by left-click and dragging
 
+# Overall game window
+sx, sy = 854, 480
+
 fac = 1
 if "--small" in sys.argv:
     fac = 0.75
+    sx, sy = 640, 360
 elif "--big" in sys.argv:
     fac = 1.25
+    sx, sy = 1068, 600
 elif "--huge" in sys.argv:
     fac = 1.5
+    sx, sy = 1280, 720
 def f(*args):
     return int(fac * args[0]) if len(args) == 1 else [int(fac*arg) for arg in args]
 
-# Overall game window
-size = sx, sy = f(854, 480)
+
+size = sx, sy
 # Main game viewport
 vsize = vx, vy = f(480), sy
 vx0, vy0 = f(187), 0

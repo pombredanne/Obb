@@ -1,4 +1,4 @@
-import pygame, math, datetime, collections, random
+import pygame, math, datetime, collections, random, os
 from pygame.locals import *
 import settings, data, tip
 
@@ -198,6 +198,7 @@ def clear(color = (0, 0, 0)):
 
 
 def screencap():
+    if not os.path.exists("screenshots"): os.mkdir("screenshots")
     dstr = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
     pygame.image.save(_screen, "screenshots/screenshot-%s.png" % dstr)
 

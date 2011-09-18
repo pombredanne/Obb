@@ -16,6 +16,12 @@ class Play(context.Context):
         self.clearselections()
         self.clickat = None
 
+    def __getstate__(self):
+        d = dict(self.__dict__)
+        d["paused"] = False
+        d["pscreen"] = None
+        return d
+
     def think(self, dt, events, keys, mousepos, buttons):
 
         if self.paused:

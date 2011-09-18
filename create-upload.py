@@ -32,7 +32,7 @@ except RuntimeError:
     package = zipfile.ZipFile(zipname, 'w')
 
 # core files
-for name in 'README.txt run_game.py'.split():
+for name in 'README.txt HINTS.txt obb.png run_game.py'.split():
     package.write(name, os.path.join(base, name))
 package.write('run_game.py', os.path.join(base, 'run_game.pyw'))
 
@@ -52,7 +52,7 @@ def add_files(generator):
             package.write(filename, os.path.join(base, filename))
 
 # add the lib and data directories
-add_files(os.walk('gamelib'))
+add_files(os.walk('src'))
 add_files(os.walk('data'))
 
 # calculate MD5
