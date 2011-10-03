@@ -87,4 +87,11 @@ class Panel(object):
         self.ages[jtile] = -6
         self.selected = None
 
+    def trashtile(self, jtile = None):
+        if jtile is None: jtile = self.selected
+        if jtile is not None:
+            self.panel.claimtile(jtile)
+            noise.play("trash")
+
+
 

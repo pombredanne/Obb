@@ -1,26 +1,15 @@
 import pygame, random
 from pygame.locals import *
-import vista, context, body, settings, panel, status, noise, twinkler, enemy, graphics, tip, mechanics
+import vista, context, settings, noise, enemy, graphics, tip, mechanics, game
 
 class Play(context.Context):
     def __init__(self):
-        self.body = body.Body()
-        self.panel = panel.Panel(self.body)
-        self.status = status.Status(self.body)
         self.edgepoint = None
-        self.twinklers = []
-        self.shots = []
         self.paused = False
         self.target = None
         self.healmode = False
         self.clearselections()
         self.clickat = None
-
-    def __getstate__(self):
-        d = dict(self.__dict__)
-        d["paused"] = False
-        d["pscreen"] = None
-        return d
 
     def think(self, dt, events, keys, mousepos, buttons):
 
@@ -33,16 +22,16 @@ class Play(context.Context):
         if vista.vrect.collidepoint(mousepos):
             edge = vista.grid.nearestedge(vista.screentoworld(mousepos))
             if edge != self.edgepoint:
-                if self.panel.selected is not None:
-                    appspec = self.panel.tiles[self.panel.selected]
-                    self.parttobuild = self.body.canplaceapp(edge, appspec)
-                elif self.status.selected is not None:
-                    otype = self.status.selected
-                    self.parttobuild = self.body.canplaceorgan(edge, otype)
+                if game.state.panel.selected is not None:
+                    appspec = game.state.panel.tiles[game.state.panel.selected]
+                    self.parttobuild = game.state.body.canplaceapp(edge, appspec)
+                elif game.state.status.selected is not None:
+                    otype = game.state.status.selected
+                    self.parttobuild = game.state.body.canplaceorgan(edge, otype)
                 if self.parttobuild is not None:
                     worldpos = vista.HexGrid.edgeworld(*edge)
-                    visible = self.body.mask.isvisible(worldpos)
-                    self.canbuild = self.body.canaddpart(self.parttobuild) and visible
+                    visible = game.state.body.mask.isvisible(worldpos)
+                    self.canbuild = game.state.body.canaddpart(self.parttobuild) and visible
                     self.parttobuild.status = "ghost" if self.canbuild else "badghost"
         else:
             edge = None
@@ -52,14 +41,14 @@ class Play(context.Context):
         for event in events:
             if event.type == KEYDOWN and event.key == K_SPACE:
                 if settings.debugkeys:
-                    self.body.addrandompart()
+                    game.state.body.addrandompart()
             if event.type == KEYDOWN and event.key == K_BACKSPACE:
                 if settings.debugkeys:
-                    self.body.addrandompart(20)
+                    game.state.body.addrandompart(20)
             if event.type == KEYDOWN and event.key == K_v:
                 if settings.debugkeys:
                     wpos = vista.screentoworld(mousepos)
-                    print "Visibility:", self.body.mask.visibility(wpos)
+                    print "Visibility:", game.state.body.mask.visibility(wpos)
             if event.type == KEYUP and event.key == K_x:
                 if settings.debugkeys:
                     if self.target is not None:
@@ -81,7 +70,7 @@ class Play(context.Context):
             tip.settip(self.choosetip(mousepos))
 
         if keys[K_F5] and settings.debugkeys:
-            self.body.addrandompart()
+            game.state.body.addrandompart()
 
         if (keys[K_x] and settings.debugkeys) or self.cutmode:
             newtarget = self.pointchildbyedge(mousepos)
@@ -92,8 +81,8 @@ class Play(context.Context):
                 if self.target is not None:
                     self.target.setbranchstatus("target")
         elif self.healmode:
-            self.body.sethealstatus()
-            self.target = self.body.nearestorgan(vista.screentoworld(mousepos))
+            game.state.body.sethealstatus()
+            self.target = game.state.body.nearestorgan(vista.screentoworld(mousepos))
         elif self.target is not None:
             self.target.setbranchstatus()
             self.target = None
@@ -102,27 +91,8 @@ class Play(context.Context):
         vista.icons["cut"].selected = self.cutmode
         vista.icons["heal"].selected = self.healmode
 
-        self.body.think(dt, self.status.healmeter)
-        self.panel.think(dt)
-        self.status.think(dt, mousepos)
-        self.twinklers += twinkler.newtwinklers(self.body.mask, dt)
-        for t in self.twinklers:
-            t.think(dt)
-        self.twinklers = [t for t in self.twinklers if t.alive()]
-        self.body.claimtwinklers(self.twinklers)
-        self.body.attackenemies(self.shots)
-        if random.random() < dt:
-            self.shots += enemy.newshots(self.body)
-        for s in self.shots: s.think(dt)
-        self.shots = [s for s in self.shots if s.alive()]
-        self.status.setheights(self.body.maxmutagen, self.body.maxplaster)
-        self.status.mutagenmeter.amount += self.body.checkmutagen()
-        self.status.healmeter.amount += self.body.checkplaster()
+        game.state.think(dt, mousepos)
         tip.think(dt)
-        self.twinklers += enemy.spoils
-        del enemy.spoils[:]
-        self.shots += enemy.spawnedshots
-        del enemy.spawnedshots[:]
 
     def pause(self):
         self.paused = True
@@ -141,12 +111,12 @@ class Play(context.Context):
         self.parttobuild = None
         self.iconclicked = None
         if clearpanel:
-            self.panel.selecttile()
+            game.state.panel.selecttile()
         if clearstatus:
-            self.status.select()
+            game.state.status.select()
         if clearheal:
             if self.healmode:
-                self.body.core.setbranchstatus()
+                game.state.body.core.setbranchstatus()
             self.healmode = False
         if clearcut:
             self.cutmode = False
@@ -159,12 +129,10 @@ class Play(context.Context):
         if abs(x0-x1) + abs(y0-y1) > 25:
             return
     
-        bicon = self.status.iconpoint(mousepos)  # Any build icons pointed to
+        bicon = game.state.status.iconpoint(mousepos)  # Any build icons pointed to
         vicon = vista.iconhit(mousepos)  # Any vista icons pointed to
         if vicon == "trash":
-            if self.panel.selected is not None:
-                self.panel.claimtile()
-                noise.play("trash")
+            game.state.panel.trashtile()
             self.clearselections()
         elif vicon == "zoomin":
             vista.zoomin()
@@ -175,7 +143,7 @@ class Play(context.Context):
         elif vicon == "music":
             noise.nexttrack()
         elif vicon == "heal":
-            self.body.core.setbranchstatus()
+            game.state.body.core.setbranchstatus()
             if self.healmode:
                 self.clearselections()
             else:
@@ -191,24 +159,24 @@ class Play(context.Context):
                     self.cutmode = True
         elif vista.prect.collidepoint(mousepos):  # Click on panel
             self.clearselections(clearpanel = False)
-            jtile = self.panel.iconp(mousepos)
+            jtile = game.state.panel.iconp(mousepos)
             if jtile in (None, 0, 1, 2, 3, 4, 5):
-                self.panel.selecttile(jtile)
+                game.state.panel.selecttile(jtile)
         elif bicon is not None:
             self.clearselections(clearstatus = False)
-            self.status.select(bicon.name)
+            game.state.status.select(bicon.name)
         elif vista.vrect.collidepoint(mousepos):
             if self.cutmode and self.target is not None:
                 self.target.die()
                 self.clearselections()
             elif self.healmode and self.target is not None:
                 self.target.autoheal = not self.target.autoheal
-            elif self.parttobuild is not None and self.canbuild and self.body.canaddpart(self.parttobuild):
-                if self.panel.selected is not None:
-                    self.panel.claimtile()
-                if self.status.selected is not None:
-                    self.status.build()
-                self.body.addpart(self.parttobuild)
+            elif self.parttobuild is not None and self.canbuild and game.state.body.canaddpart(self.parttobuild):
+                if game.state.panel.selected is not None:
+                    game.state.panel.claimtile()
+                if game.state.status.selected is not None:
+                    game.state.status.build()
+                game.state.body.addpart(self.parttobuild)
                 self.clearselections()
             else:
                 worldpos = vista.screentoworld(mousepos)
@@ -216,12 +184,11 @@ class Play(context.Context):
                     settings.showtips = not settings.showtips
                     noise.play("addpart")
 
-
     def choosetip(self, mousepos):
-        bicon = self.status.iconpoint(mousepos)  # Any build icons pointed to
+        bicon = game.state.status.iconpoint(mousepos)  # Any build icons pointed to
         vicon = vista.iconhit(mousepos)  # Any vista icons pointed to
         if vicon == "trash":
-            if self.panel.selected is not None:
+            if games.state.panel.selected is not None:
                 return "click this to get rid of stalk and get new one"
             else:
                 return "if you no like a stalk, click on stalk then click here to get new one. or you can right-click on stalk, it faster"
@@ -240,29 +207,30 @@ class Play(context.Context):
         elif vicon == "cut":
             return "no like a stalk or a organ on me body? use this to get rid of it! it okay, me not get hurt"
         elif vista.prect.collidepoint(mousepos):
-            jtile = self.panel.iconp(mousepos)
+            jtile = game.state.panel.iconp(mousepos)
             if jtile in (0, 1, 2, 3, 4, 5):
                 return "these me stalk options, har har har! can grow stalks where colors match. try make lots of branches."
             else:
-                return self.panel.choosetip(mousepos)
+                return game.state.panel.choosetip(mousepos)
         elif bicon is not None:
             return mechanics.info[bicon.name]
         elif vista.vrect.collidepoint(mousepos):
             worldpos = vista.screentoworld(mousepos)
             if vista.HexGrid.nearesttile(worldpos) == (0,0):
                 return "click me mouth to turn me tips on or off"
-            organ = self.body.nearestorgan(worldpos)
+            # TODO: help on pointing to organs?
+#            organ = game.state.body.nearestorgan(worldpos)
         elif vista.rrect.collidepoint(mousepos):
-            return self.status.choosetip(mousepos)
+            return game.state.status.choosetip(mousepos)
 
     def handlerightclick(self, mousepos):
         if vista.prect.collidepoint(mousepos):  # Click on panel
             self.clearselections()
             if settings.trashonrightclick:
-                jtile = self.panel.iconp(mousepos)
+                jtile = game.state.panel.iconp(mousepos)
                 if jtile in (0, 1, 2, 3, 4, 5):
-                    self.panel.selecttile(jtile)
-                    self.panel.claimtile()
+                    game.state.panel.selecttile(jtile)
+                    game.state.panel.claimtile()
                     noise.play("trash")
         elif vista.vrect.collidepoint(mousepos):  # Click on main window
             if settings.panonrightclick:
@@ -284,9 +252,9 @@ class Play(context.Context):
     def pointchildbyedge(self, screenpos):
         edge = vista.grid.nearestedge(vista.screentoworld(screenpos))
         edge = vista.grid.normedge(*edge)
-        if edge not in self.body.takenedges:
+        if edge not in game.state.body.takenedges:
             return None
-        parent = self.body.takenedges[edge]
+        parent = game.state.body.takenedges[edge]
         if edge not in parent.buds:
             edge = vista.grid.opposite(*edge)
         return parent.buds[edge]
@@ -298,16 +266,9 @@ class Play(context.Context):
             pygame.display.flip()
             return
         vista.clear()
-        if self.panel.selected is not None or self.status.selected is not None:
-            self.body.tracehexes()
-        self.body.draw()
+        game.state.draw()
         if self.parttobuild is not None:
             self.parttobuild.draw()
-        for t in self.twinklers: t.draw()
-        for s in self.shots: s.draw()
-        vista.addmask(self.body.mask)
-        self.panel.draw()
-        self.status.draw()
         vista.flip()
 
 
