@@ -2,5 +2,7 @@ syntax: glob
 
 *.pyc
 *savegame.pkl
+*savegame-*.pkl
+obb-map*.png
 
 

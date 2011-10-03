@@ -158,6 +158,8 @@ class Status(object):
         self.control = 5
         self.maxcontrol = 10
         self.brainimg = None
+        self.brainrect = pygame.Rect(0,0,0,0)
+        self.controlrect = pygame.Rect(0,0,0,0)
 
     def __getstate__(self):
         d = dict(self.__dict__)

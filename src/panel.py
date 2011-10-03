@@ -10,6 +10,8 @@ class Panel(object):
         self.ages = [-2, -2.4, -2.8, -3.2, -3.6, -4.0]
         self.centers = None
         self.selected = None
+        self.cuberect = pygame.Rect(0,0,0,0)
+        self.ncuberect = pygame.Rect(0,0,0,0)
 
     def getlayout(self):
         ys = [(j*0.95+1)*settings.layout.ptilesize for j in (0,1,2,3,4,5)]

@@ -126,7 +126,7 @@ class Play(context.Context):
 
     def pause(self):
         self.paused = True
-        self.pscreen = graphics.ghostify(vista._screen)
+        self.pscreen = graphics.ghostify(vista._screen.convert_alpha())
         noise.pause()
 
     def resume(self):

@@ -99,7 +99,7 @@ fast = "--doubletime" in sys.argv
 
 # Cheat
 unlockall = "--unlockall" in sys.argv   # Will probably only work if you restart
-debugkeys = False
+debugkeys = True
 
 showfps = "--showfps" in sys.argv
 saveonquit = True
