@@ -1,0 +1,691 @@
+changeset:   137:74166c77d9f0
+tag:         tip
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Sun Sep 18 23:34:28 2011 -0400
+summary:     Make Obb map script
+
+changeset:   136:63440870d185
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Sun Sep 18 22:41:13 2011 -0400
+summary:     Version 3 and 4 zips
+
+changeset:   135:985c252b28f9
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Sun Sep 18 13:50:20 2011 -0400
+summary:     Fixing potential memory leak
+
+changeset:   134:d06c7c3d1b49
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Sun Sep 18 11:51:47 2011 -0400
+summary:     README updated - version 3
+
+changeset:   133:432d2296abe2
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Sun Sep 18 11:47:50 2011 -0400
+summary:     Fixed bug in mutagenmeter rect
+
+changeset:   132:78b9817432ac
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Sun Sep 18 11:47:10 2011 -0400
+summary:     Version 2 zip
+
+changeset:   131:dc1eb03ed66f
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Sat Sep 17 22:07:54 2011 -0400
+summary:     Various bugfixes for version 2
+
+changeset:   130:f948b04452d2
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Sat Sep 17 20:06:09 2011 -0400
+summary:     Added some more info to the readme
+
+changeset:   129:f9f150ff09e8
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Sat Sep 17 19:59:37 2011 -0400
+summary:     Readme and hints
+
+changeset:   128:e3868d2a7eec
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Sat Sep 17 19:34:17 2011 -0400
+summary:     Final tweaks
+
+changeset:   127:69f5124f6715
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Sat Sep 17 18:26:24 2011 -0400
+summary:     Lots of playtesting and tweaking
+
+changeset:   126:c3573470a4dc
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Sat Sep 17 15:45:45 2011 -0400
+summary:     Ship graphics
+
+changeset:   125:0e38c74374c2
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Sat Sep 17 15:13:12 2011 -0400
+summary:     Ship implemented
+
+changeset:   124:4eda490e2819
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Sat Sep 17 14:47:22 2011 -0400
+summary:     Selected icons brighten
+
+changeset:   123:d00df9326caa
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Sat Sep 17 14:28:40 2011 -0400
+summary:     First mouth frame
+
+changeset:   122:45a522374065
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Sat Sep 17 14:07:49 2011 -0400
+summary:     Destroyed shots turn to twinklers
+
+changeset:   121:bd64144fb427
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Sat Sep 17 14:00:20 2011 -0400
+summary:     Adding a bunch of clip art
+
+changeset:   120:ab6b23f7ce54
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Sat Sep 17 12:16:58 2011 -0400
+summary:     Framework for playing sounds
+
+changeset:   119:ac0cb5c0eac0
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Sat Sep 17 11:55:54 2011 -0400
+summary:     Dust clouds on damage and death
+
+changeset:   118:ec9d15b7c2b9
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Sat Sep 17 11:25:49 2011 -0400
+summary:     Different window sizes
+
+changeset:   117:bf61953fe799
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Sat Sep 17 11:00:11 2011 -0400
+summary:     Better glow effect based on twinkler
+
+changeset:   116:5e1ee2d24b9e
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Sat Sep 17 10:54:34 2011 -0400
+summary:     twinkler graphics moved to graphics module
+
+changeset:   115:63f5111be7be
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Sat Sep 17 10:40:34 2011 -0400
+summary:     Saving/loading implemented
+
+changeset:   114:64c4ea8d0e31
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Sat Sep 17 09:55:38 2011 -0400
+summary:     Icon layout and early game balancing
+
+changeset:   113:2fc5d531cb06
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Sat Sep 17 08:50:22 2011 -0400
+summary:     Heal mode implemented fully
+
+changeset:   112:fa42c3249b8b
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Sat Sep 17 08:26:49 2011 -0400
+summary:     Auto-heal working
+
+changeset:   111:36326ba4c275
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Sat Sep 17 04:48:30 2011 -0400
+summary:     Build icon tip descriptions
+
+changeset:   110:e48bfd23bd2b
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Sat Sep 17 04:28:40 2011 -0400
+summary:     Tips can be toggled
+
+changeset:   109:3994e76cf972
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Sat Sep 17 04:19:10 2011 -0400
+summary:     Thought balloons
+
+changeset:   108:7fbfeef71ee0
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Sat Sep 17 03:59:46 2011 -0400
+summary:     Word wrap on tips
+
+changeset:   107:f2cac89624a0
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Sat Sep 17 03:46:27 2011 -0400
+summary:     Beginning of tip system
+
+changeset:   106:1838f96f7003
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Sat Sep 17 02:35:48 2011 -0400
+summary:     Four gameplay area icons
+
+changeset:   105:76aa4bb970b3
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Sat Sep 17 01:31:04 2011 -0400
+summary:     Pan on drag
+
+changeset:   104:2610f515a5a1
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Sat Sep 17 01:17:58 2011 -0400
+summary:     Pan on right click (disabled by default)
+
+changeset:   103:89d8a6ea6ffb
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Sat Sep 17 01:07:52 2011 -0400
+summary:     Trash on right click
+
+changeset:   102:1ec58adcca58
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Sat Sep 17 00:57:30 2011 -0400
+summary:     Some balancing
+
+changeset:   101:694588776eb8
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Fri Sep 16 23:54:01 2011 -0400
+summary:     Font added and implemented
+
+changeset:   100:5ce6ae9ad49c
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Fri Sep 16 23:36:47 2011 -0400
+summary:     Splash screen (which I will not use)
+
+changeset:   99:a7c3dec8acc9
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Fri Sep 16 22:11:03 2011 -0400
+summary:     Giant generators
+
+changeset:   98:f35730b65366
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Fri Sep 16 21:39:40 2011 -0400
+summary:     Giant brains implemented
+
+changeset:   97:3453ed2389ce
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Fri Sep 16 20:55:55 2011 -0400
+summary:     Zotter implemented
+
+changeset:   96:a4a08f3f2aed
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Fri Sep 16 20:42:11 2011 -0400
+summary:     Shields now use mutagenitor icons
+
+changeset:   95:cacd1206853b
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Fri Sep 16 20:28:25 2011 -0400
+summary:     Layout coming along nicely
+
+changeset:   94:557f35c6752d
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Fri Sep 16 19:31:07 2011 -0400
+summary:     Mutagenitor and Plasteritor implemented
+
+changeset:   93:bb4a3cae1584
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Fri Sep 16 19:25:18 2011 -0400
+summary:     Generator graphics
+
+changeset:   92:edabefa1f671
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Fri Sep 16 18:29:08 2011 -0400
+summary:     Shots drawn
+
+changeset:   91:4134a72ca964
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Fri Sep 16 18:06:51 2011 -0400
+summary:     Functioning plaster pods
+
+changeset:   90:32fdba69d7ea
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Fri Sep 16 18:02:00 2011 -0400
+summary:     Mutagen pods function properly
+
+changeset:   89:f83e83b8c695
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Fri Sep 16 09:51:07 2011 -0400
+summary:     Heal mode implemented
+
+changeset:   88:45bbbc5e5d0d
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Fri Sep 16 09:18:33 2011 -0400
+summary:     Cutmode works
+
+changeset:   87:18dae2883542
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Fri Sep 16 08:49:03 2011 -0400
+summary:     Twinklers drawn
+
+changeset:   86:0f530098842a
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Fri Sep 16 08:29:57 2011 -0400
+summary:     Starbursters implemented
+
+changeset:   85:09e8c190a55d
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Fri Sep 16 08:17:15 2011 -0400
+summary:     Star graphics
+
+changeset:   84:6a8cb5df1172
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Fri Sep 16 01:00:40 2011 -0400
+summary:     Vista icons
+
+changeset:   83:43ea125867c8
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Fri Sep 16 00:30:45 2011 -0400
+summary:     Bulbs fight back
+
+changeset:   82:096be90a5622
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Thu Sep 15 22:40:43 2011 -0400
+summary:     Pulsability!
+
+changeset:   81:db6733b531f7
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Thu Sep 15 22:07:50 2011 -0400
+summary:     Scroll on arrows
+
+changeset:   80:262940253eb6
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Thu Sep 15 21:49:35 2011 -0400
+summary:     Cube organs
+
+changeset:   79:e0d9e245f7a9
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Thu Sep 15 21:19:20 2011 -0400
+summary:     Balls
+
+changeset:   78:2172505737e5
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Thu Sep 15 20:26:57 2011 -0400
+summary:     Improved shot probability
+
+changeset:   77:6a5b0ec831d9
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Thu Sep 15 20:06:53 2011 -0400
+summary:     Shots
+
+changeset:   76:bd9a79759cdd
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Thu Sep 15 19:35:34 2011 -0400
+summary:     Mutagen used when you build
+
+changeset:   75:9a5c4d5923e6
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Thu Sep 15 18:56:13 2011 -0400
+summary:     Twinklers
+
+changeset:   74:044e472f3362
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Thu Sep 15 18:09:58 2011 -0400
+summary:     Starfield
+
+changeset:   73:4889c6acfff8
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Thu Sep 15 17:50:49 2011 -0400
+summary:     Zoom in and out buttons
+
+changeset:   72:977abf6db14e
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Thu Sep 15 17:40:07 2011 -0400
+summary:     Coiled shield generator added
+
+changeset:   71:77158dafe03e
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Thu Sep 15 16:38:21 2011 -0400
+summary:     TripleEye implemented
+
+changeset:   70:d873eb0772cf
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Thu Sep 15 15:59:35 2011 -0400
+summary:     Loading bars on panel
+
+changeset:   69:1de46f3675d0
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Thu Sep 15 15:42:33 2011 -0400
+summary:     Body working with refactored graphics module
+
+changeset:   68:1baa064f7002
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Thu Sep 15 15:07:13 2011 -0400
+summary:     Eyebrain and helixmeter refactored
+
+changeset:   67:6fdd0acab4a9
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Thu Sep 15 14:00:54 2011 -0400
+summary:     PanelTiles refactored
+
+changeset:   66:de646bb9fd1f
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Thu Sep 15 13:38:44 2011 -0400
+summary:     More massive refactoring
+
+changeset:   65:572a9c9d6244
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Thu Sep 15 10:53:11 2011 -0400
+summary:     Appendages refactored
+
+changeset:   64:05767634a817
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Thu Sep 15 10:09:01 2011 -0400
+summary:     More methods moved into Circles subclasses
+
+changeset:   63:d82b547f8f6e
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Thu Sep 15 08:55:39 2011 -0400
+summary:     Refactored circle-generating functions
+
+changeset:   62:a8fcc99cf35d
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Thu Sep 15 03:21:46 2011 -0400
+summary:     Eyebrains!
+
+changeset:   61:ec95256daac0
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Thu Sep 15 02:50:18 2011 -0400
+summary:     Control enforced
+
+changeset:   60:878d3a5992c8
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Thu Sep 15 02:31:32 2011 -0400
+summary:     Status panel shows Control meter (not implemented)
+
+changeset:   59:e47c3451e703
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Thu Sep 15 02:15:53 2011 -0400
+summary:     BRAAAAIIIINS!!!
+
+changeset:   58:b19f1f076c8a
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Thu Sep 15 01:31:51 2011 -0400
+summary:     Trash icon works awesomely
+
+changeset:   57:142e55e9876f
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Thu Sep 15 01:23:28 2011 -0400
+summary:     Trash and cut icons appear on panel
+
+changeset:   56:75d10bd5c26c
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Thu Sep 15 01:13:34 2011 -0400
+summary:     Add parts!
+
+changeset:   55:57f4e54798fa
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Thu Sep 15 00:31:57 2011 -0400
+summary:     Icon clicking behaves properly
+
+changeset:   54:c664bf27df53
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Thu Sep 15 00:19:18 2011 -0400
+summary:     Active icons can be clicked on
+
+changeset:   53:425e5d3a39a4
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Thu Sep 15 00:15:55 2011 -0400
+summary:     Icon and mutagen meter tweaks
+
+changeset:   52:452dee86fcc8
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Thu Sep 15 00:05:40 2011 -0400
+summary:     Improved icon appearance
+
+changeset:   51:6760f3f200e1
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Wed Sep 14 22:58:18 2011 -0400
+summary:     Can't build in the dark
+
+changeset:   50:be4d20d778b6
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Wed Sep 14 22:47:02 2011 -0400
+summary:     mechanics module now houses Appspec
+
+changeset:   49:8fd8fdf1f77a
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Wed Sep 14 22:35:09 2011 -0400
+summary:     Resized mini screenshot
+
+changeset:   48:29b3ddea9002
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Wed Sep 14 22:23:57 2011 -0400
+summary:     Bluer side panels
+
+changeset:   47:45125462d6c4
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Wed Sep 14 22:07:38 2011 -0400
+summary:     Meter on right-hand panel is a freaking double helix
+
+changeset:   46:48650a7fa68d
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Wed Sep 14 19:02:56 2011 -0400
+summary:     Rising meter on the right
+
+changeset:   45:f9cf5b4d68a8
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Wed Sep 14 18:37:54 2011 -0400
+summary:     Right-hand panel is a thing
+
+changeset:   44:d776a103121d
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Wed Sep 14 17:40:52 2011 -0400
+summary:     vista.Surface used for making surfaces now
+
+changeset:   43:73cf48ce8eb7
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Wed Sep 14 09:28:54 2011 -0400
+summary:     Dying is the opposite of growing
+
+changeset:   42:5a9240d70ab5
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Wed Sep 14 03:39:34 2011 -0400
+summary:     Growtimers working for all body parts
+
+changeset:   41:ce390becf8ee
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Wed Sep 14 03:00:22 2011 -0400
+summary:     Fix bug in part adding
+
+changeset:   40:ab565e9040a8
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Wed Sep 14 02:50:54 2011 -0400
+summary:     You can build freaking appendages, yay!!
+
+changeset:   39:4d043422c4e6
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Wed Sep 14 02:14:21 2011 -0400
+summary:     Fixed screen to world conversion
+
+changeset:   38:25668b134ebb
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Wed Sep 14 01:39:53 2011 -0400
+summary:     Trace hexes when I feel like it
+
+changeset:   37:eea1aad4061a
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Wed Sep 14 01:15:20 2011 -0400
+summary:     Option for twistiness
+
+changeset:   36:1f7c1ad97ff0
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Wed Sep 14 01:01:15 2011 -0400
+summary:     Eyeballs blink
+
+changeset:   35:033d252fd315
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Wed Sep 14 00:35:29 2011 -0400
+summary:     Core (and everybody) using the graphics module rather
+
+changeset:   34:7c40287edd1e
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Tue Sep 13 23:56:42 2011 -0400
+summary:     Organs using new graphics module
+
+changeset:   33:c9ef41bd6102
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Tue Sep 13 23:12:52 2011 -0400
+summary:     Fixed issue with blitting to screen
+
+changeset:   32:e00f358a1135
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Tue Sep 13 22:32:05 2011 -0400
+summary:     Big refactor of graphics engine
+
+changeset:   31:26cc019a02a8
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Tue Sep 13 00:30:04 2011 -0400
+summary:     Can select tiles by clicking on them
+
+changeset:   30:6a3e68bc725f
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Tue Sep 13 00:14:05 2011 -0400
+summary:     Panel appears on left where you can click one of three tiles
+
+changeset:   29:519ab23501e6
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Mon Sep 12 23:28:52 2011 -0400
+summary:     Tiles drawable
+
+changeset:   28:a86db876297a
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Mon Sep 12 23:01:54 2011 -0400
+summary:     Left-hand panel
+
+changeset:   27:ec8dfedc5ab7
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Mon Sep 12 22:41:22 2011 -0400
+summary:     Mask is more forgiving
+
+changeset:   26:b04ef8a96ecc
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Mon Sep 12 22:36:21 2011 -0400
+summary:     View moves with mouse
+
+changeset:   25:6eb732a49f5c
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Mon Sep 12 22:12:14 2011 -0400
+summary:     Gameplay to world coordinates refactored
+
+changeset:   24:5c3471ca3f80
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Mon Sep 12 21:19:50 2011 -0400
+summary:     Screenshot showing blobby goodness
+
+changeset:   23:752a03efd1af
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Mon Sep 12 21:11:34 2011 -0400
+summary:     Basic spherical blobbiness
+
+changeset:   22:cf8d9c8a12f7
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Mon Sep 12 20:10:38 2011 -0400
+summary:     tile module
+
+changeset:   21:6b076cc17424
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Sun Sep 11 22:59:54 2011 -0400
+summary:     Added Leaf and Mutagenitor
+
+changeset:   20:0f7e282e14d8
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Sun Sep 11 22:52:49 2011 -0400
+summary:     Set branch status of body parts
+
+changeset:   19:092ee47d2eae
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Sun Sep 11 22:37:04 2011 -0400
+summary:     Three colorcodes implemented
+
+changeset:   18:fee2c11dd5d2
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Sun Sep 11 22:20:27 2011 -0400
+summary:     Add methods to vista to determine nearest edge pointed to
+
+changeset:   17:18644ec4d14d
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Sun Sep 11 21:08:18 2011 -0400
+summary:     Press V to print visibility
+
+changeset:   16:64727cce047e
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Sun Sep 11 20:57:23 2011 -0400
+summary:     Body parts blit from cached images
+
+changeset:   15:1cfd505e0dda
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Sun Sep 11 19:35:52 2011 -0400
+summary:     Re-enable mask
+
+changeset:   14:10b010eb95be
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Sun Sep 11 19:21:15 2011 -0400
+summary:     Mask object moved to its own module
+
+changeset:   13:ecec385051e7
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Sun Sep 11 13:08:14 2011 -0400
+summary:     Screenshots have timestamp
+
+changeset:   12:646a78669d40
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Sun Sep 11 12:59:18 2011 -0400
+summary:     Stalks follow Bezier curves
+
+changeset:   11:e51ff61fb876
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Sun Sep 11 12:33:17 2011 -0400
+summary:     Body parts now claim tiles and edges
+
+changeset:   10:85ac333ce531
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Sun Sep 11 11:45:08 2011 -0400
+summary:     Refactor Mask class
+
+changeset:   9:7df629ed00a6
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Sun Sep 11 03:34:01 2011 -0400
+summary:     Okay really Day 1 screenshot
+
+changeset:   8:752731c1b979
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Sun Sep 11 03:33:47 2011 -0400
+summary:     Day 1 screenshot
+
+changeset:   7:267540876d15
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Sun Sep 11 03:24:11 2011 -0400
+summary:     Mask class
+
+changeset:   6:760a64dd2bca
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Sat Sep 10 22:33:15 2011 -0400
+summary:     Organ base class
+
+changeset:   5:a0a9158b3915
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Sat Sep 10 22:16:54 2011 -0400
+summary:     Buds added to body parts
+
+changeset:   4:e65f615f4c44
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Sat Sep 10 21:53:23 2011 -0400
+summary:     Body and Core classes
+
+changeset:   3:fe923b780e49
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Sat Sep 10 21:24:21 2011 -0400
+summary:     Screen-to-tile conversions in HexGrid
+
+changeset:   2:ab90988f7a75
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Sat Sep 10 21:06:08 2011 -0400
+summary:     Play context
+
+changeset:   1:a9012da05c40
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Sat Sep 10 20:35:13 2011 -0400
+summary:     Main loop
+
+changeset:   0:356d1efd58ce
+user:        Christopher Night <cosmologicon@gmail.com>
+date:        Sat Sep 10 20:15:06 2011 -0400
+summary:     Loaded up skellington and .hgignore
+
