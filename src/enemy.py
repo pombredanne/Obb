@@ -1,5 +1,5 @@
 import pygame, random, math
-import vista, mechanics, noise, data, settings, twinkler, graphics
+import vista, mechanics, noise, data, settings, twinkler, graphics, status
 
 
 def getimg(name, cache = {}):
@@ -141,7 +141,7 @@ def newshots(body):
             y += random.uniform(-1, 1)
         return x, y
 
-    dw = body.control / 10.
+    dw = status.state.control / 10.
     
 
     for part in body.parts:

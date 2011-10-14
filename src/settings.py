@@ -57,6 +57,7 @@ class layout:
     cubeiconpos = f(42, 36)
     ptilesize = f(48) # Size of selectable tiles in the panel
     ptiley = f(70)  # Offset position of top tile
+    tilerollx = f(300)
     buildiconsize = f(36)
     buildiconxs = f(752, 752-36, 752-2*36)
 

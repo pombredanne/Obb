@@ -1,6 +1,6 @@
 import pygame, random
 from pygame.locals import *
-import vista, context, settings, noise, enemy, graphics, tip, mechanics, game
+import vista, context, settings, noise, graphics, tip, mechanics, game, status, panels
 
 class Play(context.Context):
     def __init__(self):
@@ -22,11 +22,11 @@ class Play(context.Context):
         if vista.vrect.collidepoint(mousepos):
             edge = vista.grid.nearestedge(vista.screentoworld(mousepos))
             if edge != self.edgepoint:
-                if game.state.panel.selected is not None:
-                    appspec = game.state.panel.tiles[game.state.panel.selected]
+                if panels.selectedtile is not None:
+                    appspec = status.state.tiles[panels.selectedtile]
                     self.parttobuild = game.state.body.canplaceapp(edge, appspec)
-                elif game.state.status.selected is not None:
-                    otype = game.state.status.selected
+                elif panels.selectedorgan is not None:
+                    otype = panels.selectedorgan
                     self.parttobuild = game.state.body.canplaceorgan(edge, otype)
                 if self.parttobuild is not None:
                     worldpos = vista.HexGrid.edgeworld(*edge)
@@ -91,10 +91,12 @@ class Play(context.Context):
         vista.icons["cut"].selected = self.cutmode
         vista.icons["heal"].selected = self.healmode
 
-        game.state.think(dt, mousepos)
+        game.state.think(dt)
+        status.state.think(dt)
         tip.think(dt)
 
     def pause(self):
+        # TODO: add a menu
         self.paused = True
         self.pscreen = graphics.ghostify(vista._screen.convert_alpha())
         noise.pause()
@@ -110,10 +112,7 @@ class Play(context.Context):
         self.target = None
         self.parttobuild = None
         self.iconclicked = None
-        if clearpanel:
-            game.state.panel.selecttile()
-        if clearstatus:
-            game.state.status.select()
+        panels.selecticon()
         if clearheal:
             if self.healmode:
                 game.state.body.core.setbranchstatus()
@@ -122,17 +121,52 @@ class Play(context.Context):
             self.cutmode = False
 
     def handleleftclick(self, mousepos):
-
+        # TODO: handle dragging more reliably
         if self.clickat is None:  # It's a drag
             return
         (x0, y0), (x1, y1) = self.clickat, mousepos
         if abs(x0-x1) + abs(y0-y1) > 25:
             return
     
-        bicon = game.state.status.iconpoint(mousepos)  # Any build icons pointed to
         vicon = vista.iconhit(mousepos)  # Any vista icons pointed to
+        if vicon is not None:
+            self.handleiconclick(vicon)
+            return
+
+        bicon = panels.iconpoint(mousepos)  # Any panel tile or icon pointed to
+        if bicon is not None:
+            panels.selecticon(bicon)
+            return
+
+
+        # Click on the main gameplay area
+        if vista.vrect.collidepoint(mousepos):
+            if self.cutmode and self.target is not None:
+                self.target.die()
+                self.clearselections()
+            elif self.healmode and self.target is not None:
+                self.target.autoheal = not self.target.autoheal
+            elif self.parttobuild is not None and self.canbuild and game.state.body.canaddpart(self.parttobuild):
+                if panels.selectedtile is not None:
+                    panels.claimtile()
+                if panels.selectedorgan is not None:
+                    panels.claimorgan()
+                game.state.body.addpart(self.parttobuild)
+                self.clearselections()
+            else:
+                worldpos = vista.screentoworld(mousepos)
+                if vista.HexGrid.nearesttile(worldpos) == (0,0):
+                    settings.showtips = not settings.showtips
+                    noise.play("addpart")
+            return
+        
+        # Click on one of the panels
+        self.clearselections()
+
+
+    def handleiconclick(self, vicon):
         if vicon == "trash":
-            game.state.panel.trashtile()
+            panels.claimtile()
             self.clearselections()
         elif vicon == "zoomin":
             vista.zoomin()
@@ -157,38 +191,13 @@ class Play(context.Context):
                 self.clearselections()
                 if vista.icons["cut"].active:
                     self.cutmode = True
-        elif vista.prect.collidepoint(mousepos):  # Click on panel
-            self.clearselections(clearpanel = False)
-            jtile = game.state.panel.iconp(mousepos)
-            if jtile in (None, 0, 1, 2, 3, 4, 5):
-                game.state.panel.selecttile(jtile)
-        elif bicon is not None:
-            self.clearselections(clearstatus = False)
-            game.state.status.select(bicon.name)
-        elif vista.vrect.collidepoint(mousepos):
-            if self.cutmode and self.target is not None:
-                self.target.die()
-                self.clearselections()
-            elif self.healmode and self.target is not None:
-                self.target.autoheal = not self.target.autoheal
-            elif self.parttobuild is not None and self.canbuild and game.state.body.canaddpart(self.parttobuild):
-                if game.state.panel.selected is not None:
-                    game.state.panel.claimtile()
-                if game.state.status.selected is not None:
-                    game.state.status.build()
-                game.state.body.addpart(self.parttobuild)
-                self.clearselections()
-            else:
-                worldpos = vista.screentoworld(mousepos)
-                if vista.HexGrid.nearesttile(worldpos) == (0,0):
-                    settings.showtips = not settings.showtips
-                    noise.play("addpart")
+        
 
     def choosetip(self, mousepos):
-        bicon = game.state.status.iconpoint(mousepos)  # Any build icons pointed to
+        bicon = panels.iconpoint(mousepos)  # Any build icons pointed to
         vicon = vista.iconhit(mousepos)  # Any vista icons pointed to
         if vicon == "trash":
-            if games.state.panel.selected is not None:
+            if panels.selectedtile is not None:
                 return "click this to get rid of stalk and get new one"
             else:
                 return "if you no like a stalk, click on stalk then click here to get new one. or you can right-click on stalk, it faster"
@@ -206,31 +215,26 @@ class Play(context.Context):
             return "me organs will use ooze to heal when they get hurt. if you want some organs not to take ooze, click here to change them"
         elif vicon == "cut":
             return "no like a stalk or a organ on me body? use this to get rid of it! it okay, me not get hurt"
-        elif vista.prect.collidepoint(mousepos):
-            jtile = game.state.panel.iconp(mousepos)
-            if jtile in (0, 1, 2, 3, 4, 5):
-                return "these me stalk options, har har har! can grow stalks where colors match. try make lots of branches."
-            else:
-                return game.state.panel.choosetip(mousepos)
         elif bicon is not None:
-            return mechanics.info[bicon.name]
+            if bicon in range(mechanics.ntiles):
+                return "these me stalk options, har har har! can grow stalks where colors match. try make lots of branches."
+            return None # TODO: tips for organs and ncubes
         elif vista.vrect.collidepoint(mousepos):
             worldpos = vista.screentoworld(mousepos)
             if vista.HexGrid.nearesttile(worldpos) == (0,0):
                 return "click me mouth to turn me tips on or off"
             # TODO: help on pointing to organs?
 #            organ = game.state.body.nearestorgan(worldpos)
-        elif vista.rrect.collidepoint(mousepos):
-            return game.state.status.choosetip(mousepos)
+#        elif vista.rrect.collidepoint(mousepos):
+#            return game.state.status.choosetip(mousepos)
 
     def handlerightclick(self, mousepos):
         if vista.prect.collidepoint(mousepos):  # Click on panel
             self.clearselections()
             if settings.trashonrightclick:
-                jtile = game.state.panel.iconp(mousepos)
-                if jtile in (0, 1, 2, 3, 4, 5):
-                    game.state.panel.selecttile(jtile)
-                    game.state.panel.claimtile()
+                jtile = panels.iconpoint(mousepos)
+                if jtile in range(mechanics.ntiles):
+                    panels.claimtile(jtile)
                     noise.play("trash")
         elif vista.vrect.collidepoint(mousepos):  # Click on main window
             if settings.panonrightclick:
@@ -267,6 +271,7 @@ class Play(context.Context):
             return
         vista.clear()
         game.state.draw()
+        panels.draw()
         if self.parttobuild is not None:
             self.parttobuild.draw()
         vista.flip()

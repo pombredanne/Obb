@@ -1,20 +1,25 @@
+# Settings that relate to the game mechanics
+
 import random
 import vista, settings
 
 vthreshold = 0.2  # Visibility threshold
 twinklerrate = 0.004  # Twinklers per unit area per second
 mutagenhit = 6  # How much you get when a twinkler hit a mutagenitor
-plasterhit = 5
+oozehit = 5
+
+# TODO: incorporate limits on mutagen and ooze
 basemutagenrate = 0.5  # How fast it rises on its own
 basehealrate = 0.3
 mutagen0 = 65  # Base amount
 if settings.unlockall:
     mutagen0 = 300
-plaster0 = 20
+ooze0 = 20
 mutagenpodsize = 15
-plasterpodsize = 15
-baseloadrate = 0.5
-cubeloadrate = 0.3
+oozepodsize = 15
+tileloadtime = 12.
+baseloadrate = 1.
+cubeloadrate = 0.6
 shieldradius = 4
 bulbrange = 10
 zotterrange = 4
@@ -25,9 +30,11 @@ starrange = 6
 
 eyelightradius = 7
 corelightradius = 7
-braincontrol = 6
-corecontrol = 6
+braincontrol = 6  # How much maxcontrol a brain gives you
+corecontrol = 6   # How much maxcontrol you start with
 
+ntiles = 6
+tilecolors = [0, 0, 1, 1, 2, 2]
 
 # Permissable dedges for tiles
 #dedgesets = [(1,), (2,), (4,), (5,),
@@ -85,11 +92,6 @@ colors["plasterpod"] = "app2"
 colors["giantplasterpod"] = "app2"
 colors["cube"] = "app2"
 
-
-costs = {"mutagenitor":10, "zotter":20, "cube":30}
-costs = {"plasteritor":10, "giantplasteritor": 20}
-
-costs = {"eye":30, "brain":60, "eyebrain": 120, "mutagenitor":80, "tripleeye": 0, "coil":20, "ball":50, "cube": 10}
 
 costs = {
          "mutagenitor": 20,

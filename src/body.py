@@ -1,6 +1,6 @@
 import pygame, random, math
 from pygame.locals import *
-import vista, mask, graphics, mechanics, noise
+import vista, mask, graphics, mechanics, noise, status
 
 class Body(object):
     def __init__(self, (x, y) = (0, 0)):
@@ -15,14 +15,8 @@ class Body(object):
         self.takentiles = {}
         self.takenedges = {}
         self.takenbuds = {}
-        self.calccontrol()
 
         self.mask = None
-        self.mutagen = 0
-        self.maxmutagen = mechanics.mutagen0
-        self.plaster = 0
-        self.maxplaster = mechanics.plaster0
-        self.ncubes = 0
 
         self.core = Core(self, (x, y))
         self.addpart(self.core)
@@ -53,23 +47,6 @@ class Body(object):
             added += 1
             if added == n: return n
         return added
-
-    def calccontrol(self):
-        self.control = 0
-        self.maxcontrol = 0
-        for part in self.parts:
-            self.control += part.controlneed
-            self.maxcontrol += part.control
-
-    def checkmutagen(self):
-        x = self.mutagen
-        self.mutagen = 0
-        return x
-
-    def checkplaster(self):
-        x = self.plaster
-        self.plaster = 0
-        return x
 
     def nearestorgan(self, pos):
         """Nearest organ to the given world position"""
@@ -103,7 +80,7 @@ class Body(object):
 
     def canaddpart(self, part):
         tiles, edges = part.claimedsets()
-        if part.controlneed and part.controlneed + self.control > self.maxcontrol: return False
+        if not status.enoughcontrol(part): return False
         if any(tile in self.takentiles for tile in tiles): return False
         if any(edge in self.takenedges for edge in edges): return False
         return True
@@ -121,7 +98,6 @@ class Body(object):
         if part.lightradius > 0 and self.mask is not None:
             self.mask.addp(*part.lightcircle())
             vista.setgrect(self.mask.bounds())
-        self.calccontrol()
         if part.suction:
             self.suckers.append(part)
         if part.attacker:
@@ -131,9 +107,7 @@ class Body(object):
         vista.icons["cut"].active = len(self.parts) > 1
         if isinstance(part, Organ):
             self.organs[(part.x, part.y)] = part
-        self.maxmutagen += part.mutagen
-        self.maxplaster += part.plaster
-        self.ncubes += part.ncubes
+        status.addpart(part)
         if not isinstance(part, Core):
             noise.play("addpart")
 
@@ -158,7 +132,6 @@ class Body(object):
         assert part not in self.takenedges.values()
         if part.lightradius > 0:
             self.mask = None
-        self.calccontrol()
         if part in self.suckers:
             self.suckers.remove(part)
         if part in self.attackers:
@@ -169,9 +142,7 @@ class Body(object):
         vista.icons["cut"].active = len(self.parts) > 1
         if isinstance(part, Organ):
             del self.organs[(part.x, part.y)]
-        self.maxmutagen -= part.mutagen
-        self.maxplaster -= part.plaster
-        self.ncubes -= part.ncubes
+        status.removepart(part)
 
     def removebranch(self, part):
         """Remove a part and all its children"""
@@ -180,7 +151,7 @@ class Body(object):
                 self.removebranch(child)
         self.removepart(part)
 
-    def think(self, dt, meter):
+    def think(self, dt):
         shallheal = int(self.tick + dt) != int(self.tick)
         self.tick += dt
         for part in self.parts:
@@ -189,19 +160,19 @@ class Body(object):
             self.remakemask()
             vista.setgrect(self.mask.bounds())
         if shallheal:
-            self.trytoheal(meter)
+            self.trytoheal()
 
-    def trytoheal(self, meter):
+    def trytoheal(self):
         toheal = [part for part in self.organs.values() if part.targetable and part.autoheal and part.hp < part.hp0]
         if not toheal: return
         random.shuffle(toheal)
         for part in toheal:
-            available = int(meter.amount)
+            available = int(status.state.ooze)
             if not available:
                 return
             dhp = min(available, part.hp0 - part.hp)
             part.heal(dhp)
-            meter.amount -= dhp
+            status.useooze(dhp)
 
     def sethealstatus(self):
         for part in self.organs.values():
@@ -243,24 +214,23 @@ class Body(object):
 
 
 class BodyPart(object):
-    lightradius = 0  # How much does this part extend your visibility
+    lightradius = 0  # How much does this part extend your visibility?
     draworder = 0
     growtime = 0
     dietime = 0.1
-    control = 0
-    controlneed = 0
-    shield = 0
-    suction = False
-    targetable = False
-    autoheal = True
-    pulsefreq = 0
-    hp0 = 0
-    attacker = False
+    maxcontrol = 0   # How much control does this part give you?
+    control = 0      # How much control does this part require?
+    shield = 0       # Radius of this part's shield
+    suction = False  # Does this part suck in twinklers?
+    targetable = False  # Do enemies attack this part?
+    autoheal = True  # Is this part set to heal automatically?
+    hp0 = 0          # Starting health of this part
+    attacker = False    # Does this part attack enemies?
     glowtime = 0
     hearttime = 0
-    mutagen = 0
-    plaster = 0
-    ncubes = 0
+    maxmutagen = 0   # How much does this part contribute to the mutagen store?
+    maxooze = 0      # How much does this part contribute to the ooze store?
+    ncubes = 0       # How many cubes is this part worth?
     def __init__(self, body, parent, (x,y), edge = 0):
         self.body = body
         self.parent = parent
@@ -295,9 +265,6 @@ class BodyPart(object):
                 if self.dietimer < 0:
                     self.body.removepart(self)
                     noise.play("addpart")
-        else:
-            if self.hp0 and self.hp < self.hp0:
-                self.pulsefreq = 1. - float(self.hp) / self.hp0
         if self.hp < self.hp0:
             self.adddust(40 * dt * (1. - float(self.hp) / self.hp0))
         self.glowtime = max(self.glowtime - dt, 0)
@@ -326,7 +293,6 @@ class BodyPart(object):
         self.hp = self.hp0
         noise.play("heal")
         self.hearttime = 1
-        self.pulsefreq = 0
         return dhp
 
     def die(self):
@@ -404,8 +370,6 @@ class BodyPart(object):
             self.lastkey = key
             self.img = self.draw0(*key)
         img = self.img
-#        if self.pulsefreq:
-#            img = self.pulseredimg(self.img, self.pulsefreq)
         px, py = vista.worldtoview((wx, wy))
         if self.glowtime:
             self.drawglow((px, py), self.glowtime)
@@ -437,7 +401,7 @@ class Core(BodyPart):
     """The central core of the body, that has the funny mouth"""
     lightradius = mechanics.corelightradius
     growtime = 1.8
-    control = mechanics.corecontrol
+    maxcontrol = mechanics.corecontrol
     def __init__(self, body, (x,y) = (0,0)):
         BodyPart.__init__(self, body, None, (x,y), 0)
         for edge in range(6):  # One bud in each of six directions
@@ -481,7 +445,7 @@ class Organ(BodyPart):
     """A functional body part that terminates a stalk"""
     draworder = 2
     growtime = 0.3
-    controlneed = 1
+    control = 1
     targetable = True
     hp0 = 8
     def draw0(self, zoom, status, growth):
@@ -526,16 +490,16 @@ class TripleEye(Eye):
 
 class Brain(Organ):
     """Lets you control more organs"""
-    control = mechanics.braincontrol
-    controlneed = 0
+    maxcontrol = mechanics.braincontrol
+    control = 0
 
     def draw0(self, zoom, status, growth):
         return graphics.brain.img(zoom = zoom, growth = growth, color = status, edge0 = self.edge)
 
 class GiantBrain(Organ):
     """Lets you control even more organs"""
-    control = 2 * mechanics.braincontrol
-    controlneed = 0
+    maxcontrol = 2 * mechanics.braincontrol
+    control = 0
 
     def draw0(self, zoom, status, growth):
         return graphics.brain.giantimg(zoom = zoom, growth = growth, color = status, edge0 = self.edge)
@@ -549,24 +513,26 @@ class EyeBrain(Brain):
 
 
 class MutagenPod(Organ):
-    mutagen = mechanics.mutagenpodsize
+    maxmutagen = mechanics.mutagenpodsize
     def draw0(self, zoom, status, growth):
         return graphics.pod.imgmutagen(zoom = zoom, growth = growth, color = status, edge0 = self.edge)
 
 # By the way I couldn't think of what to call the stuff you heal yourself
 #   with so I went with plaster. But in the game it's called ooze.
+# Before that it was called "heal", which isn't even a noun.
+# TODO: replace all mentions of plaster and "heal" with ooze
 class PlasterPod(Organ):
-    plaster = mechanics.plasterpodsize
+    maxooze = mechanics.oozepodsize
     def draw0(self, zoom, status, growth):
         return graphics.pod.imgplaster(zoom = zoom, growth = growth, color = status, edge0 = self.edge)
 
 class GiantMutagenPod(Organ):
-    mutagen = 2 * mechanics.mutagenpodsize
+    maxmutagen = 2 * mechanics.mutagenpodsize
     def draw0(self, zoom, status, growth):
         return graphics.pod.giantimgmutagen(zoom = zoom, growth = growth, color = status, edge0 = self.edge)
 
 class GiantPlasterPod(Organ):
-    plaster = 2 * mechanics.plasterpodsize
+    maxooze = 2 * mechanics.oozepodsize
     def draw0(self, zoom, status, growth):
         return graphics.pod.giantimgplaster(zoom = zoom, growth = growth, color = status, edge0 = self.edge)
 
@@ -580,20 +546,20 @@ class Mutagenitor(Organ):
 
     def energize(self):
         if self.attached():
-            self.body.mutagen += self.amount
+            status.addmutagen(self.amount)
         self.glowtime = 0.5
 
 class Plasteritor(Organ):
     """Collects twinklers and generates mutagen"""
     suction = True
-    amount = mechanics.plasterhit
+    amount = mechanics.oozehit
 
     def draw0(self, zoom, status, growth):
         return graphics.generator.imgplaster(zoom = zoom, growth = growth, color = status, edge0 = self.edge)
 
     def energize(self):
         if self.attached():
-            self.body.plaster += self.amount
+            status.addooze(self.amount)
         self.glowtime = 0.5
 
 class GiantMutagenitor(Mutagenitor):
@@ -602,7 +568,7 @@ class GiantMutagenitor(Mutagenitor):
         return graphics.generator.giantimgmutagen(zoom = zoom, growth = growth, color = status, edge0 = self.edge)
 
 class GiantPlasteritor(Plasteritor):
-    amount = 3 * mechanics.plasterhit
+    amount = 3 * mechanics.oozehit
     def draw0(self, zoom, status, growth):
         return graphics.generator.giantimgplaster(zoom = zoom, growth = growth, color = status, edge0 = self.edge)
 

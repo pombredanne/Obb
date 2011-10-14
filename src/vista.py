@@ -7,7 +7,8 @@ import settings, data, tip
 
 # World coordinates: Zoom-level invariant coordinate system, where the
 #   gameplay happens. Distances between game object should be computed
-#   in this coordinate system.
+#   in this coordinate system. In world coordinates, the circumradius of
+#   a tile = the edge length of a tile = 1.
 # Hex coordinates: A skewed linear transform of world coordinates that
 #   maps the tile centers to (integer) lattice points. Since edges are
 #   midpoints between these, edges are obviously at half-integer
@@ -45,7 +46,7 @@ def Surface(x, y = None, color = None, alpha = True):
 
 icons = {}
 class Icon(object):
-    def __init__(self, name, color = (255, 255, 255)):  # TODO: replace with a real icon
+    def __init__(self, name, color = (255, 255, 255)):
         import graphics
         self.name = name
         size = settings.iconsize
@@ -104,8 +105,8 @@ def init():
     
 
 
-
-wx0, wy0, wx1, wy1 = -6, -6, 6, 6  # Maximum extent of gameplay window
+# Maximum extent of gameplay window (will be pretty much immediately overwritten)
+wx0, wy0, wx1, wy1 = -6, -6, 6, 6
 zoom = settings.zoom0
 gx0, gy0 = 0, 0  # Gameplay location of world coordinate (0,0)
 
@@ -228,6 +229,8 @@ def flip():
     tip.draw()
     pygame.display.flip()
 
+
+# TODO: move this monstrosity into a grid module
 s3 = math.sqrt(3.)
 class HexGrid(object):
     def __init__(self, p0 = None, a = 60):
