@@ -1,4 +1,5 @@
-import sys
+import sys, os, cPickle
+import data
 
 # Attention players: I can't guarantee that the game will run properly
 # if you mess with these settings. I haven't tested every possible
@@ -80,16 +81,7 @@ def setresolution(x, y = None):
 
     zoom0 = max(z for z in zooms if z <= f(48))
 
-if "--micro" in sys.argv:
-    setresolution(428, 240)
-elif "--small" in sys.argv:
-    setresolution(640, 360)
-elif "--big" in sys.argv:
-    setresolution(1068, 600)
-elif "--huge" in sys.argv:
-    setresolution(1280, 720)
-else:
-    setresolution(854, 480)
+setresolution(854, 480)
 
 showstars = True
 twisty = True  # Twisty paths
@@ -99,26 +91,66 @@ soundvolume = 0.5
 
 showtips = True
 
-
-silent = "--silent" in sys.argv or "--nosound" in sys.argv
-restart = "--restart" in sys.argv
-fullscreen = "--fullscreen" in sys.argv
-barrage = "--barrage" in sys.argv  # Loads of enemies. Not fun.
-if "--slow" in sys.argv:
-    showstars = False
-    tzoom0 = 72
-fast = "--doubletime" in sys.argv    
+silent = False
+restart = False
+fullscreen = False
+barrage = False  # Loads of enemies. Not fun.
+fast = False
 
 # Cheat
-unlockall = "--unlockall" in sys.argv   # Will probably only work if you restart
+unlockall = False   # Will probably only work if you restart
 debugkeys = True
 
-showfps = "--showfps" in sys.argv
+showfps = False
 saveonquit = True
 autosave = True
 savetimer = 15  # seconds between autosaves
 
 minfps, maxfps = 10, 60
+
+def applyargs():
+    global showfps, silent, restart, fullscreen, barrage
+    global showstars, tzoom0, fast, unlockall, debugkeys
+    if "--micro" in sys.argv:
+        setresolution(428, 240)
+    elif "--small" in sys.argv:
+        setresolution(640, 360)
+    elif "--big" in sys.argv:
+        setresolution(1068, 600)
+    elif "--huge" in sys.argv:
+        setresolution(1280, 720)
+    showfps = "--showfps" in sys.argv
+    silent = "--silent" in sys.argv or "--nosound" in sys.argv
+    restart = "--restart" in sys.argv
+    fullscreen = "--fullscreen" in sys.argv
+    barrage = "--barrage" in sys.argv  # Loads of enemies. Not fun.
+    if "--slow" in sys.argv:
+        showstars = False
+        tzoom0 = 72
+    fast = "--doubletime" in sys.argv    
+    unlockall = "--unlockall" in sys.argv
+    debugkeys = "--debugkeys" in sys.argv
+
+def savepath(filename = None):
+    if filename is None: filename = "settings.pkl"
+    return data.filepath(filename)
+
+def save(filename = None):
+    obj = sx, sy
+    cPickle.dump(obj, open(savepath(filename), "wb"))
+
+def load(filename = None):
+    global state
+    fpath = savepath(filename)
+    if os.path.exists(fpath):
+        obj = cPickle.load(open(fpath, "rb"))
+        sx, sy = obj
+        setresolution(sx, sy)
+
+if "--resetsettings" not in sys.argv:
+    load()
+applyargs()
+save()
 
 
 

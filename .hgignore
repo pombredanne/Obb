@@ -3,6 +3,7 @@ syntax: glob
 *.pyc
 *savegame.pkl
 *savegame-*.pkl
+*settings.pkl
 obb-map*.png
 
 
