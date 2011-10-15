@@ -79,6 +79,7 @@ musicicontext = None
 def init():
     global screen, _screen, vrect, prect, zoom, psurf, rsurf, rrect
     global stars
+    pygame.display.quit()
     flags = FULLSCREEN | HWSURFACE if settings.fullscreen else 0
     _screen = pygame.display.set_mode(settings.size, flags)
     screen = Surface(settings.size, alpha = False)

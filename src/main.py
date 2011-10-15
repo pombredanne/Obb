@@ -46,6 +46,12 @@ def main():
                 vista.screencap()
             if event.type == KEYDOWN and event.key == K_F9:  # Manual save
                 game.save()
+            if event.type == KEYDOWN and event.key == K_F10:  # Debug: change resolution and reload
+                game.save()
+                settings.sx, settings.sy = 1068, 600
+                settings.save()
+                settings.load()
+                vista.init()
 
         con.think(dt, events, keys, mousepos, buttons)
         con.draw()

@@ -961,7 +961,8 @@ def meter(img, level, color1 = (0.5, 0, 1), color0 = (0.2, 0.2, 0.2)):
     if z != 1: arr[...,:p,2] *= z
     return img2
 
-def icon(name, ghost = False, bright = False, size = settings.layout.buildiconsize, cache = {}):
+def icon(name, ghost = False, bright = False, size = None, cache = {}):
+    if size is None: size = settings.layout.buildiconsize
     key = name, ghost, bright, size
     if key in cache:
         return cache[key]
@@ -1013,7 +1014,8 @@ def thoughtcircles(sx, sy, cache = {}):
     cache[key] = circs
     return circs
 
-def thoughtbubble(h, w = settings.maxblockwidth, f = 1, cache = {}):
+def thoughtbubble(h, w = None, f = 1, cache = {}):
+    if w is None: w = settings.maxblockwidth
     m = settings.layout.tipmargin
     f = int(f * 10.) / 10.
     key = w, h, m, f

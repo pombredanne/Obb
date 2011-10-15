@@ -7,11 +7,11 @@ from itertools import chain
 # http://pygame.org/wiki/TextWrapping 
 
 def truncline(text, font, maxwidth):
-        real=len(text)       
-        stext=text           
+        real=len(text)
+        stext=text
         l=font.size(text)[0]
         cut=0
-        a=0                  
+        a=0
         done=1
         old = None
         while l > maxwidth:
@@ -23,23 +23,25 @@ def truncline(text, font, maxwidth):
             else:
                 stext = n
             l=font.size(stext)[0]
-            real=len(stext)               
-            done=0                        
-        return real, done, stext             
+            real=len(stext)
+            done=0
+        return real, done, stext
         
-def wrapline(text, font, maxwidth = settings.maxblockwidth): 
-    done=0                      
-    wrapped=[]                  
+def wrapline(text, font, maxwidth = None): 
+    if maxwidth is None: settings.maxblockwidth
+    done=0
+    wrapped=[]
                                
-    while not done:             
-        nl, done, stext=truncline(text, font, maxwidth) 
-        wrapped.append(stext.strip())                  
-        text=text[nl:]                                 
+    while not done:
+        nl, done, stext=truncline(text, font, maxwidth)
+        wrapped.append(stext.strip())
+        text=text[nl:]
     return wrapped
  
-def wrap_multi_line(text, font, maxwidth = settings.maxblockwidth):
+def wrap_multi_line(text, font, maxwidth = None):
     """ returns text taking new lines into account.
     """
+    if maxwidth is None: maxwidth = settings.maxblockwidth
     lines = chain(*(wrapline(line, font, maxwidth) for line in text.splitlines()))
     return list(lines)
 
