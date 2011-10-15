@@ -999,21 +999,35 @@ def brighten(img):
     arr[...] = arr[...] / 2 + 127
     return img2
 
-def thoughtbubble(h, w = settings.maxblockwidth, cache = {}):
-    key = w, h
-    if key in cache:
-        return cache[key]
+def thoughtcircles(sx, sy, cache = {}):
+    key = sx, sy
+    if key in cache: return cache[key]
     circs = []
-    for j in range(int(w*h*0.05)):
-        x = random.uniform(0, w)
-        y = random.uniform(0, h)
+    for j in range(int(sx*sy*10)):
+        x = random.uniform(-sx/2, sx/2)
+        y = random.uniform(-sy/2, sy/2)
         z = random.uniform(0.5, 1)
-        r = random.uniform(10, 20)
+        r = random.uniform(0.5, 1)
         g = z
         circs.append((z, x, y, r, g))
-    circs = normcircles(circs, 1, (20, 20))
-    img = vista.Surface(w+40, h+40)
+    cache[key] = circs
+    return circs
+
+def thoughtbubble(h, w = settings.maxblockwidth, f = 1, cache = {}):
+    m = settings.layout.tipmargin
+    f = int(f * 10.) / 10.
+    key = w, h, m, f
+    if key in cache:
+        return cache[key]
+    sx, sy = float(w)/m, float(h)/m
+    circs = thoughtcircles(sx, sy)
+    if f < 1: circs = circs[:int(len(circs)*f)]
+    g = 1 - 0.5 * (1 - f)
+    circs = normcircles(circs, g*m, ((1+sx/2)/g, (1+sy/2)/g))
+    img = vista.Surface(w+2*m, h+2*m)
     drawgraycircles(img, circs)
+    if f < 1:
+        filtersurface(img, 1, 1, 1, f)
     cache[key] = img
     return img
 
