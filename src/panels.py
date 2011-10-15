@@ -1,11 +1,11 @@
 # Draw the side panels, handle mouse events in these regions, and keep track
 #   of what body part we have selected, if any
 
-import vista, settings, mechanics, status, graphics
+import vista, settings, mechanics, status, graphics, font
 
 selectedtile = None
 selectedorgan = None
-buildrects = {}
+iconrects = {}
 
 def tilepos(jtile):
     cx = int(settings.px / 2 + (0.85 if jtile % 2 else -0.85) * settings.layout.ptilesize)
@@ -21,11 +21,14 @@ def getlevel(h):
 
 
 def draw():
-    # TODO: see how much of a speedup we get by caching the images here
+    global iconrects
+    iconrects = {}  # remember for pointing and clicking purposes
     drawtiles()
     drawmutagenmeter()
     drawoozemeter()
     drawbuildicons()
+    drawcubeicon()
+    drawcontrolicon()
 
 def drawtiles():
     loadrate = status.state.tileloadrate
@@ -57,6 +60,7 @@ def drawmutagenmeter():
     rect = img.get_rect()
     rect.midbottom = midbottom = settings.layout.mutagenmeterx, settings.layout.meterbottom
     vista.rsurf.blit(img, rect)
+    iconrects["mutagenmeter"] = rect.move(settings.rx0, settings.ry0)
 
 def drawoozemeter():
     height = getlevel(status.state.maxooze)
@@ -65,10 +69,9 @@ def drawoozemeter():
     rect = img.get_rect()
     rect.midbottom = midbottom = settings.layout.oozemeterx, settings.layout.meterbottom
     vista.rsurf.blit(img, rect)
+    iconrects["oozemeter"] = rect.move(settings.rx0, settings.ry0)
 
 def drawbuildicons():
-    global buildrects
-    buildrects = {}  # remember for pointing and clicking purposes
     otypes = sorted(mechanics.costs.items(), key = lambda (k,v): v)
     for j, (otype, cost) in enumerate(otypes):
         if status.state.maxmutagen < cost: continue
@@ -78,19 +81,43 @@ def drawbuildicons():
         selected = otype == selectedorgan
         img = graphics.icon(otype, ghost, selected)
         rect = img.get_rect(center = (x, y))
-        buildrects[otype] = rect
+        iconrects[otype] = rect
         vista.addoverlay(img, rect)
+
+def drawcubeicon():
+    img = graphics.cube.img(zoom = settings.layout.organcountsize, edge0 = 0)
+    rect1 = img.get_rect(center = settings.layout.cubeiconpos)
+    vista.psurf.blit(img, rect1)
+    color, size = (0,0,0), settings.layout.countsize
+    img = font.img(str(status.state.ncubes), size=size, color=color)
+    rect2 = img.get_rect(midleft = rect1.midright)
+    vista.psurf.blit(img, rect2)
+    iconrects["ncube"] = rect1.union(rect2).move(settings.px0, settings.py0)
+
+def drawcontrolicon():
+    img = graphics.brain.img(zoom = settings.layout.organcountsize)
+    rect1 = img.get_rect(bottomleft = settings.layout.brainiconpos)
+    vista.rsurf.blit(img, rect1)
+    color, size = (0,0,0), settings.layout.countsize
+    if status.state.control >= status.state.maxcontrol:
+        color, size = (128, 0, 0), int(size * 1.5)
+    text = "%s/%s" % (status.state.control, status.state.maxcontrol)
+    img = font.img(text, size=size, color=color)
+    rect2 = img.get_rect(midleft = settings.layout.controlpos)
+    vista.rsurf.blit(img, rect2)
+    iconrects["control"] = rect1.union(rect2).move(settings.rx0, settings.ry0)
+
 
 def iconpoint((mx, my)):
     """Return the index (int) of any tiles at this position, or the name
-    (str) of any build icons at this position, or None"""
+    (str) of any icons at this position, or None"""
     for jtile in range(mechanics.ntiles):
         cx, cy = tilepos(jtile)
         if (mx - cx) ** 2 + (my - cy) ** 2 < settings.layout.ptilesize ** 2:
             return jtile
-    for otype, rect in buildrects.items():
+    for icon, rect in iconrects.items():
         if rect.collidepoint((mx, my)):
-            return otype
+            return icon
     return None
 
 def selecticon(iconname = None):

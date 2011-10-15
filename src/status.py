@@ -15,7 +15,7 @@ class State(object):
         self.ncubes = 0
         # Organs use control, brains grant control
         self.control = 0
-        self.maxcontrol = mechanics.corecontrol
+        self.maxcontrol = 0
         # Amount of mutagen (used for adding organs)
         self.mutagen = self.maxmutagen = mechanics.mutagen0
         # Amount of ooze (used for healing)

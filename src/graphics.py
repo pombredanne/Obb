@@ -965,19 +965,22 @@ def icon(name, ghost = False, bright = False, size = settings.layout.buildiconsi
     key = name, ghost, bright, size
     if key in cache:
         return cache[key]
-    s = settings.largebuildicon
-    img = vista.Surface(s)
-    r, g, b, a = colors[mechanics.colors[name]]
-    color0 = int(r*255), int(g*255), int(b*255)
-    color1 = int(r*32), int(g*32), int(b*32)
-    img.fill(color0)
-    img.fill(color1, (6, 6, s-12, s-12))
-    import body
-    otype = body.otypes[name]
-    part = otype(None, None, (0, 0), 3)
-    partimg = part.draw0(zoom = int(s*.6), status = "", growth = 1)
-    img.blit(partimg, partimg.get_rect(center = img.get_rect().center))
-    img = pygame.transform.smoothscale(img, (size, size))
+    if ghost or bright:
+        img = icon(name, False, False, size)
+    else:
+        s = settings.largebuildicon
+        img = vista.Surface(s)
+        r, g, b, a = colors[mechanics.colors[name]]
+        color0 = int(r*255), int(g*255), int(b*255)
+        color1 = int(r*32), int(g*32), int(b*32)
+        img.fill(color0)
+        img.fill(color1, (6, 6, s-12, s-12))
+        import body
+        otype = body.otypes[name]
+        part = otype(None, None, (0, 0), 3)
+        partimg = part.draw0(zoom = int(s*.6), status = "", growth = 1)
+        img.blit(partimg, partimg.get_rect(center = img.get_rect().center))
+        img = pygame.transform.smoothscale(img, (size, size))
     if ghost: img = ghostify(img)
     if bright: img = brighten(img)
     cache[key] = img

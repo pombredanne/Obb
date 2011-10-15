@@ -218,6 +218,14 @@ class Play(context.Context):
         elif bicon is not None:
             if bicon in range(mechanics.ntiles):
                 return "these me stalk options, har har har! can grow stalks where colors match. try make lots of branches."
+            elif bicon == "ncube":
+                return "the more me have of that organ, the faster the new stalks come"
+            elif bicon == "control":
+                return "me need brains to grow. the more brains me have the more organs me can have"
+            elif bicon == "mutagenmeter":
+                return "that show how much mutagen me have. me like mutagen. it let me grow"
+            elif bicon == "oozemeter":
+                return "that show how much ooze me have. ooze let me fix organs when they get broke"
             elif bicon in mechanics.info:
                 return mechanics.info[bicon]
             return None # TODO: tips for organs and ncubes
