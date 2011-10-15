@@ -10,10 +10,11 @@ oozehit = 5
 
 # TODO: incorporate limits on mutagen and ooze
 basemutagenrate = 0.5  # How fast it rises on its own
-basehealrate = 0.3
+baseoozerate = 0.3
 mutagen0 = 65  # Base amount
+mutagenmax = 300
 if settings.unlockall:
-    mutagen0 = 300
+    mutagen0 = mutagenmax
 ooze0 = 20
 mutagenpodsize = 15
 oozepodsize = 15
@@ -136,7 +137,8 @@ info["giantplasteritor"] = "this organ absorb white energy and make even more oo
 info["giantplasterpod"] = "this organ hold lots of healing ooze"
 info["cube"] = "want stalk options to appear faster? grow this organ!"
 
-
+assert set(colors) == set(costs)
+assert set(costs) == set(info)
 
 
 

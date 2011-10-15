@@ -48,8 +48,8 @@ rx0, ry0 = px + vx, 0
 class layout:
     meterbottom = f(330)
     mutagenmeterx = f(124)
+    oozemeterx = f(160)
     metermaxy = f(300)
-    healmeterx = f(160)
     brainiconpos = f(-20, 486)
     controlpos = f(42, 450)
     countsize = f(60)  # Font size of counters

@@ -21,7 +21,7 @@ colors["cube"] = 0, 0.2, 1, 1
 colors["bulb"] = 1, 0.5, 0.5, 1
 colors["star"] = 1, 1, 0, 1
 colors["mutagen"] = 0, 1, 1, 0
-colors["plaster"] = 1, 1, 0, 1
+colors["ooze"] = 1, 1, 0, 1
 colors["zotter"] = 1, 1, 0, 1
 colors["bad"] = 1, 0, 0, 1
 colors["good"] = 0, 1, 0, 1
@@ -317,7 +317,7 @@ class PodCircles(ColorCircles):
             if color in colors: color = colors[color]
             return self.img(color, color, growth, edge0, Rfac, zoom)
         color0 = colors[mechanics.colors["plasterpod"]]
-        color1 = colors["plaster"]
+        color1 = colors["ooze"]
         return self.img(color0, color1, growth, edge0, Rfac, zoom)
 
     def giantimgmutagen(self, color = None, growth = 1, edge0 = 3, Rfac = 1.6, zoom = settings.tzoom0):
@@ -372,7 +372,7 @@ class GeneratorCircles(ColorCircles):
             if color in colors: color = colors[color]
             return self.img(color, color, growth, edge0, Rfac, zoom)
         color0 = colors[mechanics.colors["plasteritor"]]
-        color1 = colors["plaster"]
+        color1 = colors["ooze"]
         return self.img(color0, color1, growth, edge0, Rfac, zoom)
 
     def giantimgmutagen(self, color = None, growth = 1, edge0 = 3, Rfac = 1.6, zoom = settings.tzoom0):

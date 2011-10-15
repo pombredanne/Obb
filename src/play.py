@@ -218,6 +218,8 @@ class Play(context.Context):
         elif bicon is not None:
             if bicon in range(mechanics.ntiles):
                 return "these me stalk options, har har har! can grow stalks where colors match. try make lots of branches."
+            elif bicon in mechanics.info:
+                return mechanics.info[bicon]
             return None # TODO: tips for organs and ncubes
         elif vista.vrect.collidepoint(mousepos):
             worldpos = vista.screentoworld(mousepos)
@@ -225,8 +227,6 @@ class Play(context.Context):
                 return "click me mouth to turn me tips on or off"
             # TODO: help on pointing to organs?
 #            organ = game.state.body.nearestorgan(worldpos)
-#        elif vista.rrect.collidepoint(mousepos):
-#            return game.state.status.choosetip(mousepos)
 
     def handlerightclick(self, mousepos):
         if vista.prect.collidepoint(mousepos):  # Click on panel
