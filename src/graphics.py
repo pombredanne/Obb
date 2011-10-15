@@ -566,9 +566,11 @@ class PanelTile(Circles):
 
 paneltile = PanelTile()
 
-def drawpaneltile(dedges, color, tilt = 0):
-    img = paneltile.img(dedges, color, zoom = settings.layout.ptilesize)
-    return pygame.transform.rotate(img, -tilt) if tilt else img
+def drawpaneltile(dedges, color, tilt = 0, cache = {}):
+    key = tuple(dedges), color, settings.layout.ptilesize
+    if key not in cache:
+        cache[key] = paneltile.img(dedges, color, zoom = settings.layout.ptilesize)
+    return pygame.transform.rotate(cache[key], -tilt) if tilt else cache[key]
 
 
 class SphereCircles(Circles):
@@ -862,14 +864,19 @@ class HelixCircles(Circles):
 
 helixcircles = HelixCircles()
 
-def helixmeter(height, f=3):
+def helixmeter(height, f=3, cache={}):
+    key = height, f
+    if key in cache: return cache[key]
     img = vista.Surface(40*f, f*height)
     helixcircles.draw(img, f, (20, height), (0, -height))
     if f != 1:
         img = pygame.transform.smoothscale(img, (40, height))
+    cache[key] = img
     return img
 
-def stalkmeter(height, f=3):
+def stalkmeter(height, f=3, cache={}):
+    key = height, f
+    if key in cache: return cache[key]
     img = vista.Surface(40*f, f*height)
     h = height / 60.
     ps = []
@@ -882,6 +889,7 @@ def stalkmeter(height, f=3):
     stalkcircles.draw(img, 60*f, (1/3., h), ps, width=0.3)
     if f != 1:
         img = pygame.transform.smoothscale(img, (40, height))
+    cache[key] = img
     return img
 
 
@@ -953,8 +961,8 @@ def meter(img, level, color1 = (0.5, 0, 1), color0 = (0.2, 0.2, 0.2)):
     if z != 1: arr[...,:p,2] *= z
     return img2
 
-def icon(name, size = settings.layout.buildiconsize, cache = {}):
-    key = name, size
+def icon(name, ghost = False, bright = False, size = settings.layout.buildiconsize, cache = {}):
+    key = name, ghost, bright, size
     if key in cache:
         return cache[key]
     s = settings.largebuildicon
@@ -970,6 +978,9 @@ def icon(name, size = settings.layout.buildiconsize, cache = {}):
     partimg = part.draw0(zoom = int(s*.6), status = "", growth = 1)
     img.blit(partimg, partimg.get_rect(center = img.get_rect().center))
     img = pygame.transform.smoothscale(img, (size, size))
+    if ghost: img = ghostify(img)
+    if bright: img = brighten(img)
+    cache[key] = img
     return img
 
 def ghostify(img):

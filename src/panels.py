@@ -74,11 +74,9 @@ def drawbuildicons():
         if status.state.maxmutagen < cost: continue
         x = settings.layout.buildiconxs[j % len(settings.layout.buildiconxs)]
         y = settings.layout.meterbottom - getlevel(cost)
-        img = graphics.icon(otype)
-        if status.state.mutagen < cost:
-            img = graphics.ghostify(img)
-        elif otype == selectedorgan:
-            img = graphics.brighten(img)
+        ghost = status.state.mutagen < cost
+        selected = otype == selectedorgan
+        img = graphics.icon(otype, ghost, selected)
         rect = img.get_rect(center = (x, y))
         buildrects[otype] = rect
         vista.addoverlay(img, rect)
