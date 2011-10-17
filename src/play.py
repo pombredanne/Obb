@@ -1,24 +1,16 @@
 import pygame, random
 from pygame.locals import *
-import vista, context, settings, noise, graphics, tip, mechanics, game, status, panels
+import vista, context, settings, noise, graphics, tip, mechanics, game, status, panels, menu
 
 class Play(context.Context):
     def __init__(self):
         self.edgepoint = None
-        self.paused = False
         self.target = None
         self.healmode = False
         self.clearselections()
         self.clickat = None
 
     def think(self, dt, events, keys, mousepos, buttons):
-
-        if self.paused:
-            if any(e.type == KEYDOWN or e.type == MOUSEBUTTONDOWN for e in events):
-                self.resume()
-            return
-
-
         if vista.vrect.collidepoint(mousepos):
             edge = vista.grid.nearestedge(vista.screentoworld(mousepos))
             if edge != self.edgepoint:
@@ -95,17 +87,6 @@ class Play(context.Context):
         status.state.think(dt)
         tip.think(dt)
 
-    def pause(self):
-        # TODO: add a menu
-        self.paused = True
-        self.pscreen = graphics.ghostify(vista._screen.convert_alpha())
-        noise.pause()
-
-    def resume(self):
-        self.paused = False
-        self.pscreen = None
-        noise.resume()
-
     def clearselections(self, clearpanel = True, clearstatus = True, clearheal = True, clearcut = True):
         if self.target is not None:
             self.target.setbranchstatus()
@@ -173,7 +154,7 @@ class Play(context.Context):
         elif vicon == "zoomout":
             vista.zoomout()
         elif vicon == "pause":
-            self.pause()
+            context.push(menu.Menu())
         elif vicon == "music":
             noise.nexttrack()
         elif vicon == "heal":
@@ -273,10 +254,6 @@ class Play(context.Context):
         
 
     def draw(self):
-        if self.paused:
-            vista._screen.blit(self.pscreen, (0,0))
-            pygame.display.flip()
-            return
         vista.clear()
         game.state.draw()
         panels.draw()

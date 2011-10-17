@@ -864,20 +864,22 @@ class HelixCircles(Circles):
 
 helixcircles = HelixCircles()
 
-def helixmeter(height, f=3, cache={}):
-    key = height, f
+def helixmeter(height, w=None, f=3, cache={}):
+    if w is None: w = settings.layout.meterwidth
+    key = height, w, f
     if key in cache: return cache[key]
-    img = vista.Surface(40*f, f*height)
-    helixcircles.draw(img, f, (20, height), (0, -height))
+    img = vista.Surface(2*w*f, f*height)
+    helixcircles.draw(img, f, (w, height), (0, -height))
     if f != 1:
-        img = pygame.transform.smoothscale(img, (40, height))
+        img = pygame.transform.smoothscale(img, (2*w, height))
     cache[key] = img
     return img
 
-def stalkmeter(height, f=3, cache={}):
-    key = height, f
+def stalkmeter(height, w=None, f=3, cache={}):
+    if w is None: w = settings.layout.meterwidth
+    key = height, w, f
     if key in cache: return cache[key]
-    img = vista.Surface(40*f, f*height)
+    img = vista.Surface(2*w*f, f*height)
     h = height / 60.
     ps = []
     for y in range(int(h)+1):
@@ -886,9 +888,9 @@ def stalkmeter(height, f=3, cache={}):
         p2 = 0.15 * -math.sin((y+1)**2), -y-0.7
         p3 = 0, -y-1
         ps += cBezier(p0, p1, p2, p3)[:-1]
-    stalkcircles.draw(img, 60*f, (1/3., h), ps, width=0.3)
+    stalkcircles.draw(img, 3*w*f, (1/3., h), ps, width=0.3)
     if f != 1:
-        img = pygame.transform.smoothscale(img, (40, height))
+        img = pygame.transform.smoothscale(img, (2*w, height))
     cache[key] = img
     return img
 

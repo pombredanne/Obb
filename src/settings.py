@@ -1,4 +1,4 @@
-import sys, os, cPickle
+import sys, os, cPickle, pygame, math
 import data
 
 # Attention players: I can't guarantee that the game will run properly
@@ -53,6 +53,7 @@ def setresolution(x, y = None):
         mutagenmeterx = f(124)
         oozemeterx = f(160)
         metermaxy = f(300)
+        meterwidth = f(20)
         brainiconpos = f(-20, 486)
         controlpos = f(42, 450)
         countsize = f(60)  # Font size of counters
@@ -65,6 +66,10 @@ def setresolution(x, y = None):
         tilerollx = f(300)
         buildiconsize = f(36)
         buildiconxs = f(752, 752-36, 752-2*36)
+        menufont = f(32)
+        menudx = f(20)
+        menudy = f(20)
+        menubuttonmargin = f(6)
 
     iconsize = f(70)
     iconpos = {}
@@ -80,6 +85,30 @@ def setresolution(x, y = None):
     maxblockwidth = f(420)
 
     zoom0 = max(z for z in zooms if z <= f(48))
+
+def getresolutions():
+    pygame.display.init()
+    xmax, ymax = max(pygame.display.list_modes())
+    rs = []
+    ys = [240, 360, 480, 720, 1080]
+    while ys:
+        y = ys.pop(0)
+        x = int(math.ceil(8. * y / 9)) * 2
+        if x > xmax or y > ymax:
+            break
+        rs.append((x, y))
+    if not rs or (rs[-1][0] < xmax and rs[-1][1] < ymax):
+        y = ymax
+        x = int(math.ceil(8. * y / 9)) * 2
+        if x > xmax:
+            x = xmax
+            y = int(9 * x / 16)
+        rs.append((x, y))
+    return rs
+        
+
+    
+
 
 setresolution(854, 480)
 
@@ -136,22 +165,21 @@ def savepath(filename = None):
     return data.filepath(filename)
 
 def save(filename = None):
-    obj = sx, sy
+    obj = sx, sy, fullscreen
     cPickle.dump(obj, open(savepath(filename), "wb"))
 
 def load(filename = None):
-    global state
+    global fullscreen
     fpath = savepath(filename)
     if os.path.exists(fpath):
         obj = cPickle.load(open(fpath, "rb"))
-        sx, sy = obj
+        sx, sy, fullscreen = obj
         setresolution(sx, sy)
 
 if "--resetsettings" not in sys.argv:
     load()
 applyargs()
 save()
-
 
 
 
