@@ -67,9 +67,9 @@ def setresolution(x, y = None):
         buildiconsize = f(36)
         buildiconxs = f(752, 752-36, 752-2*36)
         menufont = f(32)
-        menudx = f(20)
-        menudy = f(20)
-        menubuttonmargin = f(6)
+        menudx = f(12)
+        menudy = f(12)
+        menubuttonmargin = f(3)
 
     iconsize = f(70)
     iconpos = {}
@@ -109,8 +109,8 @@ def getresolutions():
 
     
 
-
-setresolution(854, 480)
+rs = getresolutions()
+setresolution(*rs[-2 if len(rs) > 1 else -1])
 
 showstars = True
 twisty = True  # Twisty paths
@@ -124,7 +124,7 @@ silent = False
 restart = False
 fullscreen = False
 barrage = False  # Loads of enemies. Not fun.
-fast = False
+gamespeed = 1
 
 # Cheat
 unlockall = False   # Will probably only work if you restart
@@ -156,7 +156,7 @@ def applyargs():
     if "--slow" in sys.argv:
         showstars = False
         tzoom0 = 72
-    fast = "--doubletime" in sys.argv    
+    if "--doubletime" in sys.argv: gamespeed = 2.
     unlockall = "--unlockall" in sys.argv
     debugkeys = "--debugkeys" in sys.argv
 
@@ -165,15 +165,15 @@ def savepath(filename = None):
     return data.filepath(filename)
 
 def save(filename = None):
-    obj = sx, sy, fullscreen
+    obj = sx, sy, fullscreen, gamespeed, silent, showstars
     cPickle.dump(obj, open(savepath(filename), "wb"))
 
 def load(filename = None):
-    global fullscreen
+    global fullscreen, gamespeed, silent, showstars
     fpath = savepath(filename)
     if os.path.exists(fpath):
         obj = cPickle.load(open(fpath, "rb"))
-        sx, sy, fullscreen = obj
+        sx, sy, fullscreen, gamespeed, silent, showstars = obj
         setresolution(sx, sy)
 
 if "--resetsettings" not in sys.argv:

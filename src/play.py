@@ -154,6 +154,7 @@ class Play(context.Context):
         elif vicon == "zoomout":
             vista.zoomout()
         elif vicon == "pause":
+            game.save()
             context.push(menu.Menu())
         elif vicon == "music":
             noise.nexttrack()

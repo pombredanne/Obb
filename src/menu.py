@@ -36,16 +36,17 @@ class Button(object):
         vista._screen.blit(self.img, self.rect)
 
 class ButtonSet(object):
-    def __init__(self, texts, args, onconfirm, maxwidth):
+    def __init__(self, texts, args, maxwidth, onconfirm = None, onselects = None):
         self.buttons = []
         self.buttonmap = {}
-        for text, arg in zip(texts, args):
+        for j in range(len(texts)):
             # I swear I don't know a better way to do this
             # http://fora.xkcd.com/viewtopic.php?f=11&t=4052
-            f = (lambda z: (lambda: onconfirm(z)))(arg)
-            button = Button(text, self, onconfirm = f)
+            f = onconfirm and (lambda z: (lambda: onconfirm(z)))(args[j])
+            g = onselects and onselects[j]
+            button = Button(texts[j], self, onconfirm = f, onselect = g)
             self.buttons.append(button)
-            self.buttonmap[arg] = button
+            self.buttonmap[args[j] if args else texts[j]] = button
         self.rows = []
         width = 0
         for button in self.buttons:
@@ -85,28 +86,57 @@ class Menu(context.Context):
         self.background = graphics.ghostify(vista._screen.convert_alpha())
         self.cloudticker = 0
         self.active = True
-        maxwidth = settings.sx / 2
+        self.width = maxwidth = int(settings.sx * 0.75)
 
         rs = settings.getresolutions()
         rtexts = ["%sx%s" % res for res in rs]
         rescallback = lambda arg: settings.setresolution(*arg)
-        self.resbuttons = ButtonSet(rtexts, rs, rescallback, maxwidth)
+        self.resbuttons = ButtonSet(rtexts, rs, maxwidth, rescallback)
         self.resbuttons.buttonmap[settings.size].selected = True
 
         wargs = [False, True]
         wtexts = ["window mode", "fullscreen mode"]
         def wcallback(arg): settings.fullscreen = arg
-        self.wbuttons = ButtonSet(wtexts, wargs, wcallback, maxwidth)
+        self.wbuttons = ButtonSet(wtexts, wargs, maxwidth, wcallback)
         self.wbuttons.buttonmap[settings.fullscreen].selected = True
+
+        args = [0.5, 1., 2.]
+        texts = ["slow", "normal", "fast"]
+        def callback(arg): settings.gamespeed = arg
+        speedbuttons = ButtonSet(texts, args, maxwidth, callback)
+        speedbuttons.buttonmap[settings.gamespeed].selected = True
+
+        args = [False, True]
+        texts = ["sound on", "sound off"]
+        def callback(arg): settings.silent = arg
+        soundbuttons = ButtonSet(texts, args, maxwidth, callback)
+        soundbuttons.buttonmap[settings.silent].selected = True
+
+        args = [True, False]
+        texts = ["star field on", "star field off"]
+        def callback(arg): settings.showstars = arg
+        starbuttons = ButtonSet(texts, args, maxwidth, callback)
+        starbuttons.buttonmap[settings.showstars].selected = True
+
+        texts = ["back to game", "quit game"]
+        callbacks = [self.backtogame, self.quitgame]
+        donebuttons = ButtonSet(texts, None, maxwidth, onselects = callbacks)
         
-        self.buttonsets = [self.resbuttons, self.wbuttons]
+        self.buttonsets = [soundbuttons, self.resbuttons, self.wbuttons, speedbuttons, starbuttons, donebuttons]
         hs = [buttonset.height for buttonset in self.buttonsets]
-        height = sum(hs) + settings.layout.menudy * (len(hs) - 1)
-        y = settings.sy / 2 - height / 2
+        self.height = sum(hs) + settings.layout.menudy * (len(hs) - 1)
+        y = settings.sy / 2 - self.height / 2
         for buttonset in self.buttonsets:
             buttonset.sety(y)
             y += buttonset.height + settings.layout.menudy
 
+    def backtogame(self):
+        self.active = False
+
+    def quitgame(self):
+        context.pop(2)
+        context.push(self)
+        self.active = False        
 
     def think(self, dt, events, keys, mousepos, buttons):
         if self.active:
@@ -124,7 +154,7 @@ class Menu(context.Context):
                             if button.rect.collidepoint(mousepos):
                                 button.select()
             if event.type == MOUSEBUTTONDOWN and event.button == 3:
-                self.active = False
+                self.backtogame()
 
     def finish(self):
         newres = not self.resbuttons.buttonmap[settings.size].selected
@@ -142,7 +172,7 @@ class Menu(context.Context):
 
     def draw(self):
         vista._screen.blit(self.background, (0,0))
-        bubble = graphics.thoughtbubble(settings.sy/2, settings.sx/2, f = self.cloudticker*4)
+        bubble = graphics.thoughtbubble(self.height, self.width, f = self.cloudticker*4)
         bubblerect = bubble.get_rect(center = (settings.sx/2, settings.sy/2))
         vista._screen.blit(bubble, bubblerect)
         if self.cloudticker == 0.25:
