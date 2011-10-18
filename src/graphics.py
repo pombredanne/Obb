@@ -869,7 +869,8 @@ def helixmeter(height, w=None, f=3, cache={}):
     key = height, w, f
     if key in cache: return cache[key]
     img = vista.Surface(2*w*f, f*height)
-    helixcircles.draw(img, f, (w, height), (0, -height))
+    g = 0.05 * w
+    helixcircles.draw(img, g*f, (w/g, height/g), (0, -height/g))
     if f != 1:
         img = pygame.transform.smoothscale(img, (2*w, height))
     cache[key] = img

@@ -234,7 +234,9 @@ def flip():
     for surf, rect in overlays:
         _screen.blit(surf, rect)
     for icon in icons.values(): icon.draw()
-    if musicicontext:
+    import noise
+    if noise.track:
+        musicicontext = font.img(str(noise.track), size = settings.layout.countsize, color=(0,0,0))
         rect = musicicontext.get_rect(midright = icons["music"].rect.center)
         _screen.blit(musicicontext, rect)
     tip.draw()
