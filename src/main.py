@@ -8,6 +8,7 @@ pygame.init()
 
 def main():
     vista.init()
+    vista.addsplash()
     pygame.display.set_caption("Obb is loading.... Please wait")
     noise.nexttrack()
     if settings.restart:

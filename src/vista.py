@@ -1,6 +1,6 @@
 import pygame, math, datetime, collections, random, os
 from pygame.locals import *
-import settings, data, tip
+import settings, data, tip, font
 
 # Okay, here's the deal. There are six simultaneous coordinate systems
 #   going on at once.
@@ -94,15 +94,25 @@ def init():
         icons[name] = Icon(name)
     stars = [(random.randint(64, 255), random.randint(-10000, 10000), random.randint(-10000, 10000)) for _ in range(settings.vx * settings.vy / 2000)]
     stars.sort()
-    
+
+def addsplash():    
+    _screen.fill((0,0,0))
     try:
-        _screen.fill((0,0,0))
         splash = pygame.image.load("obb.png").convert()
         splash = pygame.transform.smoothscale(splash, (settings.sy, settings.sy))
         _screen.blit(splash, splash.get_rect(center = _screen.get_rect().center))
-        pygame.display.flip()
     except:
+        # We're not about to crash the game over someone deleting the splash screen png
         pass
+    x, y = settings.size
+    for text in ["[incompetech.com]", "music by Kevin MacLeod  ", "Universe Factory games",
+                 "by Christopher Night  "]:
+        img = font.img(text, size = settings.layout.splashsize, color = (255, 255, 255),
+                constrainwidth = False)
+        rect = img.get_rect(bottomright = (x, y))
+        _screen.blit(img, rect)
+        y -= rect.height
+    pygame.display.flip()
     
 
 

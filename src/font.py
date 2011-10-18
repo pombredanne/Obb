@@ -47,13 +47,13 @@ def wrap_multi_line(text, font, maxwidth = None):
 
 
 fonts = {}
-def img(text = "", size = 32, color = (255, 255, 255), cache = {}):
+def img(text = "", size = 32, color = (255, 255, 255), constrainwidth = True, cache = {}):
     key = text, size, color
     if key in cache: return cache[key]
     if size not in fonts:
         fonts[size] = pygame.font.Font(data.filepath("suckgolf.ttf"), size)
     img = fonts[size].render(text.replace("0", "o"), True, color)
-    if img.get_width() > settings.maxtextwidth:
+    if constrainwidth and img.get_width() > settings.maxtextwidth:
         img = pygame.transform.smoothscale(img, (settings.maxtextwidth, img.get_height()))
     cache[key] = img
     return cache[key]

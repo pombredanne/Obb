@@ -58,6 +58,7 @@ def setresolution(x, y = None):
         controlpos = f(42, 450)
         countsize = f(60)  # Font size of counters
         tipsize = f(32)  # Font size of tips
+        splashsize = f(32)  # Font size of splash screen text
         tipmargin = f(20)
         organcountsize = f(40)
         cubeiconpos = f(42, 36)
