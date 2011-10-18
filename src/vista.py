@@ -105,7 +105,7 @@ def addsplash():
         # We're not about to crash the game over someone deleting the splash screen png
         pass
     x, y = settings.size
-    for text in ["[incompetech.com]", "music by Kevin MacLeod  ", "Universe Factory games",
+    for text in ["incompetech.com", "music by Kevin MacLeod  ", "Universe Factory games",
                  "by Christopher Night  "]:
         img = font.img(text, size = settings.layout.splashsize, color = (255, 255, 255),
                 constrainwidth = False)

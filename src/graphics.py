@@ -895,13 +895,19 @@ def stalkmeter(height, w=None, f=3, cache={}):
     return img
 
 
-def loadbar(f, color = "eye", w = 60, h = 8):
+def loadbar(f, color = "eye", w = None, h = None, cache = {}):
+    if w is None: w = settings.layout.loadbarw
+    if h is None: h = settings.layout.loadbarh
     if color in colors: color = colors[color]
+    fi = int(f*w)
+    key = w, h, color, fi
+    if key in cache: return cache[key]
     r,g,b,_ = color
     color = int(255*r), int(255*g), int(255*b)
     img = vista.Surface(w+2,h+2,color)
     if 0 < f < 1:
-        img.fill((0,0,0), (1+int(f*w),1,w-int(f*w),h))
+        img.fill((0,0,0), (1+fi,1,w-fi,h))
+    cache[key] = img
     return img
     
 

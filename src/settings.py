@@ -71,6 +71,8 @@ def setresolution(x, y = None):
         menudx = f(12)
         menudy = f(12)
         menubuttonmargin = f(3)
+        loadbarw = f(60)
+        loadbarh = f(12)
 
     iconsize = f(70)
     iconpos = {}
