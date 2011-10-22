@@ -131,7 +131,7 @@ gamespeed = 1
 
 # Cheat
 unlockall = False   # Will probably only work if you restart
-debugkeys = True
+debugkeys = False
 
 showfps = False
 saveonquit = True
@@ -168,15 +168,15 @@ def savepath(filename = None):
     return data.filepath(filename)
 
 def save(filename = None):
-    obj = sx, sy, fullscreen, gamespeed, silent, showstars
+    obj = sx, sy, fullscreen, gamespeed, silent, showstars, showtips
     cPickle.dump(obj, open(savepath(filename), "wb"))
 
 def load(filename = None):
-    global fullscreen, gamespeed, silent, showstars
+    global fullscreen, gamespeed, silent, showstars, showtips
     fpath = savepath(filename)
     if os.path.exists(fpath):
         obj = cPickle.load(open(fpath, "rb"))
-        sx, sy, fullscreen, gamespeed, silent, showstars = obj
+        sx, sy, fullscreen, gamespeed, silent, showstars, showtips = obj
         setresolution(sx, sy)
 
 if "--resetsettings" not in sys.argv:

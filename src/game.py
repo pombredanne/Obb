@@ -1,7 +1,7 @@
 # This module holds the game state, and handles saving and loading
 
 import cPickle, os, random
-import data, body, status, enemy, twinkler, vista
+import data, body, status, enemy, twinkler, vista, panels
 
 class State(object):
     def __init__(self):
@@ -21,18 +21,14 @@ class State(object):
             self.shots += enemy.newshots(self.body)
         for s in self.shots: s.think(dt)
         self.shots = [s for s in self.shots if s.alive()]
-        # TODO: move into body
-        #self.status.mutagenmeter.amount += self.body.checkmutagen()
-        #self.status.healmeter.amount += self.body.checkplaster()
         self.twinklers += enemy.spoils
         del enemy.spoils[:]
         self.shots += enemy.spawnedshots
         del enemy.spawnedshots[:]
 
     def draw(self):
-        # TODO
-        #if self.panel.selected is not None or self.status.selected is not None:
-        #    self.body.tracehexes()
+        if panels.selectedtile is not None or panels.selectedorgan is not None:
+            self.body.tracehexes()
         self.body.draw()
         for t in self.twinklers: t.draw()
         for s in self.shots: s.draw()
@@ -53,6 +49,7 @@ def restart():
     status.restart()
     state = State()
 
+# TODO: save to temp file and move it only after the save is successful
 def save(filename = None):
     obj = state, status.state
     cPickle.dump(obj, open(savepath(filename), "wb"))

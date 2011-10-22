@@ -31,27 +31,22 @@ def main():
             savetime -= dt
             if savetime < 0:
                 game.save()
+                settings.save()
                 savetime = settings.savetimer
 
         for event in events:
             if event.type == QUIT:
                 if settings.saveonquit:
+                    settings.save()
                     game.save()
                 return
             if event.type == KEYDOWN and event.key == K_ESCAPE:
                 if settings.saveonquit:
+                    settings.save()
                     game.save()
                 return
             if event.type == KEYDOWN and event.key == K_F12:
                 vista.screencap()
-            if event.type == KEYDOWN and event.key == K_F9:  # Manual save
-                game.save()
-            if event.type == KEYDOWN and event.key == K_F10:  # Debug: change resolution and reload
-                game.save()
-                settings.sx, settings.sy = 1068, 600
-                settings.save()
-                settings.load()
-                vista.init()
 
         con.think(dt, events, keys, mousepos, buttons)
         con.draw()
