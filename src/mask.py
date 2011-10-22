@@ -1,4 +1,4 @@
-import pygame, math
+import pygame, math, numpy
 from pygame.locals import *
 import vista, mechanics
 from fixes import pixels_alpha
@@ -100,32 +100,60 @@ class Mask(object):
     @staticmethod
     def getcirc(r):
         if r not in Mask.circs:
-            # TODO: pygame.surfarray
             img = vista.Surface(2*r)
-            for x in range(2*r):
-                for y in range(2*r):
-                    d2 = float((x - r) ** 2 + (y - r) ** 2) / r ** 2
-                    d = math.sqrt(d2)
-                    a = max(min(int(255 * 1 / (1 + math.exp(-20 + 24 * d))), 255), 0)
-                    img.set_at((x,y), (0, 0, 255, a))
+            img.fill((0,0,255,128))
+            arr = pygame.surfarray.pixels_alpha(img)
+            y = ((numpy.arange(2*r)/float(r) - 1) ** 2).reshape([2*r,1]).repeat(2*r, axis=1)
+            alpha = 255 * 1 / (1 + numpy.exp(-20 + 24 * numpy.sqrt(y + y.T)))
+            arr[:] = numpy.uint8(alpha)
+#            for x in range(2*r):
+#                for y in range(2*r):
+#                    d2 = float((x - r) ** 2 + (y - r) ** 2) / r ** 2
+#                    d = math.sqrt(d2)
+#                    a = max(min(int(255 * 1 / (1 + math.exp(-20 + 24 * d))), 255), 0)
+#                    img.set_at((x,y), (0, 0, 255, a))
+#                    arr[x,y] = a
+            del arr
             Mask.circs[r] = img
         return Mask.circs[r]
 
 
 if __name__ == "__main__":
+    import random
     pygame.init()
     screen = pygame.display.set_mode((480, 480))
 
-    screen.fill((0, 0, 255))
+    screen.fill((0, 0, 0))
+    r = random.randint
+    t0 = pygame.time.get_ticks()
+    stars = [(r(0, 479), r(0, 479), r(64, 255)) for _ in range(2000)]
+    t1 = pygame.time.get_ticks()
+    print t1 - t0
+    
+    t0 = pygame.time.get_ticks()
+#    a = pygame.surfarray.array3d(screen)
+    for x, y, g in stars:
+#        a[x,y,0] = 255
+        screen.set_at((x,y), (g,g,g))
+#    del a
+    t1 = pygame.time.get_ticks()
+    print t1 - t0
 
 
     mask = Mask([((0,0),10)])
+    t0 = pygame.time.get_ticks()
+    mask.redraw()
+    t1 = pygame.time.get_ticks()
     surf = pygame.transform.smoothscale(mask.surf, (480, 480))
 
-#    maskimg = pygame.Surface((480, 480), SRCALPHA)
-#    maskimg.fill((0,0,0,0))
-#    pygame.draw.circle(maskimg, (0, 255, 0, 128), (240, 240), 200, 0)
-#    pygame.draw.circle(maskimg, (0, 255, 0), (240, 240), 100, 0)
+    screen.blit(surf, (0,0))
+    print t1 - t0
+    pygame.display.flip()
+    while not any(event.type in (QUIT, KEYDOWN) for event in pygame.event.get()):
+        pass
+
+    exit()
+
 
     clock = pygame.time.Clock()
     while True:
