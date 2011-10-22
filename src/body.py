@@ -1,6 +1,6 @@
 import pygame, random, math
 from pygame.locals import *
-import vista, mask, graphics, mechanics, noise, status
+import vista, mask, graphics, mechanics, noise, status, settings
 
 class Body(object):
     def __init__(self, (x, y) = (0, 0)):
@@ -421,6 +421,7 @@ class Core(BodyPart):
         BodyPart.draw(self, *args)
         wx, wy = vista.grid.hextoworld((self.x, self.y))
         px, py = vista.worldtoview((wx, wy))
+        self.nmouth = 0 if settings.showtips else 1
         mouth = graphics.mouthimg(self.nmouth)
         rect = mouth.get_rect(center = (px, py))
         vista.screen.blit(mouth, rect)
