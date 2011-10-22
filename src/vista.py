@@ -82,7 +82,7 @@ def init():
     pygame.display.quit()
     flags = FULLSCREEN | HWSURFACE if settings.fullscreen else 0
     _screen = pygame.display.set_mode(settings.size, flags)
-    screen = Surface(settings.size, alpha = False)
+    screen = Surface(settings.vsize, alpha = False)
     psurf = Surface(settings.psize, alpha = False)
     rsurf = Surface(settings.rsize, alpha = False)
     # TODO: decouple view and screen coordinates
@@ -227,7 +227,6 @@ def addoverlay(surf, rect):
     overlays.append((surf, rect))
 
 def flip():
-#    screen.blit(gsurf)  # TODO
     _screen.blit(screen, vrect)
     _screen.blit(psurf, prect)
     _screen.blit(rsurf, rrect)
