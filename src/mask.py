@@ -10,7 +10,7 @@ class Mask(object):
         self.color = tuple(color)
         self.ps = list(ps)
         self.setrange(a)
-        self.redraw()
+        self.blue = None
 
     def setrange(self, a=None):
         if self.ps:
@@ -21,7 +21,6 @@ class Mask(object):
         else:
             self.x0, self.x1, self.y0, self.y1 = -1, 1, -1, 1
         area = (self.x1 - self.x0) * (self.y1 - self.y0)
-        # TODO: set a according to area
         self.a = a if a is not None else 12
         self.sx, self.sy = self.worldtomask((self.x1, self.y0))
 
@@ -56,11 +55,7 @@ class Mask(object):
     def addp(self, p, r):
         self.ps.append((p, r))
         self.setrange()
-        # TODO: don't need to redraw necessarily.
-        self.redraw()
-#        self.addcirc(p, r)
-#        self.alphacopy()
-#        self.lastrequest = None  # Invalidate the last request
+        self.blue = None
 
     def addcirc(self, (x, y), r):
         """Add a circle onto the blue surface"""
@@ -77,6 +72,8 @@ class Mask(object):
     def getmask(self, (x0, y0, x1, y1), (sx, sy)):
         """Return a piece of the mask that covers the rectangle of given
         world-coordinate edges and has the given pixel dimensions."""
+        if self.blue is None:
+            self.redraw()
         px0, py1 = self.worldtomask((x0, y0))
         px1, py0 = self.worldtomask((x1, y1))
         key = px0, py0, px1, py1, sx, sy

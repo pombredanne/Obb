@@ -1,6 +1,6 @@
 # This module holds the game state, and handles saving and loading
 
-import cPickle, os, random
+import cPickle, os, random, tempfile, shutil
 import data, body, status, enemy, twinkler, vista, panels
 
 class State(object):
@@ -49,10 +49,14 @@ def restart():
     status.restart()
     state = State()
 
-# TODO: save to temp file and move it only after the save is successful
+# Save to a temp file first and copy over once it's complete
 def save(filename = None):
     obj = state, status.state
-    cPickle.dump(obj, open(savepath(filename), "wb"))
+    thandle, tfilename = tempfile.mkstemp()
+    tfile = os.fdopen(thandle, "wb")
+    cPickle.dump(obj, tfile)
+    tfile.close()
+    shutil.move(tfilename, savepath(filename))
 
 def load(filename = None):
     global state
