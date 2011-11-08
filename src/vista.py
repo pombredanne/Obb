@@ -85,7 +85,6 @@ def init():
     screen = Surface(settings.vsize, alpha = False)
     psurf = Surface(settings.psize, alpha = False)
     rsurf = Surface(settings.rsize, alpha = False)
-    # TODO: decouple view and screen coordinates
     vrect = pygame.Rect(settings.vx0, settings.vy0, settings.vx, settings.vy)
     prect = pygame.Rect(settings.px0, settings.py0, settings.px, settings.py)
     rrect = pygame.Rect(settings.rx0, settings.ry0, settings.rx, settings.ry)
@@ -97,10 +96,16 @@ def init():
 
 def addsplash():    
     _screen.fill((0,0,0))
+    titleimg = font.img("Obb", size = settings.layout.titlesize, background = (0,0,0), constrainwidth = False)
+    titlerect = titleimg.get_rect(midtop = settings.layout.titlepos)
+    _screen.blit(titleimg, titlerect)
     try:
         splash = pygame.image.load("obb.png").convert()
         splash = pygame.transform.smoothscale(splash, (settings.sy, settings.sy))
-        _screen.blit(splash, splash.get_rect(center = _screen.get_rect().center))
+        w, h = splash.get_size()
+        sheight = int(h * 0.6)
+        subsplash = splash.subsurface((0, h - sheight, w, sheight))
+        _screen.blit(subsplash, subsplash.get_rect(midbottom = _screen.get_rect().midbottom))
     except:
         # We're not about to crash the game over someone deleting the splash screen png
         pass
@@ -135,8 +140,6 @@ def zoomout():
     zs = [z for z in settings.zooms if z < zoom]
     if zs:
         zoom = max(zs)
-
-# TODO: scroll icons
 
 def think(dt, (mx, my), keys):
     global gx0, gy0, overlays
@@ -181,21 +184,18 @@ def scoot((dx, dy)):
     gy0 += dy
 
 
-def worldtogameplay((x, y)):
-    return int(gx0 + x * zoom + 0.5), int(gy0 - y * zoom + 0.5)
-
-def gameplaytoworld((gx, gy)):
+def viewtoworld((gx, gy)):
     return float(gx - gx0) / zoom, -float(gy - gy0) / zoom
 
 def worldtoview((x, y)):
-    return worldtogameplay((x, y))  # TODO... maybe?
+    return int(gx0 + x * zoom + 0.5), int(gy0 - y * zoom + 0.5)
 
 def worldtoscreen((x, y)):
-    vx, vy = worldtogameplay((x, y))
+    vx, vy = worldtoview((x, y))
     return settings.vx0 + vx, settings.vy0 + vy
 
 def screentoworld((x, y)):
-    return gameplaytoworld((x - settings.vx0, y - settings.vy0))
+    return viewtoworld((x - settings.vx0, y - settings.vy0))
 
 def clear(color = (0, 0, 0)):
     screen.fill(color)
@@ -216,9 +216,9 @@ def screencap():
 
 def addmask(mask):
     global screen
-    x0, y0 = gameplaytoworld((0, vrect.height))  # Bottom left world coordinates
-    x1, y1 = gameplaytoworld((vrect.width, 0))   # Top right world coordinates
-    gsx, gsy = worldtogameplay((wx1, wy0))
+    x0, y0 = viewtoworld((0, vrect.height))  # Bottom left world coordinates
+    x1, y1 = viewtoworld((vrect.width, 0))   # Top right world coordinates
+    gsx, gsy = worldtoview((wx1, wy0))
     screen.blit(mask.getmask((x0, y0, x1, y1), vrect.size), (0,0))
 
 def addoverlay(surf, rect):
@@ -342,14 +342,13 @@ class HexGrid(object):
     @staticmethod
     def drawhex((x, y), color=None):
         if color is None:
-            # TODO: support alpha
             color = [(32,0,0,32),(0,32,0,32),(0,0,32,32)][(y-x)%3]
-        vs = [worldtogameplay(HexGrid.vertexworld((x, y), v)) for v in range(6)]
+        vs = [worldtoview(HexGrid.vertexworld((x, y), v)) for v in range(6)]
         pygame.draw.polygon(screen, color, vs)
 
     @staticmethod
     def tracehex((x, y), color=(128, 128, 128)):
-        vs = [worldtogameplay(HexGrid.vertexworld((x, y), v)) for v in range(6)]
+        vs = [worldtoview(HexGrid.vertexworld((x, y), v)) for v in range(6)]
         pygame.draw.aalines(screen, color, True, vs)
 
 grid = HexGrid(a = 30)

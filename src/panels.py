@@ -23,6 +23,7 @@ def getlevel(h):
 def draw():
     global iconrects
     iconrects = {}  # remember for pointing and clicking purposes
+    vista.icons["trash"].active = selectedtile is not None
     drawtiles()
     drawmutagenmeter()
     drawoozemeter()

@@ -20,7 +20,7 @@ panondrag = True  # Move the viewport by left-click and dragging
 
 
 tzoom0 = 144  # Default tile size
-zooms = 16, 24, 32, 40, 48, 60, 72
+zooms = 16, 24, 32, 40, 48, 60, 72, 90, 120
 largebuildicon = tzoom0
 
 def setresolution(x, y = None):
@@ -59,6 +59,8 @@ def setresolution(x, y = None):
         countsize = f(60)  # Font size of counters
         tipsize = f(32)  # Font size of tips
         splashsize = f(32)  # Font size of splash screen text
+        titlesize = f(260)  # Font size of title on splash screen
+        titlepos = f(420, -32)
         tipmargin = f(20)
         organcountsize = f(40)
         cubeiconpos = f(42, 36)
@@ -154,7 +156,10 @@ def applyargs():
     showfps = "--showfps" in sys.argv
     silent = "--silent" in sys.argv or "--nosound" in sys.argv
     restart = "--restart" in sys.argv
-    fullscreen = "--fullscreen" in sys.argv
+    if "--fullscreen" in sys.argv:
+        fullscreen = True
+    if "--windowed" in sys.argv:
+        fullscreen = False
     barrage = "--barrage" in sys.argv  # Loads of enemies. Not fun.
     if "--slow" in sys.argv:
         showstars = False
@@ -183,6 +188,4 @@ if "--resetsettings" not in sys.argv:
     load()
 applyargs()
 save()
-
-
 

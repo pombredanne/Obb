@@ -106,6 +106,7 @@ class Mask(object):
             y = ((numpy.arange(2*r)/float(r) - 1) ** 2).reshape([2*r,1]).repeat(2*r, axis=1)
             alpha = 255 * 1 / (1 + numpy.exp(-20 + 24 * numpy.sqrt(y + y.T)))
             arr[:] = numpy.uint8(alpha)
+            # Slow reference implementation:
 #            for x in range(2*r):
 #                for y in range(2*r):
 #                    d2 = float((x - r) ** 2 + (y - r) ** 2) / r ** 2

@@ -62,41 +62,15 @@ organs built (lower-right corner), you've seen pretty much all there is
 to the game.
 
 
+SOURCE CODE LICENSE:
 
-LICENSE:
-
-The code for this game by Christopher Night is placed in the Public Domain.
+The code for this game by Christopher Night. It's released under GPL, BSD,
+MIT, WTFPL, CC-0, and any other license you want me to release it under.
 
 The "fixes" module is by Greg Ewing. See fixes.py for details.
 
-ARTWORK LICENSE
-Clip art is CC0 (public domain), taken from:
-http://www.openclipart.org/detail/85753/red-axe-by-inky2010
-http://www.openclipart.org/detail/68/trash-can-by-andy
-http://www.openclipart.org/detail/3344/treble-clefs-by-zeimusu-3344
-http://www.openclipart.org/detail/88045/simple-zoom-icons-by-snifty
-http://www.openclipart.org/detail/113971/ftplayer-pause-by-anonymous
-http://www.openclipart.org/detail/154117/heart-ecg-logo-by-juliobahar
+For license information for the assets used in this game, see the file
+data/LICENSE.txt
 
-FONT LICENSE:
-I suck at golf by Divide by Zero
-See the file data/suckgolf-README.TXT for license information
-http://www.fontspace.com/divide-by-zero/i-suck-at-golf
-
-MUSIC LICENSE:
-Music by Kevin MacLeod, released under CC-BY
-Specific songs are: Rocket, Killing Time, Itty Bitty 8 Bit, and Space Fighter Loop
-Find them at incompetech.com.
-
-SOUND LICENSE:
-Sounds were resampled from the following sources:
-"Pumpkin Guts Long" by MWLANDI - CC-SAMPLING+
-http://www.freesound.org/people/MWLANDI/sounds/85861/
-"Lazer" by THE bizniss - CC-SAMPLING+
-http://www.freesound.org/people/THE_bizniss/sounds/39459/
-"Thud" by farbin - CC-SAMPLING+
-http://www.freesound.org/people/farbin/sounds/36787/
-"shields3" by PhreaKsAccount - CC-SAMPLING+
-http://www.freesound.org/people/PhreaKsAccount/sounds/46494/
 
 

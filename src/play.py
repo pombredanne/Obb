@@ -102,7 +102,7 @@ class Play(context.Context):
             self.cutmode = False
 
     def handleleftclick(self, mousepos):
-        # TODO: handle dragging more reliably
+        # TODO: handle dragging vs clicking more reliably
         if self.clickat is None:  # It's a drag
             return
         (x0, y0), (x1, y1) = self.clickat, mousepos
@@ -147,8 +147,9 @@ class Play(context.Context):
 
     def handleiconclick(self, vicon):
         if vicon == "trash":
-            panels.claimtile()
-            self.clearselections()
+            if panels.selectedtile is not None:
+                panels.claimtile()
+                self.clearselections()
         elif vicon == "zoomin":
             vista.zoomin()
         elif vicon == "zoomout":
@@ -210,7 +211,7 @@ class Play(context.Context):
                 return "that show how much ooze me have. ooze let me fix organs when they get broke"
             elif bicon in mechanics.info:
                 return mechanics.info[bicon]
-            return None # TODO: tips for organs and ncubes
+            return None
         elif vista.vrect.collidepoint(mousepos):
             worldpos = vista.screentoworld(mousepos)
             if vista.HexGrid.nearesttile(worldpos) == (0,0):
