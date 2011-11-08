@@ -11,6 +11,7 @@ class Twinkler(object):
         self.claimed = False
     
     def think(self, dt):
+        # TODO: come up with a different motion formula that doesn't depend on framerate
         if self.sucker:
             sx, sy = self.sucker.worldpos
             f = math.exp(-dt)
@@ -37,9 +38,10 @@ class Twinkler(object):
         return not self.claimed and (self.sucker or self.t < 5)
 
     def draw(self):
-        for img in graphics.gettwinklerimgs(self.t):
-            pos = vista.worldtoview((self.x, self.y))
-            vista.screen.blit(img, img.get_rect(center = pos))
+        pos = vista.worldtoview((self.x, self.y))
+        alpha = min(self.t / 0.5, (5 - self.t) / 0.5, 1)
+        img = graphics.twinkler(self.t, alpha)
+        vista.screen.blit(img, img.get_rect(center = pos))
 
 
 def newtwinklers(mask, dt):

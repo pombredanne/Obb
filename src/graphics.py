@@ -1058,7 +1058,24 @@ def gettwinklerimg(zoom, angle, cache = {}):
 def gettwinklerimgs(t, r0 = 1):
     return [gettwinklerimg(vista.zoom*r*r0, angle) for r, angle in
             [(1, t * 40), (0.8, t * 100), (0.8, t * -100)]]
-    
+
+def twinkler(t, alpha = 1, cache = {}):
+    t = int(t * 50) / 50.
+    alpha = int(alpha * 20) / 20.
+    key = t, alpha, vista.zoom
+    if key in cache: return cache[key]
+    if alpha == 1:
+        imgs = gettwinklerimgs(t)
+        img = imgs[0].copy()
+        p0 = img.get_rect().center
+        for i in imgs[1:]:
+            img.blit(i, i.get_rect(center = p0))
+    else:
+        img = twinkler(t).copy()
+        filtersurface(img, 1, 1, 1, alpha)
+    cache[key] = img
+    return img
+
 
 def dustcloudimg(angle = 0, alpha = 1, R = 1, cache = {}):
     z = int(R * vista.zoom)
