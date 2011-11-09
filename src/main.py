@@ -35,15 +35,11 @@ def main():
                 savetime = settings.savetimer
 
         for event in events:
-            if event.type == QUIT:
+            if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
                 if settings.saveonquit:
                     settings.save()
                     game.save()
-                return
-            if event.type == KEYDOWN and event.key == K_ESCAPE:
-                if settings.saveonquit:
-                    settings.save()
-                    game.save()
+                pygame.quit()
                 return
             if event.type == KEYDOWN and event.key == K_F12:
                 vista.screencap()
@@ -53,7 +49,7 @@ def main():
         if settings.showfps:
             pygame.display.set_caption("Obb - %.1ffps" % clock.get_fps())
             if settings.fullscreen:
-                print clock.get_fps()
+                print(clock.get_fps())
         else:
             pygame.display.set_caption("Obb")
         

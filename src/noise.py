@@ -20,7 +20,7 @@ def play(name = ""):
             sounds[name] = pygame.mixer.Sound(filename)
             sounds[name].set_volume(settings.soundvolume)
         else:
-#            print "sound missing: %s" % name
+#            print("sound missing: %s" % name)
             sounds[name] = None
     if sounds[name] is not None:
         sounds[name].play()

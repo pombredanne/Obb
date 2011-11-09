@@ -40,7 +40,7 @@ class Play(context.Context):
             if event.type == KEYDOWN and event.key == K_v:
                 if settings.debugkeys:
                     wpos = vista.screentoworld(mousepos)
-                    print "Visibility:", game.state.body.mask.visibility(wpos)
+                    print("Visibility:", game.state.body.mask.visibility(wpos))
             if event.type == KEYUP and event.key == K_x:
                 if settings.debugkeys:
                     if self.target is not None:

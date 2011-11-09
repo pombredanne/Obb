@@ -179,7 +179,7 @@ def killtime(tmax = 20):
         if name == "app":
             drawapp(*spec)
         n += 1
-    print pygame.time.get_ticks() - tstart, n, len(drawqueue), name, spec
+    print(pygame.time.get_ticks() - tstart, n, len(drawqueue), name, spec)
 
 for a in range(5):
     for b in range(5):

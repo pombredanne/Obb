@@ -129,7 +129,7 @@ if __name__ == "__main__":
     t0 = pygame.time.get_ticks()
     stars = [(r(0, 479), r(0, 479), r(64, 255)) for _ in range(2000)]
     t1 = pygame.time.get_ticks()
-    print t1 - t0
+    print(t1 - t0)
     
     t0 = pygame.time.get_ticks()
 #    a = pygame.surfarray.array3d(screen)
@@ -138,7 +138,7 @@ if __name__ == "__main__":
         screen.set_at((x,y), (g,g,g))
 #    del a
     t1 = pygame.time.get_ticks()
-    print t1 - t0
+    print(t1 - t0)
 
 
     mask = Mask([((0,0),10)])
@@ -148,7 +148,7 @@ if __name__ == "__main__":
     surf = pygame.transform.smoothscale(mask.surf, (480, 480))
 
     screen.blit(surf, (0,0))
-    print t1 - t0
+    print(t1 - t0)
     pygame.display.flip()
     while not any(event.type in (QUIT, KEYDOWN) for event in pygame.event.get()):
         pass
@@ -166,7 +166,7 @@ if __name__ == "__main__":
         t0 = pygame.time.get_ticks()
         screen.blit(surf, (0,0))
         t1 = pygame.time.get_ticks()
-        print t1 - t0
+        print(t1 - t0)
 
         pygame.display.flip()
 

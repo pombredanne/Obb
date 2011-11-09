@@ -1147,7 +1147,7 @@ if __name__ == "__main__":
         t0 = pygame.time.get_ticks()
         loadallappimages([60])
         t1 = pygame.time.get_ticks()
-        print t1 - t0
+        print(t1 - t0)
 
     
     if False:
@@ -1164,7 +1164,7 @@ if __name__ == "__main__":
             s[...,2] *= 0
             del s
             t1 = pygame.time.get_ticks()
-            print t1 - t0
+            print(t1 - t0)
     if False:
         for _ in range(10):
             img.fill((0,0,0))
@@ -1172,14 +1172,14 @@ if __name__ == "__main__":
             drawgraysegment(img, (100, 50), (100, 150))
             filtersurface(img, 1, 0.6, 0)
             t1 = pygame.time.get_ticks()
-            print t1 - t0
+            print(t1 - t0)
     if False:
         for _ in range(10):
             t0 = pygame.time.get_ticks()
             img = app((1,2,3), (1, 0.8, 0), 1, 60)
             filtersurface(img, 1, 1, 0)
             t1 = pygame.time.get_ticks()
-            print t1 - t0
+            print(t1 - t0)
     if False:
         img = sphere(0.5, color = "ghost", zoom = 60)
     if True:
@@ -1209,7 +1209,7 @@ if __name__ == "__main__":
     t0 = pygame.time.get_ticks()
     screen.blit(img, (0,0))
     t1 = pygame.time.get_ticks()
-    print t1 - t0
+    print(t1 - t0)
     
 
     while True:
