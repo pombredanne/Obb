@@ -64,6 +64,9 @@ def randomspec(color = None):
     if color is None: color = "app%s" % random.choice((0,1,2))
     return AppendageSpec(dedges, color)
 
+
+# TODO: move this into a CSV data file
+
 # Colors determine where you can build organs
 # Because of graphical limitations, giant versions should have the same
 #   colors as their regular versions
@@ -116,26 +119,26 @@ costs = {
          }
 
 info = {}
-info["eye"] = "this organ let me see out farther. me no can grow where me no can see"
-info["brain"] = "me need this organ to work other organs"
+info["eye"] = "this organ let me see the space around it. me no can grow where me no can see"
+info["brain"] = "this organ let me control other organs. no can grow organs if me no have enough brains"
 info["giantbrain"] = "biggest brain is best brain!"
 info["eyebrain"] = "it eye! it brain! it both!"
-info["tripleeye"] = "me see way far out with this. sometimes me get dizzy"
+info["tripleeye"] = "this organ let me see out even farther! sometimes me get dizzy"
 
 info["shield"] = "this organ for protection. it block half of incoming danger"
-info["bulb"] = "this weapon good for rapid fire long range, but only shoot forward"
-info["star"] = "this weapon absorb white energy and make blast range. unreliable but powerful"
+info["bulb"] = "this weapon good for rapid, long range fire, but it only shoot in one direction"
+info["star"] = "this weapon absorb white energy and make wave of destruction!"
 info["zotter"] = "this weapon good for short-range attacks"
 
 info["mutagenitor"] = "this organ absorb white energy and make mutagen. very important!"
-info["mutagenpod"] = "this organ hold more mutagen. me need this to grow more advanced organs"
+info["mutagenpod"] = "this organ hold more mutagen. me need to be able to hold more mutagen before me can grow more advanced organs"
 info["plasteritor"] = "this organ absorb white energy and make ooze. me need ooze to heal"
-info["plasterpod"] = "this organ hold more ooze, help me survive big attacks"
+info["plasterpod"] = "this organ hold more ooze. more ooze help me survive big attacks"
 info["giantmutagenitor"] = "this organ absorb white energy and make even more mutagen!"
 info["giantmutagenpod"] = "this organ hold lots of mutagen"
 info["giantplasteritor"] = "this organ absorb white energy and make even more ooze!"
 info["giantplasterpod"] = "this organ hold lots of healing ooze"
-info["cube"] = "want stalk options to appear faster? grow this organ!"
+info["cube"] = "this organ control how fast new stalk options appear. more of this organ means options appear faster!"
 
 assert set(colors) == set(costs)
 assert set(costs) == set(info)

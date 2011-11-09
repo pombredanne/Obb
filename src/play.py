@@ -181,34 +181,34 @@ class Play(context.Context):
         vicon = vista.iconhit(mousepos)  # Any vista icons pointed to
         if vicon == "trash":
             if panels.selectedtile is not None:
-                return "click this to get rid of stalk and get new one"
+                return "want to get rid of the stalk option? click here!"
             else:
-                return "if you no like a stalk, click on stalk then click here to get new one. or you can right-click on stalk, it faster"
+                return "want to get rid of a stalk option? click on the stalk, then click here! you can also right-click on the stalk option"
         elif vicon == "zoomin":
             return
         elif vicon == "zoomout":
             return
         elif vicon == "pause":
-            return "click to pause game. it okay. me wait"
+            return "click to pause or quit game and pick options. it okay. me wait"
         elif vicon == "music":
-            return "click to hear new song or turn off"
+            return "click to hear new song or turn songs off"
         elif vicon == "heal":
             if self.healmode:
-                return "click on organs to change them so they don't heal by self. no want to waste ooze on non-vital organs"
+                return "green organs will heal themself with ooze. red organs won't. click on organs you want to change"
             return "me organs will use ooze to heal when they get hurt. if you want some organs not to take ooze, click here to change them"
         elif vicon == "cut":
-            return "no like a stalk or a organ on me body? use this to get rid of it! it okay, me not get hurt"
+            return "you no like a stalk or a organ on me body? use this to get rid of it! it okay, me not get hurt"
         elif bicon is not None:
             if bicon in range(mechanics.ntiles):
-                return "these me stalk options, har har har! can grow stalks where colors match. try make lots of branches."
+                return "these me stalk options, har har har! can grow stalks where colors match, and can make stalks cross each other. try to make lots of branches."
             elif bicon == "ncube":
                 return "the more me have of that organ, the faster the new stalks come"
             elif bicon == "control":
-                return "me need brains to grow. the more brains me have the more organs me can have"
+                return "me need brains to grow. the more brains me have, the more organs me can have"
             elif bicon == "mutagenmeter":
                 return "that show how much mutagen me have. me like mutagen. it let me grow"
             elif bicon == "oozemeter":
-                return "that show how much ooze me have. ooze let me fix organs when they get broke"
+                return "that show how much ooze me have. hurt organs will use ooze to heal selfs"
             elif bicon in mechanics.info:
                 return mechanics.info[bicon]
             return None
