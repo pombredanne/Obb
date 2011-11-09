@@ -62,13 +62,13 @@ def img(text = "", size = 32, color = (255, 255, 255), background = None, constr
     return cache[key]
 
 
-def blocktext(text = "", size = 32, color = (0, 0, 0), cache = {}):
+def blocktext(text = "", size = 32, color = (0, 0, 0), maxwidth = None, cache = {}):
     key = text, size, color
     if key in cache: return cache[key]
     if size not in fonts:
         fonts[size] = pygame.font.Font(data.filepath("suckgolf.ttf"), size)
     text = text.replace("0", "o")
-    lines = wrap_multi_line(text, fonts[size])
+    lines = wrap_multi_line(text, fonts[size], maxwidth)
     imgs = [fonts[size].render(line, True, color) for line in lines]
     if len(imgs) == 1:
         img = imgs[0]

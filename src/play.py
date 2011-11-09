@@ -1,6 +1,6 @@
 import pygame, random
 from pygame.locals import *
-import vista, context, settings, noise, graphics, tip, mechanics, game, status, panels, menu, makemap
+import vista, context, settings, noise, graphics, tip, mechanics, game, status, panels, menu, makemap, restart
 
 class Play(context.Context):
     def __init__(self):
@@ -47,6 +47,8 @@ class Play(context.Context):
                         self.target.die()
             if event.type == KEYUP and event.key == K_F11:
                 context.push(makemap.MakeMap())
+            if event.type == KEYUP and event.key == K_F9:
+                context.push(restart.Restart())
             if event.type == MOUSEBUTTONDOWN and event.button == 1:
                 self.clickat = event.pos
             if event.type == MOUSEBUTTONUP and event.button == 1:

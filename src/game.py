@@ -48,6 +48,7 @@ def restart():
     global state
     status.restart()
     state = State()
+    save()
 
 # Save to a temp file first and copy over once it's complete
 def save(filename = None):
