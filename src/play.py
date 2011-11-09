@@ -154,7 +154,7 @@ class Play(context.Context):
             vista.zoomin()
         elif vicon == "zoomout":
             vista.zoomout()
-        elif vicon == "pause":
+        elif vicon == "menu":
             game.save()
             context.push(menu.Menu())
         elif vicon == "music":
@@ -188,7 +188,7 @@ class Play(context.Context):
             return
         elif vicon == "zoomout":
             return
-        elif vicon == "pause":
+        elif vicon == "menu":
             return "click to pause or quit game and pick options. it okay. me wait"
         elif vicon == "music":
             return "click to hear new song or turn songs off"

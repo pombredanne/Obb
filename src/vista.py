@@ -89,7 +89,7 @@ def init():
     prect = pygame.Rect(settings.px0, settings.py0, settings.px, settings.py)
     rrect = pygame.Rect(settings.rx0, settings.ry0, settings.rx, settings.ry)
 
-    for name in "zoomin zoomout pause music trash cut heal".split():
+    for name in "zoomin zoomout menu music trash cut heal".split():
         icons[name] = Icon(name)
     stars = [(random.randint(64, 255), random.randint(-10000, 10000), random.randint(-10000, 10000)) for _ in range(settings.vx * settings.vy / 2000)]
     stars.sort()

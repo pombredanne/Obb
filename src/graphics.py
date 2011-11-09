@@ -20,7 +20,7 @@ colors["shield"] = 0.7, 0.7, 1, 1
 colors["cube"] = 0, 0.2, 1, 1
 colors["bulb"] = 1, 0.5, 0.5, 1
 colors["star"] = 1, 1, 0, 1
-colors["mutagen"] = 0, 1, 1, 0
+colors["mutagen"] = 0, 1, 1, 1
 colors["ooze"] = 1, 1, 0, 1
 colors["zotter"] = 1, 1, 0, 1
 colors["bad"] = 1, 0, 0, 1
@@ -1059,13 +1059,13 @@ def gettwinklerimgs(t, r0 = 1):
     return [gettwinklerimg(vista.zoom*r*r0, angle) for r, angle in
             [(1, t * 40), (0.8, t * 100), (0.8, t * -100)]]
 
-def twinkler(t, alpha = 1, cache = {}):
+def twinkler(t, alpha = 1, r0 = 1, cache = {}):
     t = int(t * 50) / 50.
     alpha = int(alpha * 20) / 20.
-    key = t, alpha, vista.zoom
+    key = t, alpha, r0, vista.zoom
     if key in cache: return cache[key]
     if alpha == 1:
-        imgs = gettwinklerimgs(t)
+        imgs = gettwinklerimgs(t, r0)
         img = imgs[0].copy()
         p0 = img.get_rect().center
         for i in imgs[1:]:
@@ -1120,7 +1120,31 @@ def heartimg(alpha = 1, cache = {}):
     cache[key] = img
     return cache[key]
 
+def plusimg(color, alpha = 1, cache = {}):
+    z = int(vista.zoom * 0.7)
+    alpha = min(max(int(alpha * 10) / 10., 0), 1)
+    key = z, alpha, color
+    if key in cache:
+        return cache[key]
+    if color not in cache:
+        baseimg = vista.Surface(240)
+        baseimg.fill((255, 255, 255), (80, 0, 80, 240))
+        baseimg.fill((255, 255, 255), (0, 80, 240, 80))
+        baseimg.fill((160, 160, 160), (15, 95, 210, 50))
+        baseimg.fill((160, 160, 160), (95, 15, 50, 210))
+        filtersurface(baseimg, *color)
+        cache[color] = baseimg
+    img = pygame.transform.smoothscale(cache[color], (z, z))
+    if alpha != 1:
+        pixels_alpha(img)[:] *= alpha
+    cache[key] = img
+    return cache[key]
 
+def plusmutagenimg(alpha = 1, cache = {}):
+    return plusimg(colors["mutagen"], alpha)
+
+def plusoozeimg(alpha = 1, cache = {}):
+    return plusimg(colors["ooze"], alpha)
 
 def mouthimg(n = 0, cache = {}):
     z = int(0.7 * vista.zoom)

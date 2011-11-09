@@ -39,7 +39,7 @@ class Twinkler(object):
 
     def draw(self):
         pos = vista.worldtoview((self.x, self.y))
-        alpha = min(self.t / 0.5, (5 - self.t) / 0.5, 1)
+        alpha = 1 if self.sucker else min(self.t / 0.5, (5 - self.t) / 0.5, 1)
         img = graphics.twinkler(self.t, alpha)
         vista.screen.blit(img, img.get_rect(center = pos))
 

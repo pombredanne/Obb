@@ -254,6 +254,7 @@ class BodyPart(object):
         d["img"] = None
         return d
 
+    # TODO: move some of this into Organ.think
     def think(self, dt):
         if self.growtimer > 0:
             if not self.parent or not self.parent.growtimer:
@@ -354,14 +355,17 @@ class BodyPart(object):
         return zoom, self.status, growth
 
     def drawglow(self, (px, py), t):
-        for img in graphics.gettwinklerimgs(t * 3, r0 = 4):
-            vista.screen.blit(img, img.get_rect(center = (px, py)))
-
-    def drawheart(self, (px, py), t):
-        alpha = t
-        py -= int(vista.zoom * (1 - t) * 1.5)
-        img = graphics.heartimg(alpha)
+        img = graphics.twinkler(t * 3, alpha = 1, r0 = 4)
         vista.screen.blit(img, img.get_rect(center = (px, py)))
+
+    def drawicon(self, (px, py), t, icon):
+        py -= int(vista.zoom * (1 - t) * 1.5)
+        vista.screen.blit(icon, icon.get_rect(center = (px, py)))
+
+    def drawicons(self, p):
+        if self.hearttime:
+            t = self.hearttime
+            self.drawicon(p, t, graphics.heartimg(alpha = t))
 
     def draw(self):
         wx, wy = vista.grid.hextoworld((self.x, self.y))
@@ -374,8 +378,7 @@ class BodyPart(object):
         if self.glowtime:
             self.drawglow((px, py), self.glowtime)
         vista.screen.blit(img, self.img.get_rect(center = (px, py)))
-        if self.hearttime:
-            self.drawheart((px, py), self.hearttime)
+        self.drawicons((px, py))
         for dx, dy, t in self.dusts:
             x, y = wx + dx * (0.65 - t), wy + dy * (0.65 - t)
             px, py = vista.worldtoview((x, y))
@@ -542,6 +545,12 @@ class Mutagenitor(Organ):
     suction = True
     amount = mechanics.mutagenhit
 
+    def drawicons(self, p):
+        if self.glowtime:
+            t = self.glowtime
+            self.drawicon(p, t, graphics.plusmutagenimg(alpha = t * 2))
+        Organ.drawicons(self, p)
+
     def draw0(self, zoom, status, growth):
         return graphics.generator.imgmutagen(zoom = zoom, growth = growth, color = status, edge0 = self.edge)
 
@@ -554,6 +563,12 @@ class Plasteritor(Organ):
     """Collects twinklers and generates mutagen"""
     suction = True
     amount = mechanics.oozehit
+
+    def drawicons(self, p):
+        if self.glowtime:
+            t = self.glowtime
+            self.drawicon(p, t, graphics.plusoozeimg(alpha = t * 2))
+        Organ.drawicons(self, p)
 
     def draw0(self, zoom, status, growth):
         return graphics.generator.imgplaster(zoom = zoom, growth = growth, color = status, edge0 = self.edge)
