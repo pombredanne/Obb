@@ -22,6 +22,8 @@ panondrag = True  # Move the viewport by left-click and dragging
 tzoom0 = 144  # Default tile size
 zooms = 16, 24, 32, 40, 48, 60, 72, 90, 120
 largebuildicon = tzoom0
+mapzoom = 72  # zoom level for maps
+mapfile = "obb-map.png"
 
 def setresolution(x, y = None):
     global sx, sy, size

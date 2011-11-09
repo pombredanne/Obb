@@ -127,7 +127,7 @@ zoom = settings.zoom0
 gx0, gy0 = 0, 0  # Gameplay location of world coordinate (0,0)
 
 def setgrect((x0, y0, x1, y1)):
-    global wx0, wy0, wx1, wy1, gx0, gy0, zoom
+    global wx0, wy0, wx1, wy1
     wx0, wy0, wx1, wy1 = x0, y0, x1, y1
 
 def zoomin():
