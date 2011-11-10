@@ -1,4 +1,4 @@
-import pygame, os, cPickle
+import pygame, os, cPickle, resource
 from pygame.locals import *
 import data, vista, context, settings, play, graphics, noise, game
 
@@ -43,13 +43,23 @@ def main():
                 return
             if event.type == KEYDOWN and event.key == K_F12:
                 vista.screencap()
+            if event.type == KEYDOWN and event.key == K_F3:
+                settings.showfps = not settings.showfps
 
         con.think(dt, events, keys, mousepos, buttons)
         con.draw()
         if settings.showfps:
-            pygame.display.set_caption("Obb - %.1ffps" % clock.get_fps())
-            if settings.fullscreen:
-                print(clock.get_fps())
+            t = pygame.time.get_ticks() * 0.001
+            if int(t / 5.) != int((t - dt) / 5.):  # Update once every 5 seconds
+                fpsstring = "%.1ffps" % clock.get_fps()
+                try:
+                    mem = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss // 1024
+                    fpsstring += " %sMB" % mem
+                except:
+                    pass
+                pygame.display.set_caption("Obb - %s" % fpsstring)
+                if settings.fullscreen:
+                    print(fpsstring)
         else:
             pygame.display.set_caption("Obb")
         
