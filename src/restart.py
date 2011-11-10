@@ -6,7 +6,7 @@ class Restart(context.Context):
         self.background = graphics.ghostify(vista._screen.convert_alpha())
         self.cloudticker = 0
         self.active = True
-        text = "Press R to delete your saved game and start over, or any other key to return to your game"
+        text = "Press y to delete your saved game and start over, or any other key to return to the game"
         self.textimg = font.blocktext(text, size = settings.layout.tipsize)
         self.torestart = False
 
@@ -24,7 +24,7 @@ class Restart(context.Context):
             for event in events:
                 if event.type == pygame.KEYUP:
                     self.active = False
-                    self.torestart = event.key == pygame.K_r
+                    self.torestart = event.key == pygame.K_y
 
     def draw(self):
         vista._screen.blit(self.background, (0,0))

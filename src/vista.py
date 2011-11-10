@@ -210,9 +210,12 @@ def clear(color = (0, 0, 0)):
 
 
 def screencap():
+    scap = _screen.copy()
+    _screen.fill((255, 255, 255))
+    pygame.display.flip()
     if not os.path.exists("screenshots"): os.mkdir("screenshots")
     dstr = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-    pygame.image.save(_screen, "screenshots/screenshot-%s.png" % dstr)
+    pygame.image.save(scap, "screenshots/screenshot-%s.png" % dstr)
 
 def addmask(mask):
     global screen
