@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Obb: README</title>
+<style type="text/css">
+Body {
+  background: #333;
+  color: white;
+  font: 400 100% "Comic Sans MS", "Arial", sans-serif;
+  letter-spacing: 0.02em;
+  line-height: normal;
+  text-align: justify;
+  margin: 0 auto 0; padding: 4px 12px 4px 20px;
+  max-width: 72ex;
+}
+P { margin: 1em 0; border-width: 0; padding: 0; }
+
+A { text-decoration: none; font-weight: bold; letter-spacing: 0.05em; }
+A:Link { background: inherit; color: #7F7; }
+A:Active { background: inherit; color: yellow }
+A:Visited { background: inherit; color: aqua }
+A:Link:Hover, A:Visited:Hover
+  { background: inherit; color: white; outline: #F77 3px solid; z-index: 10; }
+
+H1, H2, H3 {
+  background: inherit; color: #BBF;
+  position: relative;
+  font: inherit; font-weight: bold;
+  text-transform: none;
+  text-align: center;
+}
+H1 { font-size: 170%; }
+H2 { font-size: 140%; }
+H3 { font-size: 120%; }
+
+header {
+    text-align: center
+}
+
+</style>
+
+</head>
+<body>
+<header>
+<h1>Obb</h1>
+<p>by <a href="http://christophernight.net/">Christopher Night</a>
+(Universe Factory games)<br/>
+written for <a href="http://www.pyweek.org/13/">PyWeek 13</a></p>
+</header>
+
+<p>Obb is both a real-time strategy
+game and a tile placement puzzle game. Control the growth of a mutant
+named Obb. Expand into space and defend Obb from hostile forces. Collect
+mutagen to form new types of organs.</p>
+
+<p>This game was originally written in one week for
+<a href="http://www.pyweek.org/13/">PyWeek 13</a>,
+the python game programming contest. This version is only slightly
+modified from the original.</p>
+
+<p>This is a <i>sandbox game</i>. There's no way to die and no way to
+win. Feel free to quit when you've seen enough!</p>
+
+<h2>Running the game</h2>
+
+<h3>Windows version</h3>
+
+<p>Double click on obb.exe
+
+<h3>Source code version (all platforms)</h3>
+
+<p>Install the dependencies
+<a href="http://www.python.org/">python 2.6+</a>, and
+<a href="http://www.pygame.org/">pygame 1.9+</a>, and
+<a href="http://numpy.scipy.org/">numpy</a>.
+(It has not been tested on python 3.) Run the following in a
+terminal:</p>
+
+<kbd>python run_game.py</kbd>
+
+<p>To install the dependencies on Ubuntu, you can run:</p>
+
+<kbd>sudo apt-get install python python-pygame python-numpy</kbd>
+
+<h2>Controls</h2>
+
+<p>Use the mouse.</p>
+
+<p>Quit the game at any time by pressing Esc. Your game is automatically
+saved.</p>
+
+<p>Scroll by dragging or use the arrow keys or WASD.</p>
+
+<p>Press F12 to take a screenshot.</p>
+
+<p>Press F11 to make a "map" of your game. This will show your entire
+organism without any sidebars.</p>
+
+<p>Press F9 if you want to delete your save game and start over.</p>
+
+<h2>Strategy tips</h2>
+
+<p>Obb is <em>both</em> a real-time
+strategy game <em>and</em> a tile-placement puzzle game. You'll have to
+understand both aspects of the game to do well.</p>
+
+<p>Make sure you understand
+what each icon does, because it might be helpful in your strategy.</p>
+
+<h3>Tile placement tips</h3>
+
+<p>There are three colors of stalks (green, purple, and orange), and
+organs can only be built on stalks of the corresponding color. Purple
+organs are the most important, since they're how you collect resources,
+but green and orange organs are essential in every area. As you expand,
+you need to be able to build all three colors of organs in all
+regions. Think ahead when you're placing tiles and organs. Don't cut off
+any of the three colors from any part of the map. Remember that stalks
+can cross each other as long as it's not too dense.</p>
+
+<p>Every organ terminates a stalk, so make as many
+branches as possible. Get in the habit of trashing most non-branching
+tiles you get. The non-branching pieces are really only useful if you
+need to get out of a tight spot or cross stalks against each other. It's
+fine if you're trashing more tiles than you're using. There's no rush.
+Remember you can trash a tile with right-click.</p>
+
+<p>A single hex on the map should be put to multiple uses.
+Multiple stalks can go through it, and an organ can occupy the center.
+Use hexes as efficiently as possible. Don't hesitate to build organs
+over stalks or vice versa.</p>
+
+<p>You can always chop pieces off and try again!</p>
+
+<h3>Real-time strategy tips</h3>
+
+<p>Again, there's no way to win or lose. A good goal is to unlock all 18
+organs, and last for a few minutes with 70 or so organs built. (The
+number of organs built is the first number in the lower-right.) If you
+do that, you'll have seen pretty much everything the game has to offer.
+</p>
+
+<p>There are three categories of organs. Purple organs let you collect
+and store mutagen and ooze. Green organs let you explore new territory
+and control other organs. Orange organs are for defense. (Weapons are
+also useful for generating resources, since destroyed hazards turn into
+white energy.) Your main goal should be to collect and store as much
+mutagen as possible (the purple and blue
+organs), and the other organs should support this goal. The mutagen pod
+(the purple organ with the blue ball) is the most important - every one
+of these you grow unlocks a new organ.</p>
+
+<p>The least essential organ is the blue cubes. They just make new tiles
+appear faster. But if you're stuck somewhere and you're looking for the
+one tile that will fit, it's much easier if you've six cubes than if
+you've got zero.</p>
+
+<p>The amount of danger you're in depends on two things: how far out
+you've expanded, and how many total organs you have. The farther out an
+organ is from the mouth, the more it's going to be attacked. You can
+stay safer by building densely and evenly in all directions. Each hex
+can hold one organ. Try not to have too many empty hexes, and try to
+keep the mouth at roughly the center of your organism.</p>
+
+<p>If you don't remember what an organ does, you can point
+to its build icon and Obb will tell you if tips are enabled. You can
+toggle tips by clicking on the mouth.</p>
+
+<h2>License</h2>
+
+<h3>Source Code License</h3>
+
+<p>Most of the code for this game is by
+<a href="http://christophernight.net">Christopher Night</a>.
+Use it however you want.
+It's released under 
+<a href="http://sam.zoy.org/wtfpl/">WTFPL</a>,
+and also dedicated to the public domain under
+<a href="http://creativecommons.org/publicdomain/zero/1.0/">CC-0</a>.
+If you want me to release it under some other license,
+ask and I will.</p>
+
+<p>The only exceptions are the "fixes" module by Greg Ewing, and the
+"fonts" module, which contains some code from pygame.org.</p>
+
+<h3>Music License</h3>
+
+<p>Music by Kevin MacLeod, released under CC-BY.
+Specific songs are: Rocket, Killing Time, Itty Bitty 8 Bit, and Space Fighter Loop.
+Find them at <a href="http://incompetech.com">incompetech.com.</a></p>
+
+<h3>Artwork License</h3>
+
+<p>Most of the graphics are procedurally generated by the code, and are
+under the same license as the code. Icons are based on CC0 (public
+domain) clip art from
+<a href="http://www.openclipart.org/">openclipart.org</a>. Specifically:
+</p>
+<ul>
+<li><a href="http://www.openclipart.org/detail/85753/red-axe-by-inky2010">Red axe</a>
+<li><a href="http://www.openclipart.org/detail/68/trash-can-by-andy">Trash can</a>
+<li><a href="http://www.openclipart.org/detail/3344/treble-clefs-by-zeimusu-3344">Treble clef</a>
+<li><a href="http://www.openclipart.org/detail/88045/simple-zoom-icons-by-snifty">Zoom icons</a>
+<li><a href="http://www.openclipart.org/detail/154117/heart-ecg-logo-by-juliobahar">Heart ECG</a>
+</ul>
+
+<h3>Font License</h3>
+<p><a href="http://www.fontspace.com/divide-by-zero/i-suck-at-golf">I
+suck at golf</a> by Divide by Zero.</p>
+<p>See the file <a href="data/suckgolf-README.TXT">data/suckgolf-README.TXT</a> for license information</p>
+
+<h3>Sound License</h3>
+
+<p>Sounds were resampled from the following freesound.org sources:</p>
+<ul>
+<li><a href="http://www.freesound.org/people/MWLANDI/sounds/85861/">Pumpkin Guts Long</a> by MWLANDI - CC-SAMPLING+
+<li><a href="http://www.freesound.org/people/THE_bizniss/sounds/39459/">Lazer</a> by THE bizniss - CC-SAMPLING+
+<li><a href="http://www.freesound.org/people/farbin/sounds/36787/">Thud</a> by farbin - CC-SAMPLING+
+<li><a href="http://www.freesound.org/people/PhreaKsAccount/sounds/46494/">shields3</a> by PhreaKsAccount - CC-SAMPLING+
+</ul>
+
+</body>
+</html>
