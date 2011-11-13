@@ -32,9 +32,9 @@ except RuntimeError:
     package = zipfile.ZipFile(zipname, 'w')
 
 # core files
-for name in 'README.txt HINTS.txt obb.png run_game.py'.split():
+for name in 'README.html obb.png run_game.py'.split():
     package.write(name, os.path.join(base, name))
-package.write('run_game.py', os.path.join(base, 'run_game.pyw'))
+#package.write('run_game.py', os.path.join(base, 'run_game.pyw'))
 
 # utility for adding subdirectories
 def add_files(generator):
