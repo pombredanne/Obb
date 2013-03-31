@@ -1,6 +1,10 @@
+# -*- coding: utf-8 -*-
+
 import pygame, random
 from pygame.locals import *
 import vista, context, settings, noise, graphics, tip, mechanics, game, status, panels, menu, makemap, restart
+
+from i18n import _
 
 class Play(context.Context):
     def __init__(self):
@@ -185,41 +189,41 @@ class Play(context.Context):
         vicon = vista.iconhit(mousepos)  # Any vista icons pointed to
         if vicon == "trash":
             if panels.selectedtile is not None:
-                return "want to get rid of the stalk option? click here!"
+                return _("want to get rid of the stalk option? click here!")
             else:
-                return "want to get rid of a stalk option? click on the stalk, then click here! you can also right-click on the stalk option"
+                return _("want to get rid of a stalk option? click on the stalk, then click here! you can also right-click on the stalk option")
         elif vicon == "zoomin":
             return
         elif vicon == "zoomout":
             return
         elif vicon == "menu":
-            return "click to pause or quit game and pick options. it okay. me wait"
+            return _("click to pause or quit game and pick options. it okay. me wait")
         elif vicon == "music":
-            return "click to hear new song or turn songs off"
+            return _("click to hear new song or turn songs off")
         elif vicon == "heal":
             if self.healmode:
-                return "green organs will heal themself with ooze. red organs won't. click on organs you want to change"
-            return "me organs will use ooze to heal when they get hurt. if you want some organs not to take ooze, click here to change them"
+                return _("green organs will heal themself with ooze. red organs won't. click on organs you want to change")
+            return _("me organs will use ooze to heal when they get hurt. if you want some organs not to take ooze, click here to change them")
         elif vicon == "cut":
-            return "you no like a stalk or a organ on me body? use this to get rid of it! it okay, me not get hurt"
+            return _("you no like a stalk or a organ on me body? use this to get rid of it! it okay, me not get hurt")
         elif bicon is not None:
             if bicon in range(mechanics.ntiles):
-                return "these me stalk options, har har har! can grow stalks where colors match, and can make stalks cross each other. try to make lots of branches."
+                return _("these me stalk options, har har har! can grow stalks where colors match, and can make stalks cross each other. try to make lots of branches.")
             elif bicon == "ncube":
-                return "the more me have of that organ, the faster the new stalks come"
+                return _("the more me have of that organ, the faster the new stalks come")
             elif bicon == "control":
-                return "me need brains to grow. the more brains me have, the more organs me can have"
+                return _("me need brains to grow. the more brains me have, the more organs me can have")
             elif bicon == "mutagenmeter":
-                return "that show how much mutagen me have. me like mutagen. it let me grow"
+                return _("that show how much mutagen me have. me like mutagen. it let me grow")
             elif bicon == "oozemeter":
-                return "that show how much ooze me have. hurt organs will use ooze to heal selfs"
+                return _("that show how much ooze me have. hurt organs will use ooze to heal selfs")
             elif bicon in mechanics.info:
                 return mechanics.info[bicon]
             return None
         elif vista.vrect.collidepoint(mousepos):
             worldpos = vista.screentoworld(mousepos)
             if vista.HexGrid.nearesttile(worldpos) == (0,0):
-                return "click me mouth to turn me tips on or off"
+                return _("click me mouth to turn me tips on or off")
             # TODO: help on pointing to organs?
 #            organ = game.state.body.nearestorgan(worldpos)
 

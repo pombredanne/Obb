@@ -4,6 +4,7 @@ import pygame
 from pygame.locals import *
 import context, graphics, vista, settings, font
 
+from i18n import _
 
 class Button(object):
     def __init__(self, text, buttonset, onselect = None, onconfirm = None):
@@ -95,30 +96,30 @@ class Menu(context.Context):
         self.resbuttons.buttonmap[settings.size].selected = True
 
         wargs = [False, True]
-        wtexts = ["window mode", "fullscreen mode"]
+        wtexts = [_("window mode"), _("fullscreen mode")]
         def wcallback(arg): settings.fullscreen = arg
         self.wbuttons = ButtonSet(wtexts, wargs, maxwidth, wcallback)
         self.wbuttons.buttonmap[settings.fullscreen].selected = True
 
         args = [0.5, 1., 2.]
-        texts = ["slow", "normal", "fast"]
+        texts = [_("slow"), _("normal"), _("fast")]
         def callback(arg): settings.gamespeed = arg
         speedbuttons = ButtonSet(texts, args, maxwidth, callback)
         speedbuttons.buttonmap[settings.gamespeed].selected = True
 
         args = [False, True]
-        texts = ["sound on", "sound off"]
+        texts = [_("sound on"), _("sound off")]
         def callback(arg): settings.silent = arg
         soundbuttons = ButtonSet(texts, args, maxwidth, callback)
         soundbuttons.buttonmap[settings.silent].selected = True
 
         args = [True, False]
-        texts = ["star field on", "star field off"]
+        texts = [_("star field on"), _("star field off")]
         def callback(arg): settings.showstars = arg
         starbuttons = ButtonSet(texts, args, maxwidth, callback)
         starbuttons.buttonmap[settings.showstars].selected = True
 
-        texts = ["back to game", "quit game"]
+        texts = [_("back to game"), _("quit game")]
         callbacks = [self.backtogame, self.quitgame]
         donebuttons = ButtonSet(texts, None, maxwidth, onselects = callbacks)
         

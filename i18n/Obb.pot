@@ -1,0 +1,138 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-03-31 18:23+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/menu.py:99
+msgid "window mode"
+msgstr ""
+
+#: src/menu.py:99
+msgid "fullscreen mode"
+msgstr ""
+
+#: src/menu.py:105
+msgid "slow"
+msgstr ""
+
+#: src/menu.py:105
+msgid "normal"
+msgstr ""
+
+#: src/menu.py:105
+msgid "fast"
+msgstr ""
+
+#: src/menu.py:111
+msgid "sound on"
+msgstr ""
+
+#: src/menu.py:111
+msgid "sound off"
+msgstr ""
+
+#: src/menu.py:117
+msgid "star field on"
+msgstr ""
+
+#: src/menu.py:117
+msgid "star field off"
+msgstr ""
+
+#: src/menu.py:122
+msgid "back to game"
+msgstr ""
+
+#: src/menu.py:122
+msgid "quit game"
+msgstr ""
+
+#: src/play.py:192
+msgid "want to get rid of the stalk option? click here!"
+msgstr ""
+
+#: src/play.py:194
+msgid ""
+"want to get rid of a stalk option? click on the stalk, then click here! you "
+"can also right-click on the stalk option"
+msgstr ""
+
+#: src/play.py:200
+msgid "click to pause or quit game and pick options. it okay. me wait"
+msgstr ""
+
+#: src/play.py:202
+msgid "click to hear new song or turn songs off"
+msgstr ""
+
+#: src/play.py:205
+msgid ""
+"green organs will heal themself with ooze. red organs won't. click on organs "
+"you want to change"
+msgstr ""
+
+#: src/play.py:206
+msgid ""
+"me organs will use ooze to heal when they get hurt. if you want some organs "
+"not to take ooze, click here to change them"
+msgstr ""
+
+#: src/play.py:208
+msgid ""
+"you no like a stalk or a organ on me body? use this to get rid of it! it "
+"okay, me not get hurt"
+msgstr ""
+
+#: src/play.py:211
+msgid ""
+"these me stalk options, har har har! can grow stalks where colors match, and "
+"can make stalks cross each other. try to make lots of branches."
+msgstr ""
+
+#: src/play.py:213
+msgid "the more me have of that organ, the faster the new stalks come"
+msgstr ""
+
+#: src/play.py:215
+msgid ""
+"me need brains to grow. the more brains me have, the more organs me can have"
+msgstr ""
+
+#: src/play.py:217
+msgid "that show how much mutagen me have. me like mutagen. it let me grow"
+msgstr ""
+
+#: src/play.py:219
+msgid ""
+"that show how much ooze me have. hurt organs will use ooze to heal selfs"
+msgstr ""
+
+#: src/play.py:226
+msgid "click me mouth to turn me tips on or off"
+msgstr ""
+
+#: src/vista.py:115
+msgid "music by Kevin MacLeod  "
+msgstr ""
+
+#: src/vista.py:115
+msgid "Universe Factory games"
+msgstr ""
+
+#: src/vista.py:116
+msgid "by Christopher Night  "
+msgstr ""

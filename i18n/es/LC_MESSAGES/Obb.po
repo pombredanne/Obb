@@ -1,0 +1,153 @@
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+# Copyright (C) 2013
+# Miguel de Dios Matias <tres.14159@gmail.com>, 2013.
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Obb 20130331\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-03-31 18:23+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Miguel de Dios Matias <tres.14159@gmail.com>\n"
+"Language-Team:  es_ES <LL@li.org>\n"
+"Language:  es_ES\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: UTF-8\n"
+
+#: src/menu.py:99
+msgid "window mode"
+msgstr "modo ventana"
+
+#: src/menu.py:99
+msgid "fullscreen mode"
+msgstr "pantalla completa"
+
+#: src/menu.py:105
+msgid "slow"
+msgstr "lento"
+
+#: src/menu.py:105
+msgid "normal"
+msgstr "normal"
+
+#: src/menu.py:105
+msgid "fast"
+msgstr "rápido"
+
+#: src/menu.py:111
+msgid "sound on"
+msgstr "sonido"
+
+#: src/menu.py:111
+msgid "sound off"
+msgstr "silencio"
+
+#: src/menu.py:117
+msgid "star field on"
+msgstr "mostrar campo de estrellas"
+
+#: src/menu.py:117
+msgid "star field off"
+msgstr "ocultar campo de estrellas"
+
+#: src/menu.py:122
+msgid "back to game"
+msgstr "volver al juego"
+
+#: src/menu.py:122
+msgid "quit game"
+msgstr "salir del juego"
+
+#: src/play.py:192
+msgid "want to get rid of the stalk option? click here!"
+msgstr "¿Quiere deshacerse de la pieza de tentaculo? ¡haga click aquí!"
+
+#: src/play.py:194
+msgid ""
+"want to get rid of a stalk option? click on the stalk, then click here! you "
+"can also right-click on the stalk option"
+msgstr "¿Quieres deshacerte de alguna pieza de tentáculo? ¡Clicka en la pieza y después aquí!"
+"También puedes hacerlo con clickando con el botón derecho encima de la pieza de tentáculo."
+
+#: src/play.py:200
+msgid "click to pause or quit game and pick options. it okay. me wait"
+msgstr "Clicka para parar o salir del juego y elegir opciones. Esta bien, puedo esperar."
+
+#: src/play.py:202
+msgid "click to hear new song or turn songs off"
+msgstr "clicka to oir una nueva canción o apagar la música"
+
+#: src/play.py:205
+msgid ""
+"green organs will heal themself with ooze. red organs won't. click on organs "
+"you want to change"
+msgstr "los orgános en verde se reparan con ooze, los rojo no. Clicka en los organos "
+"para cambiarlos"
+
+#: src/play.py:206
+msgid ""
+"me organs will use ooze to heal when they get hurt. if you want some organs "
+"not to take ooze, click here to change them"
+msgstr "Mis orgános usan ooze para curse cuando estan dañados. Si tu quieres que algunos orgános"
+"no consuman ooze, clicka aquí para elegirlos"
+
+#: src/play.py:208
+msgid ""
+"you no like a stalk or a organ on me body? use this to get rid of it! it "
+"okay, me not get hurt"
+msgstr "¿No te gustan mis tentaculos u órganos? Cortamelos con el hacha, no me duele."
+
+#: src/play.py:211
+msgid ""
+"these me stalk options, har har har! can grow stalks where colors match, and "
+"can make stalks cross each other. try to make lots of branches."
+msgstr "Estos son los nuevos tentáculos, ¡ja ja ja! pueden crecer los tentáculos cuando coincide el color, y "
+"pueden cruzarse los tentáculos. Intenta hacer muchas ramas."
+
+#: src/play.py:213
+msgid "the more me have of that organ, the faster the new stalks come"
+msgstr "Cuantos mas órganos de estos tengo, mas rápido vienen los nuevos tentáculos"
+
+#: src/play.py:215
+msgid ""
+"me need brains to grow. the more brains me have, the more organs me can have"
+msgstr "necesito cerebros para crecer. Cuanto mas cerebros tengo mas organos puedo tener"
+
+#: src/play.py:217
+msgid "that show how much mutagen me have. me like mutagen. it let me grow"
+msgstr "Esto muestra cuanto mutagen tengo. Me gusta el mutagen, me ayuda a crecer"
+
+#: src/play.py:219
+msgid ""
+"that show how much ooze me have. hurt organs will use ooze to heal selfs"
+msgstr "Esto muestra cuanto ooze tengo. Mis órganos dañados usan ooze para curarse"
+
+#: src/play.py:226
+msgid "click me mouth to turn me tips on or off"
+msgstr "clickame en la boca para ocultar o mostrar las sugerencias"
+
+#: src/vista.py:115
+msgid "music by Kevin MacLeod  "
+msgstr "música por Kevin MacLeod  "
+
+#: src/vista.py:115
+msgid "Universe Factory games"
+msgstr "Universe Factory games"
+
+#: src/vista.py:116
+msgid "by Christopher Night  "
+msgstr "por  Christopher Night  "

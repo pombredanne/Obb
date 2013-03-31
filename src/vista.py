@@ -2,6 +2,8 @@ import pygame, math, datetime, collections, random, os
 from pygame.locals import *
 import settings, data, tip, font
 
+from i18n import _
+
 # Okay, here's the deal. There are six simultaneous coordinate systems
 #   going on at once.
 
@@ -110,8 +112,8 @@ def addsplash():
         # We're not about to crash the game over someone deleting the splash screen png
         pass
     x, y = settings.size
-    for text in ["incompetech.com", "music by Kevin MacLeod  ", "Universe Factory games",
-                 "by Christopher Night  "]:
+    for text in ["incompetech.com", _("music by Kevin MacLeod  "), _("Universe Factory games"),
+                 _("by Christopher Night  ")]:
         img = font.img(text, size = settings.layout.splashsize, color = (255, 255, 255),
                 constrainwidth = False)
         rect = img.get_rect(bottomright = (x, y))

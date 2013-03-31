@@ -1,7 +1,8 @@
+# -*- coding: utf-8 -*-
+
 import pygame, os, cPickle, resource
 from pygame.locals import *
 import data, vista, context, settings, play, graphics, noise, game
-
 
 pygame.mixer.pre_init(frequency=22050, size=-16, channels=2, buffer=(4096 if settings.audiobuffer else 0))
 pygame.init()
