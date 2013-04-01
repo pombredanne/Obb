@@ -1,6 +1,7 @@
 import pygame
 import settings, vista, graphics, mechanics, font
 
+from i18n import _
 
 class Panel(object):
     """Place where available tiles appear and you can pick them"""
@@ -63,7 +64,7 @@ class Panel(object):
     def choosetip(self, (mx, my)):
         mousepos = mx - settings.px0, my - settings.py0
         if self.cuberect.collidepoint(mousepos) or self.ncuberect.collidepoint(mousepos):
-            return "the more me have of that organ, the faster the new stalks come"
+            return _("the more me have of that organ, the faster the new stalks come")
         
 
 

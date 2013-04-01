@@ -2,6 +2,7 @@ import pygame, math
 from pygame.locals import *
 import vista, graphics, mechanics, font, settings
 
+from i18n import _
 
 class Meter(object):
     def __init__(self):
@@ -220,11 +221,11 @@ class Status(object):
     def choosetip(self, (mx, my)):
         mousepos = mx - settings.rx0, my - settings.ry0
         if self.mutagenmeter.rect.collidepoint(mousepos):
-            return "that show how much mutagen me have. me like mutagen. it let me grow"
+            return _("that show how much mutagen me have. me like mutagen. it let me grow")
         if self.healmeter.rect.collidepoint(mousepos):
-            return "that show how much ooze me have. ooze let me fix organs when they get broke"
+            return _("that show how much ooze me have. ooze let me fix organs when they get broke")
         if self.brainrect.collidepoint(mousepos) or self.controlrect.collidepoint(mousepos):
-            return "me need brains to grow. the more brains me have the more organs me can have"
+            return _("me need brains to grow. the more brains me have the more organs me can have")
         
 
 

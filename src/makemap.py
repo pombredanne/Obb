@@ -1,13 +1,14 @@
 import pygame, random
 import context, vista, graphics, settings, game, font
 
+from i18n import _
 
 class MakeMap(context.Context):
     def __init__(self):
         self.background = graphics.ghostify(vista._screen.convert_alpha())
         self.cloudticker = 0
         self.active = True
-        text = "Saving map to %s...." % settings.mapfile
+        text = _("Saving map to %s....") % settings.mapfile
         self.textimg = font.blocktext(text, size = settings.layout.tipsize)
         self.drawn = False
         self.savestate()

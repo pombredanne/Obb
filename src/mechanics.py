@@ -3,6 +3,8 @@
 import random
 import vista, settings
 
+from i18n import _
+
 vthreshold = 0.2  # Visibility threshold
 twinklerrate = 0.004  # Twinklers per unit area per second
 mutagenhit = 6  # How much you get when a twinkler hit a mutagenitor
@@ -119,26 +121,26 @@ costs = {
          }
 
 info = {}
-info["eye"] = "this organ let me see the space around it. me no can grow where me no can see"
-info["brain"] = "this organ let me control other organs. no can grow organs if me no have enough brains"
-info["giantbrain"] = "biggest brain is best brain!"
-info["eyebrain"] = "it eye! it brain! it both!"
-info["tripleeye"] = "this organ let me see out even farther! sometimes me get dizzy"
+info["eye"] = _("this organ let me see the space around it. me no can grow where me no can see")
+info["brain"] = _("this organ let me control other organs. no can grow organs if me no have enough brains")
+info["giantbrain"] = _("biggest brain is best brain!")
+info["eyebrain"] = _("it eye! it brain! it both!")
+info["tripleeye"] = _("this organ let me see out even farther! sometimes me get dizzy")
 
-info["shield"] = "this organ for protection. it block half of incoming danger"
-info["bulb"] = "this weapon good for rapid, long range fire, but it only shoot in one direction"
-info["star"] = "this weapon absorb white energy and make wave of destruction!"
-info["zotter"] = "this weapon good for short-range attacks"
+info["shield"] = _("this organ for protection. it block half of incoming danger")
+info["bulb"] = _("this weapon good for rapid, long range fire, but it only shoot in one direction")
+info["star"] = _("this weapon absorb white energy and make wave of destruction!")
+info["zotter"] = _("this weapon good for short-range attacks")
 
-info["mutagenitor"] = "this organ absorb white energy and make mutagen. very important!"
-info["mutagenpod"] = "this organ hold more mutagen. me need to be able to hold more mutagen before me can grow more advanced organs"
-info["plasteritor"] = "this organ absorb white energy and make ooze. me need ooze to heal"
-info["plasterpod"] = "this organ hold more ooze. more ooze help me survive big attacks"
-info["giantmutagenitor"] = "this organ absorb white energy and make even more mutagen!"
-info["giantmutagenpod"] = "this organ hold lots of mutagen"
-info["giantplasteritor"] = "this organ absorb white energy and make even more ooze!"
-info["giantplasterpod"] = "this organ hold lots of healing ooze"
-info["cube"] = "this organ control how fast new stalk options appear. more of this organ means options appear faster!"
+info["mutagenitor"] = _("this organ absorb white energy and make mutagen. very important!")
+info["mutagenpod"] = _("this organ hold more mutagen. me need to be able to hold more mutagen before me can grow more advanced organs")
+info["plasteritor"] = _("this organ absorb white energy and make ooze. me need ooze to heal")
+info["plasterpod"] = _("this organ hold more ooze. more ooze help me survive big attacks")
+info["giantmutagenitor"] = _("this organ absorb white energy and make even more mutagen!")
+info["giantmutagenpod"] = _("this organ hold lots of mutagen")
+info["giantplasteritor"] = _("this organ absorb white energy and make even more ooze!")
+info["giantplasterpod"] = _("this organ hold lots of healing ooze")
+info["cube"] = _("this organ control how fast new stalk options appear. more of this organ means options appear faster!")
 
 assert set(colors) == set(costs)
 assert set(costs) == set(info)

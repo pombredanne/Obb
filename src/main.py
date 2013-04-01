@@ -4,13 +4,15 @@ import pygame, os, cPickle, resource
 from pygame.locals import *
 import data, vista, context, settings, play, graphics, noise, game
 
+from i18n import _
+
 pygame.mixer.pre_init(frequency=22050, size=-16, channels=2, buffer=(4096 if settings.audiobuffer else 0))
 pygame.init()
 
 def main():
     vista.init()
     vista.addsplash()
-    pygame.display.set_caption("Obb is loading.... Please wait")
+    pygame.display.set_caption(_("Obb is loading.... Please wait"))
     noise.nexttrack()
     if settings.restart:
         game.restart()

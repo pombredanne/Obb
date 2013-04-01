@@ -1,32 +1,110 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
+# Copyright (C) YEAR ORGANIZATION
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-03-31 18:23+0200\n"
+"POT-Creation-Date: 2013-04-01 10:03+CEST\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=CHARSET\n"
-"Content-Transfer-Encoding: 8bit\n"
+"Content-Transfer-Encoding: ENCODING\n"
+"Generated-By: pygettext.py 1.5\n"
 
-#: src/menu.py:99
-msgid "window mode"
+
+#: src/main.py:15
+msgid "Obb is loading.... Please wait"
+msgstr ""
+
+#: src/makemap.py:11
+msgid "Saving map to %s...."
+msgstr ""
+
+#: src/mechanics.py:124
+msgid "this organ let me see the space around it. me no can grow where me no can see"
+msgstr ""
+
+#: src/mechanics.py:125
+msgid "this organ let me control other organs. no can grow organs if me no have enough brains"
+msgstr ""
+
+#: src/mechanics.py:126
+msgid "biggest brain is best brain!"
+msgstr ""
+
+#: src/mechanics.py:127
+msgid "it eye! it brain! it both!"
+msgstr ""
+
+#: src/mechanics.py:128
+msgid "this organ let me see out even farther! sometimes me get dizzy"
+msgstr ""
+
+#: src/mechanics.py:130
+msgid "this organ for protection. it block half of incoming danger"
+msgstr ""
+
+#: src/mechanics.py:131
+msgid "this weapon good for rapid, long range fire, but it only shoot in one direction"
+msgstr ""
+
+#: src/mechanics.py:132
+msgid "this weapon absorb white energy and make wave of destruction!"
+msgstr ""
+
+#: src/mechanics.py:133
+msgid "this weapon good for short-range attacks"
+msgstr ""
+
+#: src/mechanics.py:135
+msgid "this organ absorb white energy and make mutagen. very important!"
+msgstr ""
+
+#: src/mechanics.py:136
+msgid "this organ hold more mutagen. me need to be able to hold more mutagen before me can grow more advanced organs"
+msgstr ""
+
+#: src/mechanics.py:137
+msgid "this organ absorb white energy and make ooze. me need ooze to heal"
+msgstr ""
+
+#: src/mechanics.py:138
+msgid "this organ hold more ooze. more ooze help me survive big attacks"
+msgstr ""
+
+#: src/mechanics.py:139
+msgid "this organ absorb white energy and make even more mutagen!"
+msgstr ""
+
+#: src/mechanics.py:140
+msgid "this organ hold lots of mutagen"
+msgstr ""
+
+#: src/mechanics.py:141
+msgid "this organ absorb white energy and make even more ooze!"
+msgstr ""
+
+#: src/mechanics.py:142
+msgid "this organ hold lots of healing ooze"
+msgstr ""
+
+#: src/mechanics.py:143
+msgid "this organ control how fast new stalk options appear. more of this organ means options appear faster!"
 msgstr ""
 
 #: src/menu.py:99
 msgid "fullscreen mode"
 msgstr ""
 
+#: src/menu.py:99
+msgid "window mode"
+msgstr ""
+
 #: src/menu.py:105
-msgid "slow"
+msgid "fast"
 msgstr ""
 
 #: src/menu.py:105
@@ -34,23 +112,23 @@ msgid "normal"
 msgstr ""
 
 #: src/menu.py:105
-msgid "fast"
-msgstr ""
-
-#: src/menu.py:111
-msgid "sound on"
+msgid "slow"
 msgstr ""
 
 #: src/menu.py:111
 msgid "sound off"
 msgstr ""
 
-#: src/menu.py:117
-msgid "star field on"
+#: src/menu.py:111
+msgid "sound on"
 msgstr ""
 
 #: src/menu.py:117
 msgid "star field off"
+msgstr ""
+
+#: src/menu.py:117
+msgid "star field on"
 msgstr ""
 
 #: src/menu.py:122
@@ -61,14 +139,16 @@ msgstr ""
 msgid "quit game"
 msgstr ""
 
+#: src/panel.py:67 src/play.py:213
+msgid "the more me have of that organ, the faster the new stalks come"
+msgstr ""
+
 #: src/play.py:192
 msgid "want to get rid of the stalk option? click here!"
 msgstr ""
 
 #: src/play.py:194
-msgid ""
-"want to get rid of a stalk option? click on the stalk, then click here! you "
-"can also right-click on the stalk option"
+msgid "want to get rid of a stalk option? click on the stalk, then click here! you can also right-click on the stalk option"
 msgstr ""
 
 #: src/play.py:200
@@ -80,59 +160,54 @@ msgid "click to hear new song or turn songs off"
 msgstr ""
 
 #: src/play.py:205
-msgid ""
-"green organs will heal themself with ooze. red organs won't. click on organs "
-"you want to change"
+msgid "green organs will heal themself with ooze. red organs won't. click on organs you want to change"
 msgstr ""
 
 #: src/play.py:206
-msgid ""
-"me organs will use ooze to heal when they get hurt. if you want some organs "
-"not to take ooze, click here to change them"
+msgid "me organs will use ooze to heal when they get hurt. if you want some organs not to take ooze, click here to change them"
 msgstr ""
 
 #: src/play.py:208
-msgid ""
-"you no like a stalk or a organ on me body? use this to get rid of it! it "
-"okay, me not get hurt"
+msgid "you no like a stalk or a organ on me body? use this to get rid of it! it okay, me not get hurt"
 msgstr ""
 
 #: src/play.py:211
-msgid ""
-"these me stalk options, har har har! can grow stalks where colors match, and "
-"can make stalks cross each other. try to make lots of branches."
-msgstr ""
-
-#: src/play.py:213
-msgid "the more me have of that organ, the faster the new stalks come"
+msgid "these me stalk options, har har har! can grow stalks where colors match, and can make stalks cross each other. try to make lots of branches."
 msgstr ""
 
 #: src/play.py:215
-msgid ""
-"me need brains to grow. the more brains me have, the more organs me can have"
+msgid "me need brains to grow. the more brains me have, the more organs me can have"
 msgstr ""
 
-#: src/play.py:217
+#: src/play.py:217 src/status-0.py:224
 msgid "that show how much mutagen me have. me like mutagen. it let me grow"
 msgstr ""
 
 #: src/play.py:219
-msgid ""
-"that show how much ooze me have. hurt organs will use ooze to heal selfs"
+msgid "that show how much ooze me have. hurt organs will use ooze to heal selfs"
 msgstr ""
 
 #: src/play.py:226
 msgid "click me mouth to turn me tips on or off"
 msgstr ""
 
-#: src/vista.py:115
-msgid "music by Kevin MacLeod  "
+#: src/status-0.py:226
+msgid "that show how much ooze me have. ooze let me fix organs when they get broke"
+msgstr ""
+
+#: src/status-0.py:228
+msgid "me need brains to grow. the more brains me have the more organs me can have"
 msgstr ""
 
 #: src/vista.py:115
 msgid "Universe Factory games"
 msgstr ""
 
+#: src/vista.py:115
+msgid "music by Kevin MacLeod  "
+msgstr ""
+
 #: src/vista.py:116
 msgid "by Christopher Night  "
 msgstr ""
+
