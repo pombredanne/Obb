@@ -11,16 +11,16 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
-# Copyright (C) 2013
+# Spanish translation for our-foss-projects
+# Copyright (c) 2013 Rosetta Contributors and Canonical Ltd 2013
 # Miguel de Dios Matias <tres.14159@gmail.com>, 2013.
-# 
-#, fuzzy
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: Obb 20130331\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-03-31 18:23+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"POT-Creation-Date: 2013-04-01 10:01+0000\n"
+"PO-Revision-Date: 2013-04-01 11:04+0000\n"
 "Last-Translator: Miguel de Dios Matias <tres.14159@gmail.com>\n"
 "Language-Team:  es_ES <LL@li.org>\n"
 "Language:  es_ES\n"
@@ -28,41 +28,141 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: UTF-8\n"
 
-#: src/menu.py:99
-msgid "window mode"
-msgstr "modo ventana"
+#: src/main.py:15
+msgid "Obb is loading.... Please wait"
+msgstr "Obb esta cargando....Por favor espera"
+
+#: src/makemap.py:11
+msgid "Saving map to %s...."
+msgstr "Guardando mapa en %s..."
+
+#: src/mechanics.py:124
+msgid ""
+"this organ let me see the space around it. me no can grow where me no can see"
+msgstr ""
+"Este órgano me ayuda a ver alrededor en el espacio. No puedo crecer donde no "
+"veo."
+
+#: src/mechanics.py:125
+msgid ""
+"this organ let me control other organs. no can grow organs if me no have "
+"enough brains"
+msgstr ""
+"Este órgano me ayuda controlar otros órganos, no pueden crecerme mas órganos "
+"si no tengo suficientes cerebros"
+
+#: src/mechanics.py:126
+msgid "biggest brain is best brain!"
+msgstr "¡Un cerebro grande es el mejor cerebro!"
+
+#: src/mechanics.py:127
+msgid "it eye! it brain! it both!"
+msgstr "¡Es un ojo! ¡Es un cerebro! ¡Es ambos!"
+
+#: src/mechanics.py:128
+msgid "this organ let me see out even farther! sometimes me get dizzy"
+msgstr "¡Con este ojo veo mucho más lejos! Algunas veces me mareo"
+
+#: src/mechanics.py:130
+msgid "this organ for protection. it block half of incoming danger"
+msgstr "Este órgano me protege. Bloquea la mitad del peligro que viene"
+
+#: src/mechanics.py:131
+msgid ""
+"this weapon good for rapid, long range fire, but it only shoot in one "
+"direction"
+msgstr ""
+"Es un arma rápida, con un gran alcance, pero solo dispara en una dirección"
+
+#: src/mechanics.py:132
+msgid "this weapon absorb white energy and make wave of destruction!"
+msgstr "¡Este arma absorbe energía blanca y crea una ola de deestrucción!"
+
+#: src/mechanics.py:133
+msgid "this weapon good for short-range attacks"
+msgstr "Una buena arma para atacar en corta distancia"
+
+#: src/mechanics.py:135
+msgid "this organ absorb white energy and make mutagen. very important!"
+msgstr "Este órgano absorbe energía blanca y crea mutagen. ¡Muy importante!"
+
+#: src/mechanics.py:136
+msgid ""
+"this organ hold more mutagen. me need to be able to hold more mutagen before "
+"me can grow more advanced organs"
+msgstr ""
+"Este órgano guarda mucho mutagen, necesito ser capaz de guardar mucho "
+"mutagen para que me crezcan órganos mas avanzados"
+
+#: src/mechanics.py:137
+msgid "this organ absorb white energy and make ooze. me need ooze to heal"
+msgstr ""
+"Este órgano absorbe energía blanca y crea ooze, necesito ooze para curarme"
+
+#: src/mechanics.py:138
+msgid "this organ hold more ooze. more ooze help me survive big attacks"
+msgstr ""
+"Este órgano almacena ooze, mucho ooze me ayuda a sobrevivir a grandes ataques"
+
+#: src/mechanics.py:139
+msgid "this organ absorb white energy and make even more mutagen!"
+msgstr "¡Este órgano absorbe energía blanca y crea  mucho mas mutagen!"
+
+#: src/mechanics.py:140
+msgid "this organ hold lots of mutagen"
+msgstr "Este órgano guarda mucho mutagen"
+
+#: src/mechanics.py:141
+msgid "this organ absorb white energy and make even more ooze!"
+msgstr "¡Este órgano absorbe energía blanca y crea mucho mas ooze!"
+
+#: src/mechanics.py:142
+msgid "this organ hold lots of healing ooze"
+msgstr "Este órgano guarda mucho curativo ooze"
+
+#: src/mechanics.py:143
+msgid ""
+"this organ control how fast new stalk options appear. more of this organ "
+"means options appear faster!"
+msgstr ""
+"Este órgano controla la velocidad de aparición de tentáculos. ¡Cuanto mas "
+"órganos de este mas rápido aparecen!"
 
 #: src/menu.py:99
 msgid "fullscreen mode"
 msgstr "pantalla completa"
 
+#: src/menu.py:99
+msgid "window mode"
+msgstr "modo ventana"
+
 #: src/menu.py:105
-msgid "slow"
-msgstr "lento"
+msgid "fast"
+msgstr "rápido"
 
 #: src/menu.py:105
 msgid "normal"
 msgstr "normal"
 
 #: src/menu.py:105
-msgid "fast"
-msgstr "rápido"
-
-#: src/menu.py:111
-msgid "sound on"
-msgstr "sonido"
+msgid "slow"
+msgstr "lento"
 
 #: src/menu.py:111
 msgid "sound off"
 msgstr "silencio"
 
-#: src/menu.py:117
-msgid "star field on"
-msgstr "mostrar campo de estrellas"
+#: src/menu.py:111
+msgid "sound on"
+msgstr "sonido"
 
 #: src/menu.py:117
 msgid "star field off"
 msgstr "ocultar campo de estrellas"
+
+#: src/menu.py:117
+msgid "star field on"
+msgstr "mostrar campo de estrellas"
 
 #: src/menu.py:122
 msgid "back to game"
@@ -72,20 +172,29 @@ msgstr "volver al juego"
 msgid "quit game"
 msgstr "salir del juego"
 
+#: src/panel.py:67 src/play.py:213
+msgid "the more me have of that organ, the faster the new stalks come"
+msgstr ""
+"Cuantos mas órganos de estos tengo, mas rápido vienen los nuevos tentáculos"
+
 #: src/play.py:192
 msgid "want to get rid of the stalk option? click here!"
-msgstr "¿Quiere deshacerse de la pieza de tentaculo? ¡haga click aquí!"
+msgstr "¿Quiere deshacerse de la pieza de tentáculo? ¡haga click aquí!"
 
 #: src/play.py:194
 msgid ""
 "want to get rid of a stalk option? click on the stalk, then click here! you "
 "can also right-click on the stalk option"
-msgstr "¿Quieres deshacerte de alguna pieza de tentáculo? ¡Clicka en la pieza y después aquí!"
-"También puedes hacerlo con clickando con el botón derecho encima de la pieza de tentáculo."
+msgstr ""
+"¿Quieres deshacerte de alguna pieza de tentáculo? ¡Clicka en la pieza y "
+"después aquí! También puedes hacerlo con clickando con el botón derecho "
+"encima de la pieza de tentáculo."
 
 #: src/play.py:200
 msgid "click to pause or quit game and pick options. it okay. me wait"
-msgstr "Clicka para parar o salir del juego y elegir opciones. Esta bien, puedo esperar."
+msgstr ""
+"Clicka para parar o salir del juego y elegir opciones. Esta bien, puedo "
+"esperar."
 
 #: src/play.py:202
 msgid "click to hear new song or turn songs off"
@@ -95,58 +204,76 @@ msgstr "clicka to oir una nueva canción o apagar la música"
 msgid ""
 "green organs will heal themself with ooze. red organs won't. click on organs "
 "you want to change"
-msgstr "los orgános en verde se reparan con ooze, los rojo no. Clicka en los organos "
+msgstr ""
+"los orgános en verde se reparan con ooze, los rojo no. Clicka en los organos "
 "para cambiarlos"
 
 #: src/play.py:206
 msgid ""
 "me organs will use ooze to heal when they get hurt. if you want some organs "
 "not to take ooze, click here to change them"
-msgstr "Mis orgános usan ooze para curse cuando estan dañados. Si tu quieres que algunos orgános"
-"no consuman ooze, clicka aquí para elegirlos"
+msgstr ""
+"Mis orgános usan ooze para curse cuando estan dañados. Si tu quieres que "
+"algunos orgános no consuman ooze, clicka aquí para elegirlos"
 
 #: src/play.py:208
 msgid ""
 "you no like a stalk or a organ on me body? use this to get rid of it! it "
 "okay, me not get hurt"
-msgstr "¿No te gustan mis tentaculos u órganos? Cortamelos con el hacha, no me duele."
+msgstr ""
+"¿No te gustan mis tentáculos u órganos? Cortamelos con el hacha, no me duele."
 
 #: src/play.py:211
 msgid ""
 "these me stalk options, har har har! can grow stalks where colors match, and "
 "can make stalks cross each other. try to make lots of branches."
-msgstr "Estos son los nuevos tentáculos, ¡ja ja ja! pueden crecer los tentáculos cuando coincide el color, y "
-"pueden cruzarse los tentáculos. Intenta hacer muchas ramas."
-
-#: src/play.py:213
-msgid "the more me have of that organ, the faster the new stalks come"
-msgstr "Cuantos mas órganos de estos tengo, mas rápido vienen los nuevos tentáculos"
+msgstr ""
+"Estos son los nuevos tentáculos, ¡ja ja ja! pueden crecer los tentáculos "
+"cuando coincide el color, y pueden cruzarse los tentáculos. Intenta hacer "
+"muchas ramas."
 
 #: src/play.py:215
 msgid ""
 "me need brains to grow. the more brains me have, the more organs me can have"
-msgstr "necesito cerebros para crecer. Cuanto mas cerebros tengo mas organos puedo tener"
+msgstr ""
+"necesito cerebros para crecer. Cuanto mas cerebros tengo mas organos puedo "
+"tener"
 
-#: src/play.py:217
+#: src/play.py:217 src/status-0.py:224
 msgid "that show how much mutagen me have. me like mutagen. it let me grow"
-msgstr "Esto muestra cuanto mutagen tengo. Me gusta el mutagen, me ayuda a crecer"
+msgstr ""
+"Esto muestra cuanto mutagen tengo. Me gusta el mutagen, me ayuda a crecer"
 
 #: src/play.py:219
 msgid ""
 "that show how much ooze me have. hurt organs will use ooze to heal selfs"
-msgstr "Esto muestra cuanto ooze tengo. Mis órganos dañados usan ooze para curarse"
+msgstr ""
+"Esto muestra cuanto ooze tengo. Mis órganos dañados usan ooze para curarse"
 
 #: src/play.py:226
 msgid "click me mouth to turn me tips on or off"
 msgstr "clickame en la boca para ocultar o mostrar las sugerencias"
 
-#: src/vista.py:115
-msgid "music by Kevin MacLeod  "
-msgstr "música por Kevin MacLeod  "
+#: src/status-0.py:226
+msgid ""
+"that show how much ooze me have. ooze let me fix organs when they get broke"
+msgstr ""
+"Esto muestra cuanto ooze tengo. Mis órganos dañados usan ooze para curarse"
+
+#: src/status-0.py:228
+msgid ""
+"me need brains to grow. the more brains me have the more organs me can have"
+msgstr ""
+"necesito cerebros para crecer. Cuanto mas cerebros tengo mas organos puedo "
+"tener"
 
 #: src/vista.py:115
 msgid "Universe Factory games"
 msgstr "Universe Factory games"
+
+#: src/vista.py:115
+msgid "music by Kevin MacLeod  "
+msgstr "música por Kevin MacLeod  "
 
 #: src/vista.py:116
 msgid "by Christopher Night  "
