@@ -19,7 +19,7 @@
 import numpy, pygame
 
 def pixels_alpha (surface):
-
+	
 	if surface.get_bytesize () != 4:
 		raise ValueError("unsupported bit depth for alpha reference array")
 	
@@ -28,13 +28,14 @@ def pixels_alpha (surface):
 	
 	if alpha_shift & 7 <> 0:
 		raise ValueError("unsupported colormasks for alpha reference array")
-
+	
 	start = alpha_shift >> 3
 	if not lilendian:
 		start = 3 - start
-
+	
 	array = numpy.ndarray \
-			(shape=(surface.get_width (), surface.get_height ()),
-			 dtype=numpy.uint8, buffer=surface.get_buffer (),
-			 offset=start, strides=(4, surface.get_pitch ()))
+		(shape=(surface.get_width (), surface.get_height ()),
+			dtype=numpy.uint8, buffer=surface.get_buffer (),
+			offset=start, strides=(4, surface.get_pitch ()))
+	
 	return array
