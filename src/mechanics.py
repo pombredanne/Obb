@@ -46,25 +46,28 @@ tilecolors = [0, 0, 1, 1, 2, 2]
 #        (2,3,4), (2,3,5), (2,4,5), (3,4,5)]
 
 dedgesets = ([(1,), (5,), (1,3), (3,5), (1,4), (2,5), (2,), (3,), (4,)] +
-            [(2,3), (2,4), (3,4)] * 2)
+	[(2,3), (2,4), (3,4)] * 2)
 
 
 
 class AppendageSpec(object):
-    """Data to specify the path of an appendage, irrespective of starting position"""
-    def __init__(self, dedges, color):
-        self.dedges = sorted(set(dedges))
-        self.color = color
-    
-    def outbuds(self, pos, edge):
-        return [vista.grid.opposite(pos, edge + dedge) for dedge in self.dedges]
+	"""
+	Data to specify the path of an appendage, irrespective of starting position
+	"""
+	def __init__(self, dedges, color):
+		self.dedges = sorted(set(dedges))
+		self.color = color
+	
+	def outbuds(self, pos, edge):
+		return [vista.grid.opposite(pos, edge + dedge) for dedge in self.dedges]
 
 
 def randomspec(color = None):
-    dedges = random.choice(dedgesets)
-    if len(dedges) > 2: dedges = random.choice(dedgesets)
-    if color is None: color = "app%s" % random.choice((0,1,2))
-    return AppendageSpec(dedges, color)
+	dedges = random.choice(dedgesets)
+	if len(dedges) > 2: dedges = random.choice(dedgesets)
+	if color is None: color = "app%s" % random.choice((0,1,2))
+	
+	return AppendageSpec(dedges, color)
 
 
 # TODO: move this into a CSV data file
@@ -100,25 +103,24 @@ colors["cube"] = "app2"
 
 
 costs = {
-         "mutagenitor": 20,
-           "eye": 35,
-             "brain": 50,
-         "mutagenpod": 65,
-           "plasteritor": 80,
-             "zotter": 95,
-         "cube": 110,
-           "plasterpod": 125,
-             "bulb": 140,
-         "shield": 155,
-           "eyebrain": 170,
-             "giantmutagenpod": 185,
-         "tripleeye": 200,
-           "giantbrain": 215,
-             "giantmutagenitor": 230,
-         "giantplasterpod": 245,
-           "giantplasteritor": 260,
-             "star": 275,
-         }
+	"mutagenitor": 20,
+	"eye": 35,
+	"brain": 50,
+	"mutagenpod": 65,
+	"plasteritor": 80,
+	"zotter": 95,
+	"cube": 110,
+	"plasterpod": 125,
+	"bulb": 140,
+	"shield": 155,
+	"eyebrain": 170,
+	"giantmutagenpod": 185,
+	"tripleeye": 200,
+	"giantbrain": 215,
+	"giantmutagenitor": 230,
+	"giantplasterpod": 245,
+	"giantplasteritor": 260,
+	"star": 275}
 
 info = {}
 info["eye"] = _("this organ let me see the space around it. me no can grow where me no can see")
@@ -144,6 +146,3 @@ info["cube"] = _("this organ control how fast new stalk options appear. more of 
 
 assert set(colors) == set(costs)
 assert set(costs) == set(info)
-
-
-
